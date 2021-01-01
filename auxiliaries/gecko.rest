@@ -1,0 +1,33 @@
+GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
+
+###
+
+GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
+
+###
+
+
+GET https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false HTTP/1.0
+
+
+###
+
+
+GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&days=2 HTTP/1.0
+
+###
+
+
+###
+
+
+###
+
+
+###
+
+
+###
+
+
+
