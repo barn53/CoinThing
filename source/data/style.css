@@ -1,0 +1,9 @@
+html,
+body {
+    height: 100%;
+    /* overflow: hidden; */
+    font-family: 'Noto Sans', sans-serif;
+
+    font-size:11;
+}
+

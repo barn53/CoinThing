@@ -34,6 +34,9 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "typeinfo": "cpp",
-        "locale": "cpp"
+        "locale": "cpp",
+        "ctime": "cpp",
+        "iostream": "cpp",
+        "string": "cpp"
     }
 }

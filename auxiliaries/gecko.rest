@@ -17,6 +17,7 @@ GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&
 
 ###
 
+GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
 
 ###
 

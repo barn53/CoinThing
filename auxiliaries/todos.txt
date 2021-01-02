@@ -1,0 +1,40 @@
+TODO
+
+Über Gecko API holen oder implementieren?
+
+Einmalig pro Configuration
+
+Coins:
+- Gecko-ID      bitcoin     Eingabe
+- Symbol        BTC, btc    API
+- Name          Bitcoin     API
+- Icon-Datei    btc.jpg     <Symbol>.jpg
+
+Währungen:
+- Symbol        €           Implementieren
+- Gecko-ID      EUR, eur    Implementieren
+
+
+Regelmäßig
+
+Sentiment:
+ - Über /coin/<id>                  API
+Chart 24h/48h:
+ - Über /coins/<id>/market_chart    API
+
+
+
+
+Implementieren
+
+
+WiFi Manager
+
+millis() Überlauf 
+
+Serial ouput per -D steuern
+
+Weitere Coin Icons erzeugen
+
+https://www.instructables.com/Converting-Images-to-Flash-Memory-Iconsimages-for-/
+https://sourceforge.net/projects/lcd-image-converter/
