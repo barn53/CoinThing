@@ -209,7 +209,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
             m_tft.drawPixel(x, yStart, maxLabelColor);
         }
         ++dotted;
-        dotted %= 8;
+        dotted %= 9;
     }
 
     for (uint8_t x = 1; x < prices.size(); ++x) {
@@ -234,7 +234,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
     if (yPrice < (height / 2)) {
         h24Y = std::min<uint8_t>(DISPLAY_HEIGHT - 12, yPrice + (4 * HEIGHT_CHART_VALUE) + yStart);
     } else {
-        h24Y = std::min<uint8_t>(DISPLAY_HEIGHT - 12, yPrice - (4 * HEIGHT_CHART_VALUE) + yStart);
+        h24Y = std::min<uint8_t>(DISPLAY_HEIGHT - 12, yPrice - (5 * HEIGHT_CHART_VALUE) + yStart);
     }
 
     m_tft.fillRect(h24X, h24Y, width24h, 2 * HEIGHT_CHART_VALUE, TFT_BLACK);
