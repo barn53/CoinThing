@@ -176,7 +176,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
     uint8_t lineXRight(0);
     uint8_t maxLabelX;
     uint8_t maxLabelY;
-    bool labelLeft(true);
+    bool maxLabelLeft(true);
 
     if (xAtMax > DISPLAY_WIDTH / 2) { // at the left display side
         lineXLeft = maxWidth + (3 * DISTANCE_CHART_VALUE);
@@ -188,7 +188,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
         maxLabelX = 0;
         maxLabelY = yStart - 2 - (HEIGHT_CHART_VALUE / 2);
     } else { // at the right display side
-        labelLeft = false;
+        maxLabelLeft = false;
         lineXLeft = xAtMax + DISTANCE_CHART_VALUE;
         lineXRight = DISPLAY_WIDTH - maxWidth - (3 * DISTANCE_CHART_VALUE);
 
@@ -221,17 +221,22 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
 
     auto width24h(m_tft.textWidth("24h"));
     uint8_t h24X(DISTANCE_CHART_VALUE);
-    uint h24Y(yStart);
-    if (labelLeft) {
+    uint8_t h24Y(0);
+    uint8_t yPrice(0);
+
+    if (maxLabelLeft) { // then 24h label right
         h24X = DISPLAY_WIDTH - width24h - DISTANCE_CHART_VALUE;
-        if (calcY(prices.back()) < (height / 2)) {
-            h24Y = DISPLAY_HEIGHT - 12;
-        }
+        yPrice = calcY(prices.back());
     } else {
-        if (calcY(prices.front()) < (height / 2)) {
-            h24Y = DISPLAY_HEIGHT - 12;
-        }
+        yPrice = calcY(prices.front());
     }
+
+    if (yPrice < (height / 2)) {
+        h24Y = std::min<uint8_t>(DISPLAY_HEIGHT - 12, yPrice + (4 * HEIGHT_CHART_VALUE) + yStart);
+    } else {
+        h24Y = std::min<uint8_t>(DISPLAY_HEIGHT - 12, yPrice - (4 * HEIGHT_CHART_VALUE) + yStart);
+    }
+
     m_tft.fillRect(h24X, h24Y, width24h, 2 * HEIGHT_CHART_VALUE, TFT_BLACK);
     m_tft.setTextColor(TFT_PURPLE, TFT_BLACK);
     m_tft.setCursor(h24X, h24Y);
