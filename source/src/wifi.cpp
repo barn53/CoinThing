@@ -1,4 +1,5 @@
 #include "wifi.h"
+#include "pre.h"
 #include "secrets.h"
 #include <Arduino.h>
 #include <ESP8266HTTPClient.h>
@@ -23,8 +24,8 @@ void setupWiFi()
 {
     wifiWake();
 
-    WiFi.begin(ssid, password);
-    WiFi.hostname(hostname);
+    WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
+    WiFi.hostname(HOST_NAME);
 
     Serial.print("Connecting ");
     while (WiFi.status() != WL_CONNECTED) {

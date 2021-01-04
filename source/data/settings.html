@@ -16,7 +16,8 @@
 
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
-            <h1 class="display-4">CoinTicker Settings</h1>
+            <h1 class="display-4">CoinTicker</h1>
+            <p class="lead">Settings</p>
         </div>
     </div>
 
@@ -39,9 +40,9 @@
 
     <div class="container-fluid text-center">
         <div class="row content">
-            <div class="col-sm-1 sidenav">
+            <div class="col-sm-2 sidenav">
             </div>
-            <div class="col-sm-8 text-left">
+            <div class="col-sm-7 text-left">
                 <form>
                     <div class="form-group">
                         <label for="coin">Coin Gecko ID (e.g. bitcoin, ethereum)</label>
@@ -52,31 +53,45 @@
                     <div class="form-group">
                         <label for="currency">Currency (e.g. USD, EUR)</label>
                         <input type="email" class="form-control" id="currency" placeholder="Currency">
-                        <small id="emailHelp" class="form-text text-muted">Any valid vs. currency on coin gecko.</small>
+                        <small id="emailHelp" class="form-text text-muted">Any valid vs. currency on coin
+                            gecko.</small>
                     </div>
 
                     <div class="form-group">
                         <label>Number Format</label>
-                        <div></div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="number_format_options"
-                                id="number_format_0" value="0">
-                            <label class="form-check-label" for="number_format_0">1.000,00</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_0" value="0">
+                                <label class="form-check-label" for="number_format_0">1.000,00</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_1" value="1">
+                                <label class="form-check-label" for="number_format_1">1&#x2006;000,00</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_2" value="2">
+                                <label class="form-check-label" for="number_format_2">1000,00</label>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="number_format_options"
-                                id="number_format_1" value="1">
-                            <label class="form-check-label" for="number_format_1">1000,00</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="number_format_options"
-                                id="number_format_2" value="2">
-                            <label class="form-check-label" for="number_format_2">1,000.00</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="number_format_options"
-                                id="number_format_3" value="3">
-                            <label class="form-check-label" for="number_format3">1000.00</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_3" value="3">
+                                <label class="form-check-label" for="number_format_3">1,000.00</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_4" value="4">
+                                <label class="form-check-label" for="number_format4">1&#x2006;000.00</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="number_format_options"
+                                    id="number_format_5" value="5">
+                                <label class="form-check-label" for="number_format5">1000.00</label>
+                            </div>
                         </div>
                     </div>
 
@@ -91,6 +106,11 @@
             </div>
         </div>
     </div>
+
+    <footer class="footer fixed-bottom container">
+        <hr>
+        <p>&copy; 2020 barn53 &mdash; <a href="about.html">About</a> </p>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -144,6 +164,10 @@
                 } else if ($("#number_format_2")[0].checked) {
                     number_format = 2
                 } else if ($("#number_format_3")[0].checked) {
+                    number_format = 3
+                } else if ($("#number_format_4")[0].checked) {
+                    number_format = 3
+                } else if ($("#number_format_5")[0].checked) {
                     number_format = 3
                 }
                 if (number_format === -1) {

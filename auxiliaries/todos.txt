@@ -38,3 +38,8 @@ Weitere Coin Icons erzeugen
 
 https://www.instructables.com/Converting-Images-to-Flash-Memory-Iconsimages-for-/
 https://sourceforge.net/projects/lcd-image-converter/
+
+
+Build:
+
+Version und Host name generieren

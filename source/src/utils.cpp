@@ -7,7 +7,7 @@ String cleanUp(const String& s)
     return ret;
 }
 
-void formatNumber(double n, String& s, NumberFormat format, bool forceSign)
+void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00)
 {
     char buf[21];
     char buf2[21];
@@ -35,19 +35,38 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign)
         snprintf(buf, sizeof(buf), "%.*f", decimalPlaces, n);
     }
 
-    bool hasDecimalSep(false);
-    if (format != NumberFormat::DECIMAL_DOT) {
+    char thousandSeparator('#'); // means no separator
+    char decimalSeparator('.');
+
+    if (format == NumberFormat::THOUSAND_DOT_DECIMAL_COMMA) {
+        thousandSeparator = '.';
+        decimalSeparator = ',';
+    } else if (format == NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA) {
+        thousandSeparator = ' ';
+        decimalSeparator = ',';
+    } else if (format == NumberFormat::DECIMAL_COMMA) {
+        decimalSeparator = ',';
+    } else if (format == NumberFormat::THOUSAND_COMMA_DECIMAL_DOT) {
+        thousandSeparator = ',';
+        decimalSeparator = '.';
+    } else if (format == NumberFormat::THOUSAND_BLANK_DECIMAL_DOT) {
+        thousandSeparator = ' ';
+        decimalSeparator = '.';
+    }
+
+    bool hasDecSep(false);
+    if (format != NumberFormat::DECIMAL_DOT) { // no need touch
         int rev(0);
         for (auto pos = strlen(buf); pos != 0; --pos, ++rev) {
             char c = buf[pos - 1];
             if (c == '.') {
-                hasDecimalSep = true;
+                hasDecSep = true;
             }
             buf2[rev] = c;
         }
         buf2[rev] = 0; // buf2 holds number string in reverse order
 
-        bool decimalSeparator(false);
+        bool reachedDecSep(false);
         uint8_t jj(sizeof(buf) - 1);
         uint8_t group(0);
 
@@ -57,16 +76,13 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign)
         for (uint8_t ii = 0; buf2[ii] != 0 && jj != 0; ++ii) {
             char c = buf2[ii];
 
-            if (!hasDecimalSep || decimalSeparator) {
+            if (!hasDecSep || reachedDecSep) {
                 ++group;
             }
 
             if (c == '.') {
-                if (format == NumberFormat::THOUSAND_DOT_DECIMAL_COMMA
-                    || format == NumberFormat::DECIMAL_COMMA) {
-                    c = ',';
-                }
-                decimalSeparator = true;
+                c = decimalSeparator;
+                reachedDecSep = true;
             }
 
             buf[jj] = c;
@@ -76,11 +92,8 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign)
                 && group % 3 == 0
                 && buf2[ii + 1] != 0
                 && buf2[ii + 1] != '+') {
-                if (format == NumberFormat::THOUSAND_DOT_DECIMAL_COMMA) {
-                    buf[jj] = '.';
-                    --jj;
-                } else if (format == NumberFormat::THOUSAND_COMMA_DECIMAL_DOT) {
-                    buf[jj] = ',';
+                if (thousandSeparator != '#') {
+                    buf[jj] = thousandSeparator;
                     --jj;
                 }
             }
@@ -90,11 +103,17 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign)
         s = buf;
     }
 
-    if (format == NumberFormat::THOUSAND_DOT_DECIMAL_COMMA
-        || format == NumberFormat::DECIMAL_COMMA) {
-        s.replace(",00", ",‒"); // Figure Dash
-    } else {
-        s.replace(".00", ".‒"); // Figure Dash
+    s.replace(" ", "\u2006"); // Six-Per-Em Space U+2006
+    if (dash00) {
+        String dotZero;
+        dotZero = decimalSeparator;
+        dotZero += "00";
+        if (s.endsWith(dotZero)) {
+            String repl;
+            repl = decimalSeparator;
+            repl += "\u2012";
+            s.replace(dotZero, repl); // Figure Dash U+2012
+        }
     }
 }
 

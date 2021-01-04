@@ -134,7 +134,18 @@ String fontType = ".ttf";
 
 
 // Define the font size in points for the TFT_eSPI font file
-int  fontSize = 25;
+
+int  fontSize = 50;
+/* 
+13
+15
+20
+25
+30
+40
+50
+*/
+
 
 // Font size to use in the Processing sketch display window that pops up (can be different to above)
 int displayFontSize = 40;
@@ -326,6 +337,7 @@ static final int[] specificUnicodes = {
   // Commonly used codes, add or remove // in next line
   // 0x00A3, 0x00B0, 0x00B5, 0x03A9, 0x20AC, // £ ° µ Ω €
   
+  0x2006, // Sechstelgeviert-Leerzeichen - Six-Per-Em Space
   0x2012, // Ziffernbreiter Gedankenstrich - Figure Dash
   0x2013 // Halbgeviertstrich - En Dash
 
@@ -515,8 +527,8 @@ void setup() {
     delay(100);
 
     // Open up the FontFiles folder to access the saved file
-    String path = sketchPath();
-    Desktop.getDesktop().open(new File(path+"/FontFiles"));
+    // String path = sketchPath();
+    // Desktop.getDesktop().open(new File(path+"/FontFiles"));
 
     System.err.println("All done! Note: Rectangles are displayed for non-existant characters.");
   }

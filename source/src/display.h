@@ -19,6 +19,12 @@ public:
     void showAPIFailed();
 
 private:
+    void heartbeat();
+    void coin(double price, double price_usd, double change, uint16_t color);
+    void chart(const std::vector<double>& prices, double max, double min, uint16_t color);
+    void rewrite();
+    void chartFailed();
+
     enum class ShowedScreen {
         NONE,
         AP_QR,

@@ -1,3 +1,7 @@
+GET https://api.coingecko.com/api/v3/ping HTTP/1.0
+
+###
+
 GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
 
 ###
@@ -15,9 +19,6 @@ GET https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=fa
 
 GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&days=2 HTTP/1.0
 
-###
-
-GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
 
 ###
 

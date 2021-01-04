@@ -2,6 +2,7 @@
 #include "gecko.h"
 #include "handler.h"
 #include "http.h"
+#include "pre.h"
 #include "settings.h"
 #include "utils.h"
 #include "wifi.h"
@@ -18,8 +19,16 @@ Handler handler(settings);
 
 void setup(void)
 {
+    rst_info* ri(ESP.getResetInfoPtr());
+
     Serial.begin(115200);
+    Serial.printf("\n---------------------\n");
+    Serial.printf("Reset Info reason:   %u\n", ri->reason);
+    Serial.printf("Reset Info exccause: %u", ri->exccause);
+    Serial.printf("\n---------------------\n");
+
     display.begin();
+    display.showAPQR();
 
     setupWiFi();
 
