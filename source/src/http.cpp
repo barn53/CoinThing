@@ -4,10 +4,14 @@
 
 HttpJson::HttpJson()
 {
+#ifdef ESP8266
     m_client.setInsecure();
+#endif
 
     m_http.useHTTP10(true); // stream is only available with HTTP1.0 (no chunked transfer)
+#ifdef ESP8266
     m_http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+#endif
 }
 
 bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc)

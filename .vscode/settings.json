@@ -38,5 +38,6 @@
         "ctime": "cpp",
         "iostream": "cpp",
         "string": "cpp"
-    }
+    },
+    "python.pythonPath": "C:\\Users\\gerdm\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
 }

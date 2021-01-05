@@ -4,11 +4,18 @@
 #include "settings.h"
 #include "utils.h"
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
 #include <ESP_QRcode.h> // https://github.com/peteha99/esp_gen_qr
 #include <SPI.h>
 #include <locale>
 #include <sstream>
+
+#ifdef ESP8266
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#else
+#include <HTTPClient.h>
+#include <WiFi.h>
+#endif
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
@@ -126,7 +133,7 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
 
     String usdMsg;
     formatNumber(price_usd, usdMsg, m_settings.numberFormat(), false, true);
-    formatNumber(change, msg, m_settings.numberFormat(), true, false);
+    formatNumber(change, msg, m_settings.numberFormat(), true, false, 2);
     usdMsg += "$";
     msg += "%";
     auto usdWidth(sprite.textWidth(usdMsg));
@@ -160,7 +167,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
 
     uint8_t yStart(170);
     uint8_t height(DISPLAY_HEIGHT - yStart); // 70
-    m_tft.fillRect(0, yStart - 2, DISPLAY_WIDTH, height + 2, TFT_BLACK);
+    m_tft.fillRect(0, yStart - HEIGHT_CHART_VALUE, DISPLAY_WIDTH, height + HEIGHT_CHART_VALUE, TFT_BLACK);
 
     uint8_t xAtMax(0);
     for (uint8_t x = 1; x < prices.size(); ++x) {
@@ -242,7 +249,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, u
     m_tft.setCursor(h24X, h24Y);
     m_tft.println("24h");
 
-    m_tft.fillRect(maxLabelX, maxLabelY, maxWidth, 2 * HEIGHT_CHART_VALUE, TFT_BLACK);
+    m_tft.fillRect(maxLabelX, yStart - HEIGHT_CHART_VALUE, maxWidth, DISTANCE_CHART_VALUE + (2 * HEIGHT_CHART_VALUE), TFT_BLACK);
     m_tft.setTextColor(maxLabelColor, TFT_BLACK);
     m_tft.setCursor(maxLabelX, maxLabelY);
     m_tft.println(maxMsg);

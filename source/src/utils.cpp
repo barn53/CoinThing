@@ -7,26 +7,32 @@ String cleanUp(const String& s)
     return ret;
 }
 
-void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00)
+void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
 
-    uint8_t decimalPlaces(2);
-    if ((n < 0 ? n * -1. : n) < 0.000001) {
-        decimalPlaces = 8;
-    } else if ((n < 0 ? n * -1. : n) < 0.00001) {
-        decimalPlaces = 8;
-    } else if ((n < 0 ? n * -1. : n) < 0.0001) {
-        decimalPlaces = 7;
-    } else if ((n < 0 ? n * -1. : n) < 0.001) {
-        decimalPlaces = 6;
-    } else if ((n < 0 ? n * -1. : n) < 0.01) {
-        decimalPlaces = 6;
-    } else if ((n < 0 ? n * -1. : n) < 0.1) {
-        decimalPlaces = 5;
-    } else if ((n < 0 ? n * -1. : n) < 1) {
-        decimalPlaces = 5;
+    uint8_t decimalPlaces;
+    if (forceDecimalPlaces == std::numeric_limits<uint8_t>::max()) {
+        if ((n < 0 ? n * -1. : n) < 0.000001) {
+            decimalPlaces = 8;
+        } else if ((n < 0 ? n * -1. : n) < 0.00001) {
+            decimalPlaces = 8;
+        } else if ((n < 0 ? n * -1. : n) < 0.0001) {
+            decimalPlaces = 7;
+        } else if ((n < 0 ? n * -1. : n) < 0.001) {
+            decimalPlaces = 6;
+        } else if ((n < 0 ? n * -1. : n) < 0.01) {
+            decimalPlaces = 6;
+        } else if ((n < 0 ? n * -1. : n) < 0.1) {
+            decimalPlaces = 5;
+        } else if ((n < 0 ? n * -1. : n) < 1) {
+            decimalPlaces = 5;
+        } else {
+            decimalPlaces = 2;
+        }
+    } else {
+        decimalPlaces = forceDecimalPlaces;
     }
 
     if (forceSign) {

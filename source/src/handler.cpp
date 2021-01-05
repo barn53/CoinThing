@@ -2,10 +2,22 @@
 #include "gecko.h"
 #include "settings.h"
 #include "utils.h"
-#include <ESP8266WebServer.h>
 #include <FS.h>
 
+// Call up the SPIFFS FLASH filing system this is part of the ESP Core
+#define FS_NO_GLOBALS
+#include <FS.h>
+
+#ifdef ESP8266
+#include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
+#else
+#include <HTTPClient.h>
+#include <SPIFFS.h> // ESP32 only
+#include <WebServer.h>
+#include <WiFi.h>
+extern WebServer server;
+#endif
 
 using namespace std;
 

@@ -8,6 +8,10 @@
 // Call up the SPIFFS FLASH filing system this is part of the ESP Core
 #define FS_NO_GLOBALS
 #include <FS.h>
+#ifdef ESP8266
+#else
+#include <SPIFFS.h> // ESP32 only
+#endif
 
 using fs::File;
 

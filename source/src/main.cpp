@@ -5,11 +5,16 @@
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
-#include "wifi.h"
+#include "wifi_utils.h"
 #include <Arduino.h>
-#include <ESP8266WebServer.h>
 
+#ifdef ESP8266
+#include <ESP8266WebServer.h>
 ESP8266WebServer server(80);
+#else
+#include <WebServer.h>
+WebServer server(80);
+#endif
 
 HttpJson httpJson;
 Gecko gecko(httpJson);
@@ -19,13 +24,15 @@ Handler handler(settings);
 
 void setup(void)
 {
+#ifdef ESP8266
     rst_info* ri(ESP.getResetInfoPtr());
-
     Serial.begin(115200);
     Serial.printf("\n---------------------\n");
     Serial.printf("Reset Info reason:   %u\n", ri->reason);
     Serial.printf("Reset Info exccause: %u", ri->exccause);
     Serial.printf("\n---------------------\n");
+#else
+#endif
 
     display.begin();
     display.showAPQR();

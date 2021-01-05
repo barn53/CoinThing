@@ -25,14 +25,13 @@ Chart 24h/48h:
 
 
 
-Implementieren
+Implementieren:
 
 
 WiFi Manager
 
 millis() Überlauf 
 
-Serial ouput per -D steuern
 
 Weitere Coin Icons erzeugen
 
