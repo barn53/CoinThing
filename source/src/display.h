@@ -3,6 +3,8 @@
 #include <TFT_eFEX.h>
 #include <TFT_eSPI.h>
 
+#define TFT_BL PIN_D2 // Backlight PWM
+
 class Settings;
 
 class Display {
