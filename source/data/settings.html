@@ -167,9 +167,9 @@
                 } else if ($("#number_format_3")[0].checked) {
                     number_format = 3
                 } else if ($("#number_format_4")[0].checked) {
-                    number_format = 3
+                    number_format = 4
                 } else if ($("#number_format_5")[0].checked) {
-                    number_format = 3
+                    number_format = 5
                 }
                 if (number_format === -1) {
                     showError(": Number format is not selected!")
@@ -189,9 +189,13 @@
                         showError(": " + data)
                     }
 
-                }).fail(checkFailed)
-
-
+                })
+                    .fail(checkFailed)
+                    .always(function () {
+                        setTimeout(function () {
+                            $("#apply").prop("disabled", false)
+                        }, 10000)
+                    })
             })
         })
 
