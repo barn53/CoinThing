@@ -1,4 +1,4 @@
 #pragma once
 
-#define SECRET_SSID "ssid";
-#define SECRET_PASSWORD "password";
+#define SECRET_SSID "ssid"
+#define SECRET_PASSWORD "password"
