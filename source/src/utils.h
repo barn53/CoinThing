@@ -13,4 +13,10 @@ enum class NumberFormat : uint8_t {
 };
 void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
 
+struct Currency {
+    const char* currency;
+    const char* symbol;
+};
+static const Currency currencies[] = { { "USD", "$" }, { "EUR", "€" } };
+
 const char* getCurrencySymbol(const char* currency);

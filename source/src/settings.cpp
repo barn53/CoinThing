@@ -51,10 +51,10 @@ Settings::Status Settings::set(const char* coin, const char* currency, uint8_t n
     if (valid) {
         m_coin = cleanUp(coin);
         m_currency = cleanUp(currency);
-        m_number_format = static_cast<NumberFormat>(number_format);
-        if (m_number_format > NumberFormat::DECIMAL_DOT) {
-            m_number_format = NumberFormat::DECIMAL_DOT;
+        if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
+            number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
         }
+        m_number_format = static_cast<NumberFormat>(number_format);
         m_valid = true;
         m_displayed = false;
         write();

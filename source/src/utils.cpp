@@ -125,11 +125,11 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
 
 const char* getCurrencySymbol(const char* currency)
 {
-    if (strcmp(currency, "eur") == 0) {
-        return "€";
-    } else if (strcmp(currency, "usd") == 0) {
-        return "$";
-    } else {
-        return currency;
+    for (const auto& c : currencies) {
+        if (strcmp(c.currency, currency) == 0) {
+            return c.symbol;
+        }
     }
+
+    return currency;
 }

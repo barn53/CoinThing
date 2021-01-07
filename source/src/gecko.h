@@ -3,7 +3,15 @@
 
 class HttpJson;
 
+struct Coin {
+    const char* id;
+    const char* symbol;
+    const char* name;
+};
+static const Coin coins[] = { { "bitcoin", "BTC", "Bitcoin" } };
+
 class Gecko {
+
 public:
     Gecko(HttpJson& http);
 

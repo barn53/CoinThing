@@ -26,14 +26,22 @@ Chart 24h/48h:
 
 
 Implementieren:
-
-
 WiFi Manager
+millis() Überlauf
 
-millis() Überlauf 
 
 
+
+Währungen:
+https://www.xe.com/symbols.php
+https://transferwise.com/gb/blog/world-currency-symbols
+
+
+Coins:
+Gecko Coins
 Weitere Coin Icons erzeugen
+
+
 
 https://www.instructables.com/Converting-Images-to-Flash-Memory-Iconsimages-for-/
 https://sourceforge.net/projects/lcd-image-converter/
