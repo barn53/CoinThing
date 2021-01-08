@@ -15,7 +15,7 @@ Gecko::Gecko(HttpJson& http)
 {
 }
 
-bool Gecko::coinPriceChange(const String& coin, const String& currency, double& price, double& price_usd, double& change) const
+bool Gecko::coinPriceChange(const char* coin, const char* currency, double& price, double& price_usd, double& change) const
 {
     String cleanCoin(cleanUp(coin));
     String cleanCurrency(cleanUp(currency));
@@ -34,12 +34,13 @@ bool Gecko::coinPriceChange(const String& coin, const String& currency, double& 
         price = doc[cleanCoin.c_str()][cleanCurrency.c_str()] | std::numeric_limits<double>::max();
         price_usd = doc[cleanCoin.c_str()]["usd"] | std::numeric_limits<double>::max();
         change = doc[cleanCoin.c_str()][cleanChange.c_str()] | std::numeric_limits<double>::max();
+        TRACE;
         return price != std::numeric_limits<double>::max() && change != std::numeric_limits<double>::max();
     }
     return false;
 }
 
-bool Gecko::coinChart(const String& coin, const String& currency, std::vector<double>& prices, double& max, double& min) const
+bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min) const
 {
     String cleanCoin(cleanUp(coin));
     String cleanCurrency(cleanUp(currency));
@@ -74,17 +75,16 @@ bool Gecko::coinChart(const String& coin, const String& currency, std::vector<do
             }
             --ii;
         }
+        TRACE;
         return prices.size() == 24;
     }
     return false;
 }
 
-bool Gecko::coinDetails(const String& coin, String& name, String& symbol) const
+bool Gecko::coinDetailsAPI(const char* coin, String& symbol, String& name) const
 {
-    String cleanCoin(cleanUp(coin));
-
     String url("https://api.coingecko.com/api/v3/coins/");
-    url += cleanCoin;
+    url += coin;
     url += "?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false";
 
     DynamicJsonDocument filter(32);
@@ -101,30 +101,16 @@ bool Gecko::coinDetails(const String& coin, String& name, String& symbol) const
     return false;
 }
 
-bool Gecko::isValidCoin(const String& coin) const
+bool Gecko::isValidCoinAPI(const char* coin) const
 {
     String url("https://api.coingecko.com/api/v3/simple/price?ids=");
-    url += cleanUp(coin);
+    url += coin;
     url += "&vs_currencies=usd";
 
     DynamicJsonDocument doc(DYNAMIC_JSON_VALID_SIZE);
 
     if (m_http.read(url.c_str(), doc)) {
         auto gecko_says = doc[cleanUp(coin).c_str()]["usd"] | std::numeric_limits<double>::max();
-        return gecko_says != std::numeric_limits<double>::max();
-    }
-    return false;
-}
-
-bool Gecko::isValidCurrency(const String& currency) const
-{
-    String url("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=");
-    url += cleanUp(currency);
-
-    DynamicJsonDocument doc(DYNAMIC_JSON_VALID_SIZE);
-
-    if (m_http.read(url.c_str(), doc)) {
-        auto gecko_says = doc["bitcoin"][cleanUp(currency).c_str()] | std::numeric_limits<double>::max();
         return gecko_says != std::numeric_limits<double>::max();
     }
     return false;
@@ -139,4 +125,45 @@ bool Gecko::ping() const
         return strcmp(gecko_says, "(V3) To the Moon!") == 0;
     }
     return false;
+}
+
+bool Gecko::coinDetails(const String& coinOrSymbol, String& coin, String& symbol, String& name) const
+{
+    String cleanCoinOrSymbol(cleanUp(coinOrSymbol));
+    String upperCoinOrSymbol(cleanCoinOrSymbol);
+    upperCoinOrSymbol.toUpperCase();
+
+    for (const auto& c : coins) {
+        if (strcmp(c.id, cleanCoinOrSymbol.c_str()) == 0
+            || strcmp(c.symbol, upperCoinOrSymbol.c_str()) == 0) {
+            coin = c.id;
+            name = c.name;
+            symbol = c.symbol;
+            return true;
+        }
+    }
+    coin = cleanCoinOrSymbol;
+    return coinDetailsAPI(coin.c_str(), symbol, name);
+}
+
+bool Gecko::isValidCoin(const char* coinOrSymbol) const
+{
+    String cleanCoinOrSymbol(cleanUp(coinOrSymbol));
+    String upperCoinOrSymbol(cleanCoinOrSymbol);
+    upperCoinOrSymbol.toUpperCase();
+
+    for (const auto& c : coins) {
+        if (strcmp(c.id, cleanCoinOrSymbol.c_str()) == 0
+            || strcmp(c.symbol, upperCoinOrSymbol.c_str()) == 0) {
+            return true;
+        }
+    }
+
+    return isValidCoinAPI(cleanCoinOrSymbol.c_str());
+}
+
+bool Gecko::isValidCurrency(const char* currency) const
+{
+    return isCurrency(cleanUp(currency).c_str());
+    // no API fallback for currencies
 }

@@ -17,11 +17,11 @@ public:
     bool begin();
     bool read();
     void write() const;
-    const String& coin() const { return m_coin; }
-    const String& currency() const { return m_currency; }
+    const char* coin() const { return m_coin.c_str(); }
+    const char* currency() const { return m_currency.c_str(); }
     NumberFormat numberFormat() const { return m_number_format; }
-    const String& name() const { return m_name; }
-    const String& symbol() const { return m_symbol; }
+    const char* name() const { return m_name.c_str(); }
+    const char* symbol() const { return m_symbol.c_str(); }
     bool valid() const { return m_valid; }
 
     void displayed(bool d) { m_displayed = d; }

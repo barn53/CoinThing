@@ -19,8 +19,8 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define CHART_UPDATE_INTERVAL 300000
 #define COIN_UPDATE_INTERVAL 10000
+#define CHART_UPDATE_INTERVAL 300000
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
@@ -77,7 +77,8 @@ void Display::rewrite()
     m_tft.fillScreen(TFT_BLACK);
     m_tft.setTextWrap(false);
     String symbol("/");
-    symbol += m_settings.symbol() + ".jpg";
+    symbol += m_settings.symbol();
+    symbol += ".jpg";
     int16_t x_name(0);
     if (SPIFFS.exists(symbol)) {
         m_fex.drawJpeg(symbol, 0, 0);
@@ -91,7 +92,11 @@ void Display::rewrite()
     m_tft.loadFont("NotoSans-Regular25");
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
     m_tft.setCursor(x_name, 30);
-    m_tft.println(m_settings.symbol());
+    m_tft.print(m_settings.symbol());
+    m_tft.print(" - ");
+    String upperCurrency(m_settings.currency());
+    upperCurrency.toUpperCase();
+    m_tft.println(upperCurrency);
     m_tft.unloadFont();
 }
 
@@ -103,10 +108,17 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     sprite.createSprite(SPRITE_WIDTH, SPRITE_PRICE_HEIGHT);
     sprite.setTextColor(color, TFT_BLACK);
 
+    TRACE;
+
     sprite.loadFont("NotoSans-Regular50");
+    TRACE;
     sprite.setTextWrap(false);
+    TRACE;
     formatNumber(price, msg, m_settings.numberFormat(), false, true);
-    msg += getCurrencySymbol(m_settings.currency().c_str());
+    TRACE;
+    msg += getCurrencySymbol(m_settings.currency());
+
+    TRACE;
 
     uint8_t priceYOffset(0);
     auto priceWidth(sprite.textWidth(msg));
@@ -117,19 +129,29 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
         priceYOffset = 5;
     }
 
+    TRACE;
+
     for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
         sprite.fillSprite(TFT_BLACK);
         auto x((DISPLAY_WIDTH - priceWidth) - (page * SPRITE_WIDTH));
         sprite.setCursor(x, priceYOffset);
         sprite.println(msg);
 
+        TRACE;
+
         sprite.pushSprite(page * SPRITE_WIDTH, 70);
+
+        TRACE;
     }
     sprite.unloadFont();
     sprite.deleteSprite();
 
+    TRACE;
+
     sprite.loadFont("NotoSans-Regular25");
     sprite.createSprite(SPRITE_WIDTH, SPRITE_CHANGE_HEIGHT);
+
+    TRACE;
 
     String usdMsg;
     formatNumber(price_usd, usdMsg, m_settings.numberFormat(), false, true);
@@ -138,6 +160,8 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     msg += "%";
     auto usdWidth(sprite.textWidth(usdMsg));
     auto changeWidth(sprite.textWidth(msg));
+
+    TRACE;
 
     for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
         sprite.fillSprite(TFT_BLACK);
@@ -152,11 +176,17 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
         sprite.setCursor(x, 0);
         sprite.println(msg);
 
+        TRACE;
+
         sprite.pushSprite(page * SPRITE_WIDTH, 125);
+
+        TRACE;
     }
 
     sprite.unloadFont();
     sprite.deleteSprite();
+
+    TRACE;
 
     m_lastUpdate = millis();
 }
@@ -289,11 +319,15 @@ void Display::showCoin()
                 rewrite();
             }
 
+            TRACE;
+
             uint16_t color(change >= 0.0
                     ? RGB(0x10, 0xd0, 0x0)
                     : RGB(0xd0, 0x10, 0x0));
 
             coin(price, price_usd, change, color);
+
+            TRACE;
 
             if ((millis() - m_lastChartUpdate) > CHART_UPDATE_INTERVAL
                 || m_lastChartUpdate == 0
@@ -303,6 +337,8 @@ void Display::showCoin()
                 double max, min;
                 if (m_settings.getGecko().coinChart(m_settings.coin(), m_settings.currency(), prices, max, min)) {
                     chart(prices, max, min, color);
+                    TRACE;
+
                 } else {
                     chartFailed();
                 }

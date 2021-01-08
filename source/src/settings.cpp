@@ -37,9 +37,9 @@ Settings::Status Settings::set(const char* coin, const char* currency, uint8_t n
     bool valid(false);
     Status ret = Status::OK;
 
-    if (m_gecko.isValidCoin(cleanUp(coin))) {
-        if (m_gecko.isValidCurrency(cleanUp(currency))) {
-            m_gecko.coinDetails(coin, m_name, m_symbol);
+    if (m_gecko.isValidCoin(coin)) {
+        if (m_gecko.isValidCurrency(currency)) {
+            m_gecko.coinDetails(coin, m_coin, m_symbol, m_name);
             valid = true;
         } else {
             ret = Status::CURRENCY_INVALID;
@@ -49,7 +49,6 @@ Settings::Status Settings::set(const char* coin, const char* currency, uint8_t n
     }
 
     if (valid) {
-        m_coin = cleanUp(coin);
         m_currency = cleanUp(currency);
         if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
             number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
@@ -88,8 +87,8 @@ bool Settings::read()
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
 
-            if (m_gecko.isValidCoin(m_coin)) {
-                if (m_gecko.isValidCurrency(m_currency)) {
+            if (m_gecko.isValidCoin(m_coin.c_str())) {
+                if (m_gecko.isValidCurrency(m_currency.c_str())) {
                     m_valid = true;
                     m_displayed = false;
                 }

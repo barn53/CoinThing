@@ -16,6 +16,10 @@ ESP8266WebServer server(80);
 WebServer server(80);
 #endif
 
+// strange PlatformIO behavior:
+// https://community.platformio.org/t/adafruit-gfx-lib-will-not-build-any-more-pio-5/15776/12
+#include <Adafruit_I2CDevice.h>
+
 HttpJson httpJson;
 Gecko gecko(httpJson);
 Settings settings(gecko);
@@ -53,13 +57,14 @@ void setup(void)
     } else {
         Serial.println("Settings invalid!");
     }
-    Serial.printf("Settings coin:          >%s<\n", settings.coin().c_str());
-    Serial.printf("Settings currency:      >%s<\n", settings.currency().c_str());
+    Serial.printf("Settings coin:          >%s<\n", settings.coin());
+    Serial.printf("Settings currency:      >%s<\n", settings.currency());
     Serial.printf("Settings number format: >%u<\n", settings.numberFormat());
-    Serial.printf("Settings symbol:        >%s<\n", settings.symbol().c_str());
-    Serial.printf("Settings name:          >%s<\n", settings.name().c_str());
+    Serial.printf("Settings symbol:        >%s<\n", settings.symbol());
+    Serial.printf("Settings name:          >%s<\n", settings.name());
 
     server.onNotFound([]() { // If the client requests any URI
+        TRACE;
         if (!handler.handleAction()
             && !handler.handleFileRead()) { // send it if it exists
             server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error

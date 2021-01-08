@@ -51,16 +51,14 @@ bool Handler::handleCheck(const String& check) const
     Serial.printf("handleAction: check %s\n", check.c_str());
 
     if (check.startsWith("coin/")) {
-        String coin(check.substring(5).c_str());
-        if (m_settings.getGecko().isValidCoin(coin)) {
+        if (m_settings.getGecko().isValidCoin(check.substring(5).c_str())) {
             server.send(200, "text/plain", "1");
         } else {
             server.send(200, "text/plain", "0");
         }
         return true;
     } else if (check.startsWith("currency/")) {
-        String currency(check.substring(9).c_str());
-        if (m_settings.getGecko().isValidCurrency(currency)) {
+        if (m_settings.getGecko().isValidCurrency(check.substring(9).c_str())) {
             server.send(200, "text/plain", "1");
         } else {
             server.send(200, "text/plain", "0");
@@ -73,24 +71,7 @@ bool Handler::handleCheck(const String& check) const
 
 bool Handler::handleSet() const
 {
-#if 0
-    Serial.printf("handleAction: set %s\n", query.c_str());
-
-    const String& pathArg(unsigned int i) const; // get request path argument by number
-    const String& arg(const String& name) const; // get request argument value by name
-    const String& arg(int i) const; // get request argument value by number
-    const String& argName(int i) const; // get request argument name by number
-    int args() const; // get arguments count
-    bool hasArg(const String& name) const; // check if argument exists
-
-    String mutabl(query);
-    std::vector<std::pair<const char*, const char*>> vec;
-    parseQuery(mutabl.begin(), vec);
-
-#endif
-
-    Serial.println("Parsed Query:");
-
+    Serial.printf("handleAction: set - parsed Query:\n");
     for (int ii = 0; ii < server.args(); ++ii) {
         Serial.print(server.argName(ii));
         Serial.print(" -> ");
@@ -140,6 +121,7 @@ bool Handler::handleGet(const String& action) const
 
 bool Handler::handleAction() const
 {
+    TRACE;
     String path(server.uri());
     if (path.startsWith("/action/get/")) {
         String action(path.substring(12));
@@ -155,6 +137,7 @@ bool Handler::handleAction() const
 
 bool Handler::handleFileRead()
 {
+    TRACE;
     String path(server.uri());
     Serial.printf("handleFileRead: %s\n", path.c_str());
     if (path.endsWith("/")) {

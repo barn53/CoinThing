@@ -6,6 +6,12 @@ GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
 
 ###
 
+
+GET https://api.coingecko.com/api/v3/simple/supported_vs_currencies
+
+
+###
+
 GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
 
 ###
@@ -22,6 +28,7 @@ GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&
 
 ###
 
+GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100
 
 ###
 

@@ -1,6 +1,6 @@
 {
-    "coin": "abcdefghijklmnopqrstuvwxyz",
-    "currency": "abcdefghijklmnopqrstuvwxyz",
-    "symbol": "abcdefghijklmnopqrstuvwxyz",
-    "name": "abcdefghijklmnopqrstuvwxyz"
+    "coin": "bitcoin",
+    "currency": "eur",
+    "symbol": "BTC",
+    "name": "Bitcoin"
 }

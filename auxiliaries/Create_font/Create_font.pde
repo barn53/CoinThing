@@ -235,7 +235,7 @@ static final int[] unicodeBlocks = {
   //0x1F00, 0x1FFF, //Greek Extended, 256, 233, Greek
   //0x2000, 0x206F, //General Punctuation, 112, 111, Common (109 characters), Inherited (2 characters)
   //0x2070, 0x209F, //Superscripts and Subscripts, 48, 42, Latin (15 characters), Common (27 characters)
-  0x20A0, 0x20CF, //Currency Symbols, 48, 32, Common
+  //0x20A0, 0x20CF, //Currency Symbols, 48, 32, Common
   //0x20D0, 0x20FF, //Combining Diacritical Marks for Symbols, 48, 33, Inherited
   //0x2100, 0x214F, //Letterlike Symbols, 80, 80, Greek (1 character), Latin (4 characters), Common (75 characters)
   //0x2150, 0x218F, //Number Forms, 64, 60, Latin (41 characters), Common (19 characters)
@@ -337,10 +337,26 @@ static final int[] specificUnicodes = {
   // Commonly used codes, add or remove // in next line
   // 0x00A3, 0x00B0, 0x00B5, 0x03A9, 0x20AC, // £ ° µ Ω €
   
+  0x010d, // Latin Small Letter C with Caron
+  0x0141, // Latin Capital Letter L with Stroke - Litecoin
+  0x0142, // Latin Small Letter L with Stroke
+  0x039e, // Greek Capital Letter Xi, Ethereum
+  0x0E3F, // Thai Currency Symbol Baht
+  0x09f3, // Bengali Rupee Sign
   0x2006, // Sechstelgeviert-Leerzeichen - Six-Per-Em Space
   0x2012, // Ziffernbreiter Gedankenstrich - Figure Dash
-  0x2013 // Halbgeviertstrich - En Dash
+  0x20aa, // New Sheqel Sign
+  0x20A6, // Naira Sign
+  0x20A9, // Won Sign
+  0x20AB, // Dong Sign
+  0x20B1, // Peso Sign
+  0x20B4, // Hryvnia Sign
+  0x20B9, // Indian Rupee Sign
+  0x20ba, // Turkish Lira Sign
+  0x20bd, // Ruble Sign
+  0x20bf, // Bitcoin Sign
 
+  
   // Numbers and characters for showing time, change next line to //* to use
 /*
     0x002B, 0x002D, 0x002E, 0x0030, 0x0031, 0x0032, 0x0033, 0x0034, // - + . 0 1 2 3 4

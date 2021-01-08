@@ -12,7 +12,7 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
     char buf[21];
     char buf2[21];
 
-    uint8_t decimalPlaces;
+    uint8_t decimalPlaces(forceDecimalPlaces);
     if (forceDecimalPlaces == std::numeric_limits<uint8_t>::max()) {
         if ((n < 0 ? n * -1. : n) < 0.000001) {
             decimalPlaces = 8;
@@ -31,8 +31,6 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
         } else {
             decimalPlaces = 2;
         }
-    } else {
-        decimalPlaces = forceDecimalPlaces;
     }
 
     if (forceSign) {
@@ -61,7 +59,7 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
     }
 
     bool hasDecSep(false);
-    if (format != NumberFormat::DECIMAL_DOT) { // no need touch
+    if (format != NumberFormat::DECIMAL_DOT) { // no need to touch
         int rev(0);
         for (auto pos = strlen(buf); pos != 0; --pos, ++rev) {
             char c = buf[pos - 1];
@@ -117,8 +115,8 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
         if (s.endsWith(dotZero)) {
             String repl;
             repl = decimalSeparator;
-            repl += "\u2012";
-            s.replace(dotZero, repl); // Figure Dash U+2012
+            repl += "\u2012"; // Figure Dash U+2012
+            s.replace(dotZero, repl);
         }
     }
 }
@@ -130,6 +128,15 @@ const char* getCurrencySymbol(const char* currency)
             return c.symbol;
         }
     }
-
     return currency;
+}
+
+bool isCurrency(const char* currency)
+{
+    for (const auto& c : currencies) {
+        if (strcmp(c.currency, currency) == 0) {
+            return true;
+        }
+    }
+    return false;
 }
