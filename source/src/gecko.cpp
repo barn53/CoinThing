@@ -34,13 +34,12 @@ bool Gecko::coinPriceChange(const char* coin, const char* currency, double& pric
         price = doc[cleanCoin.c_str()][cleanCurrency.c_str()] | std::numeric_limits<double>::max();
         price_usd = doc[cleanCoin.c_str()]["usd"] | std::numeric_limits<double>::max();
         change = doc[cleanCoin.c_str()][cleanChange.c_str()] | std::numeric_limits<double>::max();
-        TRACE;
         return price != std::numeric_limits<double>::max() && change != std::numeric_limits<double>::max();
     }
     return false;
 }
 
-bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min) const
+bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min, Settings::Chart chart) const
 {
     String cleanCoin(cleanUp(coin));
     String cleanCurrency(cleanUp(currency));
@@ -49,7 +48,16 @@ bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double
     url += cleanCoin;
     url += "/market_chart?vs_currency=";
     url += cleanCurrency;
-    url += "&days=2";
+    uint8_t numValues(24);
+    if (chart == Settings::Chart::CHART_24_H) {
+        url += "&days=2";
+    } else if (chart == Settings::Chart::CHART_30_D) {
+        url += "&days=30&interval=daily";
+        numValues = 30;
+    } else {
+        // Settings::Chart::CHART_BOTH makes no sense here!
+        return false;
+    }
 
     DynamicJsonDocument filter(16);
     filter["prices"] = true;
@@ -63,7 +71,7 @@ bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double
 
         uint16_t ii(jPrices.size());
         for (const auto& p : jPrices) {
-            if (ii <= 24) { // only the last 24 values
+            if (ii <= numValues) { // trim result
                 auto f(p[1].as<double>());
                 if (f < min) {
                     min = f;
@@ -75,8 +83,7 @@ bool Gecko::coinChart(const char* coin, const char* currency, std::vector<double
             }
             --ii;
         }
-        TRACE;
-        return prices.size() == 24;
+        return prices.size() == numValues;
     }
     return false;
 }

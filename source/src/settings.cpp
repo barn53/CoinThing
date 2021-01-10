@@ -15,9 +15,6 @@
 
 using fs::File;
 
-#define USER_CONFIG "/config.json"
-#define DYNAMIC_JSON_CONFIG_SIZE 256
-
 Settings::Settings(Gecko& gecko)
     : m_gecko(gecko)
 {
@@ -32,14 +29,13 @@ bool Settings::begin()
     return m_valid;
 }
 
-Settings::Status Settings::set(const char* coin, const char* currency, uint8_t number_format)
+Settings::Status Settings::set(const char* coin, const char* currency, uint8_t number_format, uint8_t chart, bool heartbeat)
 {
     bool valid(false);
     Status ret = Status::OK;
 
     if (m_gecko.isValidCoin(coin)) {
         if (m_gecko.isValidCurrency(currency)) {
-            m_gecko.coinDetails(coin, m_coin, m_symbol, m_name);
             valid = true;
         } else {
             ret = Status::CURRENCY_INVALID;
@@ -49,11 +45,21 @@ Settings::Status Settings::set(const char* coin, const char* currency, uint8_t n
     }
 
     if (valid) {
+        m_gecko.coinDetails(coin, m_coin, m_symbol, m_name);
         m_currency = cleanUp(currency);
+
         if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
             number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
         }
         m_number_format = static_cast<NumberFormat>(number_format);
+
+        if (chart > static_cast<uint8_t>(Chart::CHART_BOTH)) {
+            chart = static_cast<uint8_t>(Chart::CHART_BOTH);
+        }
+        m_chart = static_cast<Chart>(chart);
+
+        m_heartbeat = heartbeat;
+
         m_valid = true;
         m_displayed = false;
         write();
@@ -78,11 +84,19 @@ bool Settings::read()
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
             m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
+            m_chart = static_cast<Chart>(doc["chart"] | static_cast<uint8_t>(Chart::CHART_24_H));
+            m_heartbeat = doc["heartbeat"] | true;
+
+            m_name = doc["name"] | "";
+            m_symbol = doc["symbol"] | "";
+
             if (m_number_format > NumberFormat::DECIMAL_DOT) {
                 m_number_format = NumberFormat::DECIMAL_DOT;
             }
-            m_name = doc["name"] | "";
-            m_symbol = doc["symbol"] | "";
+
+            if (m_chart > Chart::CHART_BOTH) {
+                m_chart = Chart::CHART_BOTH;
+            }
 
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
@@ -110,6 +124,8 @@ void Settings::write() const
             doc["coin"] = m_coin.c_str();
             doc["currency"] = m_currency.c_str();
             doc["number_format"] = static_cast<uint8_t>(m_number_format);
+            doc["chart"] = static_cast<uint8_t>(m_chart);
+            doc["heartbeat"] = m_heartbeat;
             doc["name"] = m_name.c_str();
             doc["symbol"] = m_symbol.c_str();
 

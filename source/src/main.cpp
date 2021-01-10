@@ -64,7 +64,6 @@ void setup(void)
     Serial.printf("Settings name:          >%s<\n", settings.name());
 
     server.onNotFound([]() { // If the client requests any URI
-        TRACE;
         if (!handler.handleAction()
             && !handler.handleFileRead()) { // send it if it exists
             server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error

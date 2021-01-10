@@ -1,11 +1,10 @@
 #pragma once
+#include "settings.h"
 #include <Arduino.h>
 #include <TFT_eFEX.h>
 #include <TFT_eSPI.h>
 
 #define TFT_BL PIN_D2 // Backlight PWM
-
-class Settings;
 
 class Display {
 public:
@@ -23,7 +22,7 @@ public:
 private:
     void heartbeat();
     void coin(double price, double price_usd, double change, uint16_t color);
-    void chart(const std::vector<double>& prices, double max, double min, uint16_t color);
+    void chart(const std::vector<double>& prices, double max, double min, Settings::Chart showChart, uint16_t color);
     void rewrite();
     void chartFailed();
 
@@ -45,4 +44,5 @@ private:
     uint8_t m_heartbeat { 0 };
     unsigned long m_lastUpdate { 0 };
     unsigned long m_lastChartUpdate { 0 };
+    Settings::Chart m_lastChart { Settings::Chart::CHART_24_H };
 };

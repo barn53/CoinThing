@@ -46,41 +46,22 @@ Handler::Handler(Settings& settings)
 {
 }
 
-bool Handler::handleCheck(const String& check) const
-{
-    Serial.printf("handleAction: check %s\n", check.c_str());
-
-    if (check.startsWith("coin/")) {
-        if (m_settings.getGecko().isValidCoin(check.substring(5).c_str())) {
-            server.send(200, "text/plain", "1");
-        } else {
-            server.send(200, "text/plain", "0");
-        }
-        return true;
-    } else if (check.startsWith("currency/")) {
-        if (m_settings.getGecko().isValidCurrency(check.substring(9).c_str())) {
-            server.send(200, "text/plain", "1");
-        } else {
-            server.send(200, "text/plain", "0");
-        }
-        return true;
-    }
-
-    return false;
-}
-
 bool Handler::handleSet() const
 {
+#if COIN_TICKER_SERIAL == 1
     Serial.printf("handleAction: set - parsed Query:\n");
     for (int ii = 0; ii < server.args(); ++ii) {
         Serial.print(server.argName(ii));
         Serial.print(" -> ");
         Serial.println(server.arg(ii));
     }
+#endif
 
     Settings::Status status(m_settings.set(server.arg("coin").c_str(),
         server.arg("currency").c_str(),
-        static_cast<uint8_t>(server.arg("number_format").toInt())));
+        static_cast<uint8_t>(server.arg("number_format").toInt()),
+        static_cast<uint8_t>(server.arg("chart").toInt()),
+        server.arg("heartbeat").toInt() != 0));
 
     String error;
     switch (status) {
@@ -100,36 +81,10 @@ bool Handler::handleSet() const
     return true;
 }
 
-bool Handler::handleGet(const String& action) const
-{
-    Serial.printf("handleAction: get %s\n", action.c_str());
-
-    if (action == "coin") {
-        server.send(200, "text/plain", m_settings.coin());
-        return true;
-    } else if (action == "currency") {
-        server.send(200, "text/plain", m_settings.currency());
-        return true;
-    } else if (action == "number_format") {
-        String s(static_cast<uint8_t>(m_settings.numberFormat()));
-        server.send(200, "text/plain", s);
-        return true;
-    }
-
-    return false;
-}
-
 bool Handler::handleAction() const
 {
-    TRACE;
     String path(server.uri());
-    if (path.startsWith("/action/get/")) {
-        String action(path.substring(12));
-        return handleGet(action);
-    } else if (path.startsWith("/action/check/")) {
-        String action(path.substring(14));
-        return handleCheck(action);
-    } else if (path == "/action/set") {
+    if (path == "/action/set") {
         return handleSet();
     }
     return false;
@@ -137,23 +92,18 @@ bool Handler::handleAction() const
 
 bool Handler::handleFileRead()
 {
-    TRACE;
     String path(server.uri());
     Serial.printf("handleFileRead: %s\n", path.c_str());
     if (path.endsWith("/")) {
-        path += "settings.html"; // If a folder is requested, send the settings file
-        // Serial.printf(" --> %s\n", p.c_str());
+        path += "settings.html";
     }
-    String contentType = getContentType(path); // Get the MIME type
+    String contentType = getContentType(path);
 
-    if (SPIFFS.exists(path)) { // If the file exists
-        File file = SPIFFS.open(path, "r"); // Open it
-        // size_t sent =
-        server.streamFile(file, contentType); // And send it to the client
-        file.close(); // Then close the file again
-        // Serial.printf("\tSent %u bytes\n", sent);
+    if (SPIFFS.exists(path)) {
+        File file = SPIFFS.open(path, "r");
+        server.streamFile(file, contentType);
+        file.close();
         return true;
     }
-    // Serial.print("\nFile Not Found\n");
-    return false; // If the file doesn't exist, return false
+    return false;
 }

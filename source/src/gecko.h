@@ -1,4 +1,5 @@
 #pragma once
+#include "settings.h"
 #include <Arduino.h>
 
 class HttpJson;
@@ -60,7 +61,7 @@ public:
 
     bool ping() const;
     bool coinPriceChange(const char* coin, const char* currency, double& price, double& price_usd, double& change) const;
-    bool coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min) const;
+    bool coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min, Settings::Chart chart) const;
 
     bool coinDetails(const String& coinOrSymbol, String& coin, String& symbol, String& name) const;
     bool isValidCoin(const char* coinOrSymbol) const;
