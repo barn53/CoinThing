@@ -17,6 +17,11 @@ GET  https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1h&limit=24 HT
 ###
 
 
+GET https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1m&limit=50
+
+
+###
+
 Web Socket Stream
 
 wss://stream.binance.com:9443/ws/btceur@miniTicker

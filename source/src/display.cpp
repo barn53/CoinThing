@@ -34,7 +34,6 @@ Display::Display(Settings& settings)
     : m_settings(settings)
     , m_tft(TFT_eSPI())
     , m_fex(TFT_eFEX(&m_tft))
-    , m_spr(TFT_eSprite(&m_tft))
 {
 }
 
@@ -42,7 +41,6 @@ void Display::begin()
 {
     m_tft.begin();
     m_tft.setRotation(2); // 0 & 2 Portrait. 1 & 3 landscape
-    m_spr.createSprite(100, 20);
     m_fex.listSPIFFS(); // Lists the files so you can see what is in the SPIFFS}
 }
 

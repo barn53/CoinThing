@@ -39,7 +39,6 @@ private:
     Settings& m_settings;
     TFT_eSPI m_tft;
     TFT_eFEX m_fex;
-    TFT_eSprite m_spr;
 
     ShowedScreen m_lastScreen { ShowedScreen::NONE };
     unsigned long m_lastHeartbeat { 0 };

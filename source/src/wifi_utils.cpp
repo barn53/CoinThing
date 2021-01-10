@@ -54,7 +54,9 @@ void setupWiFi()
     Serial.printf("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
 #ifdef ESP8266
     Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
+    Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 #else
     Serial.printf(" Hostname: %s\n", WiFi.getHostname());
+    Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 #endif
 }

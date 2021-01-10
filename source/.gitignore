@@ -2,4 +2,4 @@
 secrets.h
 pre.h
 
-libs/*
+lib/*
