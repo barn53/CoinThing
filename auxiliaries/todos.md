@@ -5,15 +5,20 @@
 ### Einmalig pro Configuration
 
 #### Coins:
-- Gecko-ID      bitcoin     Eingabe
-- Symbol        BTC, btc    API
-- Name          Bitcoin     API
-- Icon-Datei    btc.jpg     <Symbol>.jpg
+| Gecko-ID   | Symbol  |  Name |  Icon-Datei |
+|---|---|---|---|
+| bitcoin  | BTC, btc  | Bitcoin  | BTC.jpg  |
+| Eingabe  | API  | API  | &lt;Symbol&gt;.jpg  |
+
+
 Die wichtigsten Coins sind implementiert, API-Fallback wenn nicht gefunden.
 
 #### Währungen:
-- Symbol        €           Implementieren
-- Gecko-ID      EUR, eur    Implementieren
+| Symbol  | Gecko-ID  | 
+|---|---|
+| €  | EUR, eur  | 
+| Implementieren  | Implementieren  | 
+
 Alle Währungen sind implementiert.
 
 
