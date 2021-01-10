@@ -19,8 +19,8 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define COIN_UPDATE_INTERVAL 10000
-#define CHART_UPDATE_INTERVAL 30000
+#define COIN_UPDATE_INTERVAL 10'000
+#define CHART_UPDATE_INTERVAL 300'000
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
