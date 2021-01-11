@@ -19,8 +19,9 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define COIN_UPDATE_INTERVAL 10'000
-#define CHART_UPDATE_INTERVAL 300'000
+#define COIN_UPDATE_INTERVAL (10 * 1000)
+#define CHART_UPDATE_INTERVAL (60 * 1000)
+#define CHART_UPDATE_INTERVAL_30_D (60 * 60 * 1000)
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
@@ -308,13 +309,17 @@ void Display::showCoin()
 
             coin(price, price_usd, change, color);
 
-            if ((millis() - m_lastChartUpdate) > CHART_UPDATE_INTERVAL
+            Settings::Chart showChart(m_settings.chart());
+            uint16_t chartUpdateInterval(CHART_UPDATE_INTERVAL);
+            if (showChart == Settings::Chart::CHART_BOTH) {
+                chartUpdateInterval = CHART_UPDATE_INTERVAL_30_D;
+            }
+            if ((millis() - m_lastChartUpdate) > chartUpdateInterval
                 || m_lastChartUpdate == 0
                 || rewr) {
 
                 std::vector<double> prices;
                 double max, min;
-                Settings::Chart showChart(m_settings.chart());
                 if (showChart == Settings::Chart::CHART_BOTH) {
                     if (m_lastChart == Settings::Chart::CHART_24_H) {
                         showChart = Settings::Chart::CHART_30_D;
