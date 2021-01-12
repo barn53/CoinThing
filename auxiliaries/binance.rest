@@ -26,6 +26,16 @@ Web Socket Stream
 
 wss://stream.binance.com:9443/ws/btceur@miniTicker
 
+
+wss://stream.binance.com:9443/ws
+{
+  "method": "SUBSCRIBE",
+  "params": [
+    "btceur@miniTicker"
+  ],
+  "id":1
+}
+
 ###
 
 
