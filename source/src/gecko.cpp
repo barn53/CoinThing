@@ -97,6 +97,9 @@ bool Gecko::coinDetailsAPI(const char* coin, String& symbol, String& name) const
     DynamicJsonDocument filter(32);
     filter["symbol"] = true;
     filter["name"] = true;
+
+    // "sentiment_votes_up_percentage" - todo sentiment lamp
+
     DynamicJsonDocument doc(DYNAMIC_JSON_COIN_DETAILS_SIZE);
 
     if (m_http.read(url.c_str(), doc, filter)) {
