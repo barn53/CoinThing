@@ -1,6 +1,7 @@
 #pragma once
 #include "settings.h"
 #include <Arduino.h>
+#include <NeoPixelBus.h>
 #include <TFT_eFEX.h>
 #include <TFT_eSPI.h>
 
@@ -38,6 +39,8 @@ private:
     Settings& m_settings;
     TFT_eSPI m_tft;
     TFT_eFEX m_fex;
+
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> m_neo { 1 };
 
     ShowedScreen m_lastScreen { ShowedScreen::NONE };
     unsigned long m_lastHeartbeat { 0 };
