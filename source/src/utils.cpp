@@ -33,7 +33,7 @@ void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool
         }
     }
 
-    if (forceSign) {
+    if (forceSign && n != 0.) {
         snprintf(buf, sizeof(buf), "%+.*f", decimalPlaces, n);
     } else {
         snprintf(buf, sizeof(buf), "%.*f", decimalPlaces, n);
