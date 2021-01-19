@@ -41,7 +41,7 @@ Display::Display(Settings& settings)
 void Display::begin()
 {
     m_tft.begin();
-    m_tft.setRotation(2); // 0 & 2 Portrait. 1 & 3 landscape
+    m_tft.setRotation(0); // 0 & 2 Portrait. 1 & 3 landscape
     m_fex.listSPIFFS(); // Lists the files so you can see what is in the SPIFFS}
 }
 
