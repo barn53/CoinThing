@@ -1,12 +1,6 @@
 #pragma once
 #include <Arduino.h>
 
-#if COIN_TICKER_SERIAL == 1
-#define TRACE Serial.printf("%s:%u \n", __FILE__, __LINE__)
-#else
-#define TRACE
-#endif
-
 String cleanUp(const String& s);
 
 enum class NumberFormat : uint8_t {

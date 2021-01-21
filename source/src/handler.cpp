@@ -48,7 +48,7 @@ Handler::Handler(Settings& settings)
 
 bool Handler::handleSet() const
 {
-#if COIN_TICKER_SERIAL == 1
+#if COIN_THING_SERIAL == 1
     Serial.printf("handleAction: set - parsed Query:\n");
     for (int ii = 0; ii < server.args(); ++ii) {
         Serial.print(server.argName(ii));
