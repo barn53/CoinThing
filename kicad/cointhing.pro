@@ -1,4 +1,4 @@
-update=2021 January 15, Friday 20:47:01
+update=2021 January 23, Saturday 22:47:52
 version=1
 last_client=kicad
 [general]
@@ -12,11 +12,21 @@ NetIExt=net
 version=1
 LibDir=
 [eeschema/libraries]
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceAjustPassiveValues=0
+LabSize=50
+ERC_TestSimilarLabels=1
 [pcbnew]
 version=1
 PageLayoutDescrFile=
 LastNetListRead=
-CopperLayerCount=4
+CopperLayerCount=2
 BoardThickness=1.6
 AllowMicroVias=0
 AllowBlindVias=0
@@ -33,8 +43,8 @@ TrackWidth2=0.127
 TrackWidth3=0.1524
 TrackWidth4=0.3048
 TrackWidth5=0.381
-ViaDiameter1=0.6
-ViaDrill1=0.3
+ViaDiameter1=0.45
+ViaDrill1=0.2
 ViaDiameter2=0.45
 ViaDrill2=0.2
 ViaDiameter3=0.6
@@ -75,11 +85,11 @@ Enabled=1
 [pcbnew/Layer.In1.Cu]
 Name=In1.Cu
 Type=0
-Enabled=1
+Enabled=0
 [pcbnew/Layer.In2.Cu]
 Name=In2.Cu
 Type=0
-Enabled=1
+Enabled=0
 [pcbnew/Layer.In3.Cu]
 Name=In3.Cu
 Type=0
@@ -239,8 +249,8 @@ Enabled=0
 Name=Default
 Clearance=0.127
 TrackWidth=0.1524
-ViaDiameter=0.6
-ViaDrill=0.3
+ViaDiameter=0.45
+ViaDrill=0.2
 uViaDiameter=0.6
 uViaDrill=0.3
 dPairWidth=0.1524
@@ -259,7 +269,7 @@ dPairGap=0.127
 dPairViaGap=0.25
 [pcbnew/Netclasses/2]
 Name=Power
-Clearance=0.254
+Clearance=0.1524
 TrackWidth=0.3048
 ViaDiameter=0.6
 ViaDrill=0.3
@@ -268,13 +278,3 @@ uViaDrill=0.3
 dPairWidth=0.3048
 dPairGap=0.254
 dPairViaGap=0.25
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=
-SpiceAjustPassiveValues=0
-LabSize=50
-ERC_TestSimilarLabels=1
