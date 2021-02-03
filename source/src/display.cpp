@@ -122,7 +122,7 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     auto priceWidth(sprite.textWidth(msg));
     if (priceWidth > DISPLAY_WIDTH) {
         sprite.unloadFont();
-        sprite.loadFont("NotoSans-Regular40");
+        sprite.loadFont("NotoSans-Condensed50");
         priceWidth = sprite.textWidth(msg);
         priceYOffset = 5;
     }

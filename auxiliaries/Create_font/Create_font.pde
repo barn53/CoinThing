@@ -127,8 +127,14 @@ int fontNumber = -1; // << Use [Number] in brackets from the fonts listed.
 //                                                  the font numbers are listed when the sketch is run.
 //                |         1         2     |       Maximum filename size for SPIFFS is 31 including leading /
 //                 1234567890123456789012345        and added point size and .vlw extension, so max is 25
+
+// Note: SPIFFS does NOT accept underscore in a filename!
+
 String fontName = "NotoSans-Regular";  // Manually crop the filename length later after creation if needed
-                                     // Note: SPIFFS does NOT accept underscore in a filename!
+
+// NotoSans-Regular
+// NotoSans-Condensed
+
 String fontType = ".ttf";
 //String fontType = ".otf";
 
@@ -136,19 +142,19 @@ String fontType = ".ttf";
 // Define the font size in points for the TFT_eSPI font file
 
 int  fontSize = 50;
+
 /* 
 13
 15
 20
 25
 30
-40
 50
 */
 
 
 // Font size to use in the Processing sketch display window that pops up (can be different to above)
-int displayFontSize = 40;
+int displayFontSize = 50;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Next we specify which unicode blocks from the the Basic Multilingual Plane (BMP) are included in the final font file. //
@@ -158,13 +164,13 @@ int displayFontSize = 40;
 static final int[] unicodeBlocks = {
   // The list below has been created from the table here: https://en.wikipedia.org/wiki/Unicode_block
   // Remove // at start of lines below to include that unicode block, different code ranges can also be specified by
-  // editting the start and end-of-range values. Multiple lines from the list below can be included, limited only by
+  // editting the start and end-of-range values. Multiple lines from the list below can be incfoluded, limited only by
   // the final font file size!
 
   // Block range,   //Block name, Code points, Assigned characters, Scripts
   // First, last,   //Range is inclusive of first and last codes
   0x0021, 0x007E, //Basic Latin, 128, 128, Latin (52 characters), Common (76 characters)
-  0x0080, 0x00FF, //Latin-1 Supplement, 128, 128, Latin (64 characters), Common (64 characters)
+  //0x0080, 0x00FF, //Latin-1 Supplement, 128, 128, Latin (64 characters), Common (64 characters)
   //0x0100, 0x017F, //Latin Extended-A, 128, 128, Latin
   //0x0180, 0x024F, //Latin Extended-B, 208, 208, Latin
   //0x0250, 0x02AF, //IPA Extensions, 96, 96, Latin
@@ -337,6 +343,8 @@ static final int[] specificUnicodes = {
   // Commonly used codes, add or remove // in next line
   // 0x00A3, 0x00B0, 0x00B5, 0x03A9, 0x20AC, // £ ° µ Ω €
   
+  0x00A3, // £
+  0x00A5, // ¥
   0x010d, // Latin Small Letter C with Caron
   0x0141, // Latin Capital Letter L with Stroke - Litecoin
   0x0142, // Latin Small Letter L with Stroke
@@ -349,6 +357,7 @@ static final int[] specificUnicodes = {
   0x20A6, // Naira Sign
   0x20A9, // Won Sign
   0x20AB, // Dong Sign
+  0x20AC, // €
   0x20B1, // Peso Sign
   0x20B4, // Hryvnia Sign
   0x20B9, // Indian Rupee Sign
