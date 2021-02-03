@@ -108,7 +108,6 @@ static const Coin coins[] = {
     { "quant-network", "QNT", "Quant" },
     { "siacoin", "SC", "Siacoin" },
     { "band-protocol", "BAND", "Band Protocol" },
-    { "arweave", "AR", "Arweave" },
     { "bitcoin-gold", "BTG", "Bitcoin Gold" }
 };
 
