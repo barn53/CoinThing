@@ -130,10 +130,11 @@ int fontNumber = -1; // << Use [Number] in brackets from the fonts listed.
 
 // Note: SPIFFS does NOT accept underscore in a filename!
 
-String fontName = "NotoSans-Regular";  // Manually crop the filename length later after creation if needed
+String fontName = "NotoSans-ExtraCondensed";  // Manually crop the filename length later after creation if needed
 
 // NotoSans-Regular
 // NotoSans-Condensed
+// NotoSans-ExtraCondensed
 
 String fontType = ".ttf";
 //String fontType = ".otf";

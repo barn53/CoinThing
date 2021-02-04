@@ -63,8 +63,10 @@ void Display::heartbeat()
     }
 
     if (m_lastScreen == ShowedScreen::COIN
-        && (((millis() - m_lastHeartbeat) > 300 && (m_heartbeat == 0 || m_heartbeat == 1 || m_heartbeat == 2))
-            || ((millis() - m_lastHeartbeat) > 1500 && (m_heartbeat == 3)))) {
+        && (((millis() - m_lastHeartbeat) > 300
+                && (m_heartbeat == 0 || m_heartbeat == 1 || m_heartbeat == 2))
+            || ((millis() - m_lastHeartbeat) > 1500
+                && (m_heartbeat == 3)))) {
         if (m_heartbeat % 2 == 0) {
             m_fex.drawJpeg("/heart2.jpg", 220, 0);
         } else {
@@ -118,19 +120,22 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     formatNumber(price, msg, m_settings.numberFormat(), false, true);
     msg += getCurrencySymbol(m_settings.currency());
 
-    uint8_t priceYOffset(0);
     auto priceWidth(sprite.textWidth(msg));
     if (priceWidth > DISPLAY_WIDTH) {
         sprite.unloadFont();
         sprite.loadFont("NotoSans-Condensed50");
         priceWidth = sprite.textWidth(msg);
-        priceYOffset = 5;
+        if (priceWidth > DISPLAY_WIDTH) {
+            sprite.unloadFont();
+            sprite.loadFont("NotoSans-ExtraCondensed50");
+            priceWidth = sprite.textWidth(msg);
+        }
     }
 
     for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
         sprite.fillSprite(TFT_BLACK);
         auto x((DISPLAY_WIDTH - priceWidth) - (page * SPRITE_WIDTH));
-        sprite.setCursor(x, priceYOffset);
+        sprite.setCursor(x, 0);
         sprite.println(msg);
 
         sprite.pushSprite(page * SPRITE_WIDTH, 70);
@@ -148,6 +153,13 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     msg += "%";
     auto usdWidth(sprite.textWidth(usdMsg));
     auto changeWidth(sprite.textWidth(msg));
+
+    if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+        sprite.unloadFont();
+        sprite.loadFont("NotoSans-Condensed25");
+        usdWidth = sprite.textWidth(usdMsg);
+        changeWidth = sprite.textWidth(msg);
+    }
 
     for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
         sprite.fillSprite(TFT_BLACK);
@@ -314,9 +326,7 @@ void Display::showCoin()
             if (showChart == Settings::Chart::CHART_BOTH) {
                 chartUpdateInterval = CHART_UPDATE_INTERVAL_30_D;
             }
-            if ((millis() - m_lastChartUpdate) > chartUpdateInterval
-                || m_lastChartUpdate == 0
-                || rewr) {
+            if ((millis() - m_lastChartUpdate) > chartUpdateInterval || m_lastChartUpdate == 0 || rewr) {
 
                 std::vector<double> prices;
                 double max, min;
