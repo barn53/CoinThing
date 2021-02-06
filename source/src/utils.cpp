@@ -7,7 +7,7 @@ String cleanUp(const String& s)
     return ret;
 }
 
-void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
+void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
@@ -137,6 +137,33 @@ bool isCurrency(const char* currency)
         if (strcmp(c.currency, currency) == 0) {
             return true;
         }
+    }
+    return false;
+}
+
+uint32_t millis_test()
+{
+    return millis() + 1;
+}
+
+bool doInterval(uint32_t change, uint32_t interval)
+{
+    if (change == 0) {
+        return true;
+    }
+    if ((millis_test() - change) >= interval) {
+        return true;
+    }
+    return false;
+}
+
+bool doChange(uint32_t change, uint32_t seen)
+{
+    if (seen == 0) {
+        return true;
+    }
+    if (change > seen) {
+        return true;
     }
     return false;
 }

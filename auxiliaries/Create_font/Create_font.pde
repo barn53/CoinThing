@@ -130,7 +130,7 @@ int fontNumber = -1; // << Use [Number] in brackets from the fonts listed.
 
 // Note: SPIFFS does NOT accept underscore in a filename!
 
-String fontName = "NotoSans-ExtraCondensed";  // Manually crop the filename length later after creation if needed
+String fontName = "NotoSans-Condensed";  // Manually crop the filename length later after creation if needed
 
 // NotoSans-Regular
 // NotoSans-Condensed
@@ -142,7 +142,7 @@ String fontType = ".ttf";
 
 // Define the font size in points for the TFT_eSPI font file
 
-int  fontSize = 50;
+int  fontSize = 25;
 
 /* 
 13

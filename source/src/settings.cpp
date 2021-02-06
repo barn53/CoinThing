@@ -8,35 +8,68 @@
 // Call up the SPIFFS FLASH filing system this is part of the ESP Core
 #define FS_NO_GLOBALS
 #include <FS.h>
-#ifdef ESP8266
-#else
-#include <SPIFFS.h> // ESP32 only
-#endif
 
 using fs::File;
 
-Settings::Settings(Gecko& gecko)
-    : m_gecko(gecko)
+#define MIN_BRIGHTNESS 10
+
+Settings::Settings()
 {
     SPIFFS.begin();
 }
 
-bool Settings::begin()
+bool Settings::begin(const Gecko& gecko)
 {
-    read();
+    read(gecko);
     write();
+    m_lastChange = millis_test();
 
     return m_valid;
 }
 
-Settings::Status Settings::set(const char* coin, const char* currency, uint8_t number_format, uint8_t chart, bool heartbeat)
+uint8_t Settings::brightness() const
 {
-    bool valid(false);
-    Status ret = Status::OK;
+    return m_valid
+        ? m_brightness
+        : std::numeric_limits<uint8_t>::max();
+}
 
-    if (m_gecko.isValidCoin(coin)) {
-        if (m_gecko.isValidCurrency(currency)) {
-            valid = true;
+bool Settings::setBrightness(uint8_t b)
+{
+    if (b != m_brightness
+        && b >= MIN_BRIGHTNESS
+        && b <= std::numeric_limits<uint8_t>::max()) {
+        m_brightness = b;
+        write();
+    }
+    return true;
+}
+
+Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chart, bool heartbeat)
+{
+    Status ret = Status::OK;
+    String cleanCoin(cleanUp(coin));
+    String cleanCurrency(cleanUp(currency));
+
+    if (gecko.coinDetails(cleanCoin.c_str(), m_coin, m_symbol, m_name)) {
+        if (gecko.isValidCurrency(cleanCurrency.c_str())) {
+            m_currency = cleanCurrency;
+
+            if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
+                number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
+            }
+            m_number_format = static_cast<NumberFormat>(number_format);
+
+            if (chart > Chart::CHART_ALL) {
+                chart = Chart::CHART_ALL;
+            }
+            m_chart = chart;
+
+            m_heartbeat = heartbeat;
+
+            m_valid = true;
+            m_lastChange = millis_test();
+            write();
         } else {
             ret = Status::CURRENCY_INVALID;
         }
@@ -44,31 +77,10 @@ Settings::Status Settings::set(const char* coin, const char* currency, uint8_t n
         ret = Status::COIN_INVALID;
     }
 
-    if (valid) {
-        m_gecko.coinDetails(coin, m_coin, m_symbol, m_name);
-        m_currency = cleanUp(currency);
-
-        if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
-            number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
-        }
-        m_number_format = static_cast<NumberFormat>(number_format);
-
-        if (chart > static_cast<uint8_t>(Chart::CHART_BOTH)) {
-            chart = static_cast<uint8_t>(Chart::CHART_BOTH);
-        }
-        m_chart = static_cast<Chart>(chart);
-
-        m_heartbeat = heartbeat;
-
-        m_valid = true;
-        m_displayed = false;
-        write();
-    }
-
     return ret;
 }
 
-bool Settings::read()
+bool Settings::read(const Gecko& gecko)
 {
     m_valid = false;
     if (SPIFFS.exists(USER_CONFIG)) {
@@ -90,21 +102,21 @@ bool Settings::read()
             m_name = doc["name"] | "";
             m_symbol = doc["symbol"] | "";
 
+            m_brightness = doc["brightness"] | std::numeric_limits<uint8_t>::max();
+
             if (m_number_format > NumberFormat::DECIMAL_DOT) {
                 m_number_format = NumberFormat::DECIMAL_DOT;
             }
 
-            if (m_chart > Chart::CHART_BOTH) {
-                m_chart = Chart::CHART_BOTH;
+            if (m_chart > Chart::CHART_ALL) {
+                m_chart = Chart::CHART_ALL;
             }
-
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
 
-            if (m_gecko.isValidCoin(m_coin.c_str())) {
-                if (m_gecko.isValidCurrency(m_currency.c_str())) {
+            if (gecko.isValidCoin(m_coin.c_str())) {
+                if (gecko.isValidCurrency(m_currency.c_str())) {
                     m_valid = true;
-                    m_displayed = false;
                 }
             }
         }
@@ -112,7 +124,7 @@ bool Settings::read()
     return m_valid;
 }
 
-void Settings::write() const
+void Settings::write()
 {
     SPIFFS.remove(USER_CONFIG);
 
@@ -128,6 +140,7 @@ void Settings::write() const
             doc["heartbeat"] = m_heartbeat;
             doc["name"] = m_name.c_str();
             doc["symbol"] = m_symbol.c_str();
+            doc["brightness"] = m_brightness;
 
             serializeJson(doc, file);
             file.close();

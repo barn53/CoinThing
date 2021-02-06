@@ -1,17 +1,22 @@
 #pragma once
 #include <Arduino.h>
 
+class Gecko;
 class Settings;
 
 class Handler {
 public:
-    Handler(Settings& settings);
+    Handler(const Gecko& gecko, Settings& settings);
 
     bool handleAction() const;
     static bool handleFileRead();
 
 private:
-    bool handleSet() const;
+    static bool streamFile(const char* filename);
 
+    bool handleSet() const;
+    bool handleReset() const;
+
+    const Gecko& m_gecko;
     Settings& m_settings;
 };

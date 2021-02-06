@@ -1,6 +1,22 @@
 #pragma once
 #include <Arduino.h>
 
+#if COIN_THING_SERIAL == 1
+#define LOG_FUNC            \
+    Serial.print(__func__); \
+    Serial.println("()");
+#else
+#define LOG_FUNC
+#endif
+
+#if COIN_THING_SERIAL == 1
+#define SERIAL_PRINTLN(x) Serial.println(x);
+#else
+#define SERIAL_PRINTLN(x)
+#endif
+
+using gecko_t = float;
+
 String cleanUp(const String& s);
 
 enum class NumberFormat : uint8_t {
@@ -11,7 +27,7 @@ enum class NumberFormat : uint8_t {
     THOUSAND_BLANK_DECIMAL_DOT, // 1 000.00
     DECIMAL_DOT // 1000.00
 };
-void formatNumber(double n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
+void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
 
 struct Currency {
     const char* currency;
@@ -81,3 +97,7 @@ static const Currency currencies[] = {
 
 bool isCurrency(const char* currency);
 const char* getCurrencySymbol(const char* currency);
+
+uint32_t millis_test();
+bool doInterval(uint32_t change, uint32_t interval);
+bool doChange(uint32_t change, uint32_t seen);

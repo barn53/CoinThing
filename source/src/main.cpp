@@ -1,42 +1,34 @@
 #include "display.h"
 #include "gecko.h"
 #include "handler.h"
-#include "http.h"
+#include "http_json.h"
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
 #include "wifi_utils.h"
 #include <Arduino.h>
-
-#ifdef ESP8266
 #include <ESP8266WebServer.h>
+
 ESP8266WebServer server(80);
-#else
-#include <WebServer.h>
-WebServer server(80);
-#endif
 
 // strange PlatformIO behavior:
 // https://community.platformio.org/t/adafruit-gfx-lib-will-not-build-any-more-pio-5/15776/12
 #include <Adafruit_I2CDevice.h>
 
 HttpJson httpJson;
-Gecko gecko(httpJson);
-Settings settings(gecko);
-Display display(settings);
-Handler handler(settings);
+Settings settings;
+Gecko gecko(httpJson, settings);
+Display display(gecko, settings);
+Handler handler(gecko, settings);
 
 void setup(void)
 {
-#ifdef ESP8266
     rst_info* ri(ESP.getResetInfoPtr());
     Serial.begin(115200);
     Serial.printf("\n---------------------\n");
     Serial.printf("Reset Info reason:   %u\n", ri->reason);
     Serial.printf("Reset Info exccause: %u", ri->exccause);
     Serial.printf("\n---------------------\n");
-#else
-#endif
 
     display.begin();
     display.showAPQR();
@@ -52,7 +44,7 @@ void setup(void)
             yield();
     }
 
-    if (settings.begin()) {
+    if (settings.begin(gecko)) {
         Serial.println("Settings valid!");
     } else {
         Serial.println("Settings invalid!");

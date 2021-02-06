@@ -2,26 +2,19 @@
 #include "gecko.h"
 #include "pre.h"
 #include "settings.h"
-#include "utils.h"
 #include <Arduino.h>
 #include <ESP_QRcode.h> // https://github.com/peteha99/esp_gen_qr
 #include <SPI.h>
 #include <locale>
 #include <sstream>
 
-#ifdef ESP8266
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
-#else
-#include <HTTPClient.h>
-#include <WiFi.h>
-#endif
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define COIN_UPDATE_INTERVAL (10 * 1000)
-#define CHART_UPDATE_INTERVAL (60 * 1000)
-#define CHART_UPDATE_INTERVAL_30_D (60 * 60 * 1000)
+#define Red565 RGB(0x10, 0xd0, 0x0)
+#define Green565 RGB(0xd0, 0x10, 0x0)
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
@@ -31,8 +24,11 @@
 #define DISTANCE_CHART_VALUE 3
 #define HEIGHT_CHART_VALUE 6
 
-Display::Display(Settings& settings)
-    : m_settings(settings)
+#define CHART_UPDATE_INTERVAL (5 * 1000)
+
+Display::Display(Gecko& gecko, const Settings& settings)
+    : m_gecko(gecko)
+    , m_settings(settings)
     , m_tft(TFT_eSPI())
     , m_fex(TFT_eFEX(&m_tft))
 {
@@ -40,13 +36,30 @@ Display::Display(Settings& settings)
 
 void Display::begin()
 {
+    pinMode(TFT_BL, OUTPUT);
+    analogWrite(TFT_BL, 30);
+
     m_tft.begin();
     m_tft.setRotation(0); // 0 & 2 Portrait. 1 & 3 landscape
+#if COIN_THING_SERIAL == 1
     m_fex.listSPIFFS(); // Lists the files so you can see what is in the SPIFFS}
+#endif
+
+    analogWriteRange(std::numeric_limits<uint8_t>::max());
+    analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
+
+    pinMode(NEO_AND, OUTPUT);
+    digitalWrite(NEO_AND, 1);
+
+    m_neo.Begin();
+    m_neo.SetPixelColor(0, RgbColor(0xff, 0x00, 0x10));
+    m_neo.Show();
 }
 
 void Display::loop()
 {
+    m_gecko.loop();
+    analogWrite(TFT_BL, m_settings.brightness());
     if (m_settings.valid()) {
         showCoin();
     } else {
@@ -57,30 +70,31 @@ void Display::loop()
 void Display::heartbeat()
 {
     if (!m_settings.heartbeat()) {
-        m_lastHeartbeat = 0;
-        m_heartbeat = 0;
+        m_last_heartbeat = 0;
+        m_heart_beat_count = 0;
         return;
     }
 
-    if (m_lastScreen == ShowedScreen::COIN
-        && (((millis() - m_lastHeartbeat) > 300
-                && (m_heartbeat == 0 || m_heartbeat == 1 || m_heartbeat == 2))
-            || ((millis() - m_lastHeartbeat) > 1500
-                && (m_heartbeat == 3)))) {
-        if (m_heartbeat % 2 == 0) {
+    if (m_last_screen == Screen::COIN
+        && (((millis_test() - m_last_heartbeat) > 300
+                && (m_heart_beat_count == 0 || m_heart_beat_count == 1 || m_heart_beat_count == 2))
+            || ((millis_test() - m_last_heartbeat) > 1500
+                && (m_heart_beat_count == 3)))) {
+        if (m_heart_beat_count % 2 == 0) {
             m_fex.drawJpeg("/heart2.jpg", 220, 0);
         } else {
             m_fex.drawJpeg("/heart.jpg", 220, 0);
         }
-        m_lastHeartbeat = millis();
-        ++m_heartbeat;
-        m_heartbeat %= 4;
+        m_last_heartbeat = millis_test();
+        ++m_heart_beat_count;
+        m_heart_beat_count %= 4;
     }
 }
 
-void Display::rewrite()
+void Display::renderTitle()
 {
-    m_settings.displayed(true);
+    LOG_FUNC
+
     m_tft.fillScreen(TFT_BLACK);
     m_tft.setTextWrap(false);
     String symbol("/");
@@ -107,8 +121,14 @@ void Display::rewrite()
     m_tft.unloadFont();
 }
 
-void Display::coin(double price, double price_usd, double change, uint16_t color)
+void Display::renderCoin()
 {
+    LOG_FUNC
+
+    uint16_t color(m_gecko.change_pct() >= 0.0
+            ? Red565
+            : Green565);
+
     String msg;
     TFT_eSprite sprite(&m_tft);
     sprite.setColorDepth(8);
@@ -117,7 +137,7 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
 
     sprite.loadFont("NotoSans-Regular50");
     sprite.setTextWrap(false);
-    formatNumber(price, msg, m_settings.numberFormat(), false, true);
+    formatNumber(m_gecko.price(), msg, m_settings.numberFormat(), false, true);
     msg += getCurrencySymbol(m_settings.currency());
 
     auto priceWidth(sprite.textWidth(msg));
@@ -147,8 +167,8 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     sprite.createSprite(SPRITE_WIDTH, SPRITE_CHANGE_HEIGHT);
 
     String usdMsg;
-    formatNumber(price_usd, usdMsg, m_settings.numberFormat(), false, true);
-    formatNumber(change, msg, m_settings.numberFormat(), true, false, 2);
+    formatNumber(m_gecko.price_usd(), usdMsg, m_settings.numberFormat(), false, true);
+    formatNumber(m_gecko.change_pct(), msg, m_settings.numberFormat(), true, false, 2);
     usdMsg += "$";
     msg += "%";
     auto usdWidth(sprite.textWidth(usdMsg));
@@ -180,21 +200,46 @@ void Display::coin(double price, double price_usd, double change, uint16_t color
     sprite.unloadFont();
     sprite.deleteSprite();
 
-    m_lastUpdate = millis();
+    m_last_price_update = millis_test();
 }
 
-void Display::chart(const std::vector<double>& prices, double max, double min, Settings::Chart showChart, uint16_t color)
+bool Display::renderChart(Settings::Chart type)
 {
+    LOG_FUNC
+
+    const std::vector<gecko_t>* prices(nullptr);
+
+    if (type == Settings::Chart::CHART_24_H) {
+        prices = &m_gecko.chart_48h();
+    } else if (type == Settings::Chart::CHART_48_H) {
+        prices = &m_gecko.chart_48h();
+    } else if (type == Settings::Chart::CHART_30_D) {
+        prices = &m_gecko.chart_30d();
+    } else {
+        return false;
+    }
+
+    if (prices->empty()) {
+        return false;
+    }
+
+    gecko_t max = *(std::max_element(prices->begin(), prices->end()));
+    gecko_t min = *(std::min_element(prices->begin(), prices->end()));
+
+    uint16_t color(prices->front() > prices->back()
+            ? Red565
+            : Green565);
+
     auto maxLabelColor(TFT_GOLD);
 
     uint8_t yStart(170);
     uint8_t height(DISPLAY_HEIGHT - yStart); // 70
     m_tft.fillRect(0, yStart - HEIGHT_CHART_VALUE, DISPLAY_WIDTH, height + HEIGHT_CHART_VALUE, TFT_BLACK);
 
-    uint8_t xPerVaue(DISPLAY_WIDTH / prices.size());
+    uint8_t xPerVaue(DISPLAY_WIDTH / prices->size());
     uint8_t xAtMax(0);
-    for (uint8_t x = 1; x < prices.size(); ++x) {
-        if (prices.at(x) >= max) {
+    for (uint8_t x = 1; x < prices->size(); ++x) {
+        if (prices->at(x) >= max) {
             xAtMax = x * xPerVaue;
         }
     }
@@ -228,7 +273,7 @@ void Display::chart(const std::vector<double>& prices, double max, double min, S
         maxLabelX = DISPLAY_WIDTH - maxWidth;
     }
 
-    auto calcY = [&max, &min, &height](double price) -> uint8_t {
+    auto calcY = [&max, &min, &height](gecko_t price) -> uint8_t {
         return height - ((height / (max - min)) * (price - min));
     };
 
@@ -241,15 +286,15 @@ void Display::chart(const std::vector<double>& prices, double max, double min, S
         dotted %= 9;
     }
 
-    for (uint8_t x = 1; x < prices.size(); ++x) {
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices.at(x - 1)) + yStart, x * xPerVaue, calcY(prices.at(x)) + yStart, color);
-        m_tft.drawLine(((x - 1) * xPerVaue) + 1, calcY(prices.at(x - 1)) + yStart, (x * xPerVaue) + 1, calcY(prices.at(x)) + yStart, color);
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices.at(x - 1)) + yStart - 1, x * xPerVaue, calcY(prices.at(x)) + yStart - 1, color);
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices.at(x - 1)) + yStart - 2, x * xPerVaue, calcY(prices.at(x)) + yStart - 2, color);
+    for (uint8_t x = 1; x < prices->size(); ++x) {
+        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart, x * xPerVaue, calcY(prices->at(x)) + yStart, color);
+        m_tft.drawLine(((x - 1) * xPerVaue) + 1, calcY(prices->at(x - 1)) + yStart, (x * xPerVaue) + 1, calcY(prices->at(x)) + yStart, color);
+        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart - 1, x * xPerVaue, calcY(prices->at(x)) + yStart - 1, color);
+        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart - 2, x * xPerVaue, calcY(prices->at(x)) + yStart - 2, color);
     }
 
     String period("24h");
-    if (showChart == Settings::Chart::CHART_30_D) {
+    if (type == Settings::Chart::CHART_30_D) {
         period = "30d";
     }
     auto widthPeriod(m_tft.textWidth(period));
@@ -259,9 +304,9 @@ void Display::chart(const std::vector<double>& prices, double max, double min, S
 
     if (maxLabelLeft) { // then period label right
         periodX = DISPLAY_WIDTH - widthPeriod - DISTANCE_CHART_VALUE;
-        yPrice = calcY(prices.back());
+        yPrice = calcY(prices->back());
     } else {
-        yPrice = calcY(prices.front());
+        yPrice = calcY(prices->front());
     }
 
     if (yPrice < (height / 2)) {
@@ -281,7 +326,8 @@ void Display::chart(const std::vector<double>& prices, double max, double min, S
     m_tft.println(maxMsg);
     m_tft.unloadFont();
 
-    m_lastChartUpdate = millis();
+    m_last_chart_update = millis_test();
+    return true;
 }
 
 void Display::chartFailed()
@@ -291,67 +337,78 @@ void Display::chartFailed()
     m_tft.setCursor(10, 185);
     m_tft.println("Chart update failed!");
     m_tft.unloadFont();
-    m_lastChartUpdate = 0;
+    m_last_chart_update = 0;
+}
+
+Settings::Chart Display::nextChartType()
+{
+    switch (m_last_chart) {
+    case Settings::Chart::CHART_24_H:
+        if (m_settings.chart() & Settings::Chart::CHART_48_H) {
+            return Settings::Chart::CHART_48_H;
+        } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
+            return Settings::Chart::CHART_30_D;
+        } else {
+            return Settings::Chart::CHART_24_H;
+        }
+        break;
+    case Settings::Chart::CHART_48_H:
+        if (m_settings.chart() & Settings::Chart::CHART_30_D) {
+            return Settings::Chart::CHART_30_D;
+        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
+            return Settings::Chart::CHART_48_H;
+        } else {
+            return Settings::Chart::CHART_48_H;
+        }
+        break;
+    case Settings::Chart::CHART_30_D:
+        if (m_settings.chart() & Settings::Chart::CHART_24_H) {
+            return Settings::Chart::CHART_24_H;
+        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
+            return Settings::Chart::CHART_48_H;
+        } else {
+            return Settings::Chart::CHART_30_D;
+        }
+        break;
+    }
+    return Settings::Chart::CHART_24_H;
 }
 
 void Display::showCoin()
 {
+    bool rewrite(false);
+
+    if (m_last_screen != Screen::COIN
+        || doChange(m_settings.lastChange(), m_last_seen_settings)) {
+        renderTitle();
+        rewrite = true;
+        m_last_seen_settings = millis_test();
+    }
     heartbeat();
 
-    if ((millis() - m_lastUpdate) > COIN_UPDATE_INTERVAL
-        || !m_settings.displayed()
-        || m_lastScreen != ShowedScreen::COIN) {
-
-        double price, price_usd, change;
-        bool rewr(false);
-
-        if (!m_settings.displayed()
-            || m_lastScreen != ShowedScreen::COIN) {
-            rewr = true;
-        }
-
-        if (m_settings.getGecko().coinPriceChange(m_settings.coin(), m_settings.currency(), price, price_usd, change)) {
-            if (rewr) {
-                rewrite();
-            }
-
-            uint16_t color(change >= 0.0
-                    ? RGB(0x10, 0xd0, 0x0)
-                    : RGB(0xd0, 0x10, 0x0));
-
-            coin(price, price_usd, change, color);
-
-            Settings::Chart showChart(m_settings.chart());
-            uint16_t chartUpdateInterval(CHART_UPDATE_INTERVAL);
-            if (showChart == Settings::Chart::CHART_BOTH) {
-                chartUpdateInterval = CHART_UPDATE_INTERVAL_30_D;
-            }
-            if ((millis() - m_lastChartUpdate) > chartUpdateInterval || m_lastChartUpdate == 0 || rewr) {
-
-                std::vector<double> prices;
-                double max, min;
-                if (showChart == Settings::Chart::CHART_BOTH) {
-                    if (m_lastChart == Settings::Chart::CHART_24_H) {
-                        showChart = Settings::Chart::CHART_30_D;
-                    } else {
-                        showChart = Settings::Chart::CHART_24_H;
-                    }
-                }
-                if (m_settings.getGecko().coinChart(m_settings.coin(), m_settings.currency(), prices, max, min, showChart)) {
-                    chart(prices, max, min, showChart, color);
-                    m_lastChart = showChart;
-                } else {
-                    chartFailed();
-                }
-            }
-        }
-        m_lastScreen = ShowedScreen::COIN;
+    if (rewrite
+        || doChange(m_gecko.lastPriceFetch(), m_last_price_update)) {
+        renderCoin();
     }
+
+    if (rewrite
+        || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
+        Settings::Chart next(nextChartType());
+#if COIN_THING_SERIAL > 0
+        Serial.printf("last type: %u -> next type: %u, setting: %u\n", m_last_chart, next, m_settings.chart());
+#endif
+        if (!renderChart(next)) {
+            chartFailed();
+        }
+        m_last_chart = next;
+    }
+
+    m_last_screen = Screen::COIN;
 }
 
 void Display::showAPQR()
 {
-    if (m_lastScreen != ShowedScreen::AP_QR) {
+    if (m_last_screen != Screen::AP_QR) {
         m_tft.fillScreen(TFT_WHITE);
 
         std::string qrText;
@@ -375,13 +432,13 @@ void Display::showAPQR()
         m_tft.println(qrText.c_str());
         m_tft.unloadFont();
 
-        m_lastScreen = ShowedScreen::AP_QR;
+        m_last_screen = Screen::AP_QR;
     }
 }
 
 void Display::showSettingsQR()
 {
-    if (m_lastScreen != ShowedScreen::SETTINGS_QR) {
+    if (m_last_screen != Screen::SETTINGS_QR) {
         m_tft.fillScreen(TFT_WHITE);
 
         std::string url("http://");
@@ -401,13 +458,13 @@ void Display::showSettingsQR()
         m_tft.println(url.c_str());
         m_tft.unloadFont();
 
-        m_lastScreen = ShowedScreen::SETTINGS_QR;
+        m_last_screen = Screen::SETTINGS_QR;
     }
 }
 
 void Display::showAPIOK()
 {
-    if (m_lastScreen != ShowedScreen::API_OK) {
+    if (m_last_screen != Screen::API_OK) {
         m_tft.loadFont("NotoSans-Regular30");
         m_tft.fillScreen(TFT_SKYBLUE);
         constexpr const char* msg = "To The Moon!";
@@ -415,13 +472,13 @@ void Display::showAPIOK()
         m_tft.setTextColor(TFT_WHITE, TFT_SKYBLUE);
         m_tft.println(msg);
         m_tft.unloadFont();
-        m_lastScreen = ShowedScreen::API_OK;
+        m_last_screen = Screen::API_OK;
     }
 }
 
 void Display::showAPIFailed()
 {
-    if (m_lastScreen != ShowedScreen::API_FAILED) {
+    if (m_last_screen != Screen::API_FAILED) {
         m_tft.loadFont("NotoSans-Regular30");
         m_tft.fillScreen(TFT_RED);
         constexpr const char* msg = "Gecko API failed!";
@@ -429,6 +486,6 @@ void Display::showAPIFailed()
         m_tft.setTextColor(TFT_BLACK, TFT_RED);
         m_tft.println(msg);
         m_tft.unloadFont();
-        m_lastScreen = ShowedScreen::API_FAILED;
+        m_last_screen = Screen::API_FAILED;
     }
 }

@@ -9,6 +9,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"
+        integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css"
+        integrity="sha512-3q8fi8M0VS+X/3n64Ndpp6Bit7oXSiyCnzmlx6IDBLGlY5euFySyJ46RUlqIVs0DPCGOypqP8IRk/EyPvU28mQ=="
+        crossorigin="anonymous" />
     <link rel="stylesheet" href="style.css">
     <title>CoinThing Settings</title>
 </head>
@@ -91,22 +100,22 @@
                         <label><b>Chart</b></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="co" id="co_0" value="0">
-                                <label class="form-check-label" for="co_0">24 hour</label>
+                                <input class="form-check-input" type="checkbox" name="co" id="co_1" value="1">
+                                <label class="form-check-label" for="co_1">24 hour</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="co" id="co_1" value="1">
-                                <label class="form-check-label" for="co_1">30 days</label>
+                                <input class="form-check-input" type="checkbox" name="co" id="co_2" value="2">
+                                <label class="form-check-label" for="co_2">48 hour</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="co" id="co_2" value="2">
-                                <label class="form-check-label" for="co_2">both alternating</label>
+                                <input class="form-check-input" type="checkbox" name="co" id="co_4" value="4">
+                                <label class="form-check-label" for="co_4">30 day</label>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label><b>Heartbeat </b>&#x2764;</label>
+                        <label><b>Heartbeat</b></label>
                         <div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="heartbeat" value="hb">
@@ -120,7 +129,17 @@
                             <i class="fa fa-spinner fa-spin" id="applyspinner" style="visibility:hidden;"></i></button>
                     </div>
 
+                    <hr>
+                    <div class="form-group">
+                        <label><b>Display Bightness</b></label>
+                        <div>
+                            <input id="brightness" type="text" />
+                        </div>
+                    </div>
+
                 </form>
+                <div class="row content" style="height:50px;">
+                </div>
             </div>
             <div class="col-sm-3 sidenav">
             </div>
@@ -133,10 +152,9 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
     <script type="text/javascript">
+
+        var brightnessSlider
 
         function applyBusy(busy) {
             if (busy) {
@@ -148,26 +166,37 @@
             }
         }
 
+        function displaySettings(settings) {
+            applyBusy(false)
+            $("#coin").val(settings['coin'] || '')
+            $("#currency").val(settings['currency'] || '')
+            number_format = settings['number_format'] || 0
+            chart = settings['chart'] || 0
+            heartbeat = settings['heartbeat'] || 0
+
+            try {
+                $("#nf_" + number_format)[0].checked = true
+            } catch (error) { }
+
+            if ((chart & 1) > 0) {
+                $("#co_1")[0].checked = true
+            }
+            if ((chart & 2) > 0) {
+                $("#co_2")[0].checked = true
+            }
+            if ((chart & 4) > 0) {
+                $("#co_4")[0].checked = true
+            }
+
+            $("#heartbeat")[0].checked = (heartbeat !== 0)
+
+            brightnessSlider.slider("setValue", settings['brightness'])
+            console.log(JSON.stringify(settings))
+        }
+
         function getSettings() {
             $.get("/settings.json", function (data) {
-                applyBusy(false)
-                settings = JSON.parse(data)
-                $("#coin").val(settings['coin'] || '')
-                $("#currency").val(settings['currency'] || '')
-                number_format = settings['number_format'] || 0
-                chart = settings['chart'] || 0
-                heartbeat = settings['heartbeat'] || 0
-                try {
-                    $("#nf_" + number_format)[0].checked = true
-                } catch (error) { }
-                try {
-                    $("#co_" + chart)[0].checked = true
-                } catch (error) { }
-                try {
-                    $("#heartbeat")[0].checked = (heartbeat !== 0)
-                } catch (error) { }
-
-                console.log(data)
+                displaySettings(data)
             })
         }
 
@@ -183,7 +212,18 @@
 
         $(document).ready(function () {
 
+            brightnessSlider = $("#brightness").slider({
+                min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
+            });
+
             getSettings()
+
+            brightnessSlider.on('change', function (e) {
+                console.log(e.value.newValue)
+                $.get("/action/set?brightness=" + e.value.newValue, function (data) {
+                    console.log(data)
+                })
+            })
 
             $('#apply').off().click(function (e) {
                 applyBusy(true)
@@ -215,15 +255,17 @@
                     return
                 }
 
-                chart = -1
-                if ($("#co_0")[0].checked) {
-                    chart = 0
-                } else if ($("#co_1")[0].checked) {
-                    chart = 1
-                } else if ($("#co_2")[0].checked) {
-                    chart = 2
+                chart = 0
+                if ($("#co_1")[0].checked) {
+                    chart += 1
                 }
-                if (chart === -1) {
+                if ($("#co_2")[0].checked) {
+                    chart += 2
+                }
+                if ($("#co_4")[0].checked) {
+                    chart += 4
+                }
+                if (chart === 0) {
                     showError(": Chart option is not selected!")
                     return
                 }
@@ -238,10 +280,10 @@
                     + "&number_format=" + number_format
                     + "&chart=" + chart + "&heartbeat=" + heartbeat, function (data) {
 
-                        if (data === "1") {
-                            getSettings()
+                        if (data["error"]) {
+                            showError(": " + data["error"])
                         } else {
-                            showError(": " + data)
+                            displaySettings(data)
                         }
 
                     })

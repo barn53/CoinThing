@@ -1,5 +1,6 @@
 #pragma once
 #include "settings.h"
+#include "utils.h"
 #include <Arduino.h>
 
 class HttpJson;
@@ -9,6 +10,7 @@ struct Coin {
     const char* symbol;
     const char* name;
 };
+
 static const Coin coins[] = {
     { "bitcoin", "BTC", "Bitcoin" },
     { "ethereum", "ETH", "Ethereum" },
@@ -116,20 +118,43 @@ bool isCoin(const char* coin);
 class Gecko {
 
 public:
-    Gecko(HttpJson& http);
+    Gecko(HttpJson& http, Settings& settings);
+
+    void loop();
 
     bool ping() const;
-    bool coinPriceChange(const char* coin, const char* currency, double& price, double& price_usd, double& change) const;
-    bool coinChart(const char* coin, const char* currency, std::vector<double>& prices, double& max, double& min, Settings::Chart chart) const;
 
-    bool coinDetails(const String& coinOrSymbol, String& coin, String& symbol, String& name) const;
+    bool coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const;
     bool isValidCoin(const char* coinOrSymbol) const;
     bool isValidCurrency(const char* currency) const;
 
+    gecko_t price() const { return m_price; }
+    gecko_t price_usd() const { return m_price_usd; }
+    gecko_t change_pct() const { return m_change_pct; }
+    const std::vector<gecko_t>& chart_48h();
+    const std::vector<gecko_t>& chart_30d();
+
+    uint32_t lastPriceFetch() const { return m_last_price_fetch; }
+
 private:
+    bool fetchCoinPriceChange();
+    bool fetchCoinChart(Settings::Chart type);
+
     // fallbacks use (slow) API calls
-    bool coinDetailsAPI(const char* coin, String& symbol, String& name) const;
-    bool isValidCoinAPI(const char* coin) const;
+    bool fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const;
+    bool fetchIsValidCoin(const char* coin) const;
+
+    gecko_t m_price;
+    gecko_t m_price_usd;
+    gecko_t m_change_pct;
+    std::vector<gecko_t> m_chart_48h;
+    std::vector<gecko_t> m_chart_30d;
+
+    uint32_t m_last_price_fetch { 0 };
+    uint32_t m_last_chart_48h_fetch { 0 };
+    uint32_t m_last_chart_30d_fetch { 0 };
+    uint32_t m_last_seen_settings { 0 };
 
     HttpJson& m_http;
+    Settings& m_settings;
 };

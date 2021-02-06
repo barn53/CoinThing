@@ -1,17 +1,12 @@
-#include "http.h"
+#include "http_json.h"
 #include <Arduino.h>
 #include <StreamUtils.h>
 
 HttpJson::HttpJson()
 {
-#ifdef ESP8266
     m_client.setInsecure();
-#endif
-
     m_http.useHTTP10(true); // stream is only available with HTTP1.0 (no chunked transfer)
-#ifdef ESP8266
     m_http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
-#endif
 }
 
 bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc)
@@ -35,7 +30,7 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
 #endif
         if (httpCode == HTTP_CODE_OK) {
-#if COIN_THING_SERIAL > 0
+#if COIN_THING_SERIAL > 1
             ReadLoggingStream loggingStream(m_client, Serial);
             deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
             Serial.println();

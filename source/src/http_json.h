@@ -1,13 +1,8 @@
 #pragma once
 #include <ArduinoJson.h>
 
-#ifdef ESP8266
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
-#else
-#include <HTTPClient.h>
-#include <WiFi.h>
-#endif
 
 class HttpJson {
 public:
