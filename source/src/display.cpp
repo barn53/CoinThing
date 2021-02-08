@@ -342,36 +342,29 @@ void Display::chartFailed()
 
 Settings::Chart Display::nextChartType()
 {
-    switch (m_last_chart) {
-    case Settings::Chart::CHART_24_H:
+    Settings::Chart next(m_last_chart);
+
+    if (m_last_chart == Settings::Chart::CHART_24_H) {
         if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            return Settings::Chart::CHART_48_H;
+            next = Settings::Chart::CHART_48_H;
         } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
-            return Settings::Chart::CHART_30_D;
-        } else {
-            return Settings::Chart::CHART_24_H;
+            next = Settings::Chart::CHART_30_D;
         }
-        break;
-    case Settings::Chart::CHART_48_H:
+    } else if (m_last_chart == Settings::Chart::CHART_48_H) {
         if (m_settings.chart() & Settings::Chart::CHART_30_D) {
-            return Settings::Chart::CHART_30_D;
+            next = Settings::Chart::CHART_30_D;
         } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            return Settings::Chart::CHART_48_H;
-        } else {
-            return Settings::Chart::CHART_48_H;
+            next = Settings::Chart::CHART_48_H;
         }
-        break;
-    case Settings::Chart::CHART_30_D:
+    } else if (m_last_chart == Settings::Chart::CHART_30_D) {
         if (m_settings.chart() & Settings::Chart::CHART_24_H) {
-            return Settings::Chart::CHART_24_H;
+            next = Settings::Chart::CHART_24_H;
         } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            return Settings::Chart::CHART_48_H;
-        } else {
-            return Settings::Chart::CHART_30_D;
+            next = Settings::Chart::CHART_48_H;
         }
-        break;
     }
-    return Settings::Chart::CHART_24_H;
+
+    return next;
 }
 
 void Display::showCoin()
