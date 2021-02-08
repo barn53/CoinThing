@@ -26,7 +26,7 @@ void Gecko::loop()
         m_last_seen_settings = millis_test();
         m_last_price_fetch = 0;
         m_last_chart_48h_fetch = 0;
-        m_last_chart_30d_fetch = 0;
+        m_last_chart_60d_fetch = 0;
     }
 
     if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
@@ -38,7 +38,7 @@ void Gecko::loop()
     }
 }
 
-const std::vector<gecko_t>& Gecko::chart_48h() 
+const std::vector<gecko_t>& Gecko::chart_48h()
 {
     if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::Chart::CHART_48_H)) {
@@ -50,16 +50,16 @@ const std::vector<gecko_t>& Gecko::chart_48h()
     return m_chart_48h;
 }
 
-const std::vector<gecko_t>& Gecko::chart_30d() 
+const std::vector<gecko_t>& Gecko::chart_60d()
 {
-    if (doInterval(m_last_chart_30d_fetch, CHART_30_D_FETCH_INTERVAL)) {
+    if (doInterval(m_last_chart_60d_fetch, CHART_30_D_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::Chart::CHART_30_D)) {
-            m_last_chart_30d_fetch = millis_test();
+            m_last_chart_60d_fetch = millis_test();
         } else {
-            m_last_chart_30d_fetch = 0;
+            m_last_chart_60d_fetch = 0;
         }
     }
-    return m_chart_30d;
+    return m_chart_60d;
 }
 
 bool Gecko::fetchCoinPriceChange()
@@ -101,41 +101,39 @@ bool Gecko::fetchCoinChart(Settings::Chart type)
     url += m_settings.coin();
     url += "/market_chart?vs_currency=";
     url += m_settings.currency();
-    uint8_t numValues(0);
     std::vector<gecko_t>* targetChart;
 
     if (type == Settings::Chart::CHART_24_H
         || type == Settings::Chart::CHART_48_H) {
         url += "&days=2";
-        numValues = 48;
         m_last_chart_48h_fetch = millis_test();
         targetChart = &m_chart_48h;
-    } else if (type == Settings::Chart::CHART_30_D) {
-        url += "&days=30&interval=daily";
-        numValues = 30;
-        m_last_chart_30d_fetch = millis_test();
-        targetChart = &m_chart_30d;
+    } else if (type == Settings::Chart::CHART_30_D
+        || type == Settings::Chart::CHART_60_D) {
+        url += "&days=60&interval=daily";
+        m_last_chart_60d_fetch = millis_test();
+        targetChart = &m_chart_60d;
     } else {
         return false;
     }
+    targetChart->clear();
 
     DynamicJsonDocument filter(16);
     filter["prices"] = true;
 
     DynamicJsonDocument doc(DYNAMIC_JSON_CHART_SIZE);
 
-    targetChart->clear();
     if (m_http.read(url.c_str(), doc, filter)) {
         JsonArray jPrices = doc["prices"];
-        uint16_t ii(jPrices.size());
+        bool first(true);
         for (const auto& p : jPrices) {
-            if (ii <= numValues) { // trim result
+            if (!first) { // omit the first (oldest), because there are +1 entries in JSON result
                 auto f(p[1].as<gecko_t>());
                 targetChart->emplace_back(f);
             }
-            --ii;
+            first = false;
         }
-        return targetChart->size() == numValues;
+        return !targetChart->empty();
     }
     return false;
 }

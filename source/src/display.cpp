@@ -13,8 +13,8 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define Red565 RGB(0x10, 0xd0, 0x0)
-#define Green565 RGB(0xd0, 0x10, 0x0)
+#define Red565 RGB(0xd0, 0x10, 0x0)
+#define Green565 RGB(0x10, 0xd0, 0x0)
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
@@ -126,8 +126,8 @@ void Display::renderCoin()
     LOG_FUNC
 
     uint16_t color(m_gecko.change_pct() >= 0.0
-            ? Red565
-            : Green565);
+            ? Green565
+            : Red565);
 
     String msg;
     TFT_eSprite sprite(&m_tft);
@@ -209,12 +209,42 @@ bool Display::renderChart(Settings::Chart type)
 
     const std::vector<gecko_t>* prices(nullptr);
 
+    String period;
+    uint16_t periodColor;
+    std::vector<gecko_t>::const_iterator beginIt;
+    std::vector<gecko_t>::const_iterator endIt;
     if (type == Settings::Chart::CHART_24_H) {
         prices = &m_gecko.chart_48h();
+        if (prices->size() != 48) {
+            return false;
+        }
+        beginIt = prices->end() - 24;
+        period = "24h";
+        periodColor = RGB(0xff, 0x30, 0xcc);
     } else if (type == Settings::Chart::CHART_48_H) {
         prices = &m_gecko.chart_48h();
+        if (prices->size() != 48) {
+            return false;
+        }
+        beginIt = prices->begin();
+        period = "48h";
+        periodColor = TFT_PURPLE;
     } else if (type == Settings::Chart::CHART_30_D) {
-        prices = &m_gecko.chart_30d();
+        prices = &m_gecko.chart_60d();
+        if (prices->size() != 60) {
+            return false;
+        }
+        beginIt = prices->end() - 30;
+        period = "30d";
+        periodColor = TFT_GOLD;
+    } else if (type == Settings::Chart::CHART_60_D) {
+        prices = &m_gecko.chart_60d();
+        if (prices->size() != 60) {
+            return false;
+        }
+        beginIt = prices->begin();
+        period = "60d";
+        periodColor = TFT_SKYBLUE;
     } else {
         return false;
     }
@@ -223,10 +253,12 @@ bool Display::renderChart(Settings::Chart type)
         return false;
     }
 
-    gecko_t max = *(std::max_element(prices->begin(), prices->end()));
-    gecko_t min = *(std::min_element(prices->begin(), prices->end()));
+    endIt = prices->end();
 
-    uint16_t color(prices->front() > prices->back()
+    gecko_t max = *(std::max_element(beginIt, endIt));
+    gecko_t min = *(std::min_element(beginIt, endIt));
+
+    uint16_t color(*beginIt > *endIt
             ? Red565
             : Green565);
 
@@ -236,7 +268,7 @@ bool Display::renderChart(Settings::Chart type)
     uint8_t height(DISPLAY_HEIGHT - yStart); // 70
     m_tft.fillRect(0, yStart - HEIGHT_CHART_VALUE, DISPLAY_WIDTH, height + HEIGHT_CHART_VALUE, TFT_BLACK);
 
-    uint8_t xPerVaue(DISPLAY_WIDTH / prices->size());
+    uint8_t xPerVaue(DISPLAY_WIDTH / (endIt - beginIt));
     uint8_t xAtMax(0);
     for (uint8_t x = 1; x < prices->size(); ++x) {
         if (prices->at(x) >= max) {
@@ -293,10 +325,6 @@ bool Display::renderChart(Settings::Chart type)
         m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart - 2, x * xPerVaue, calcY(prices->at(x)) + yStart - 2, color);
     }
 
-    String period("24h");
-    if (type == Settings::Chart::CHART_30_D) {
-        period = "30d";
-    }
     auto widthPeriod(m_tft.textWidth(period));
     uint8_t periodX(DISTANCE_CHART_VALUE);
     uint8_t periodY(0);
@@ -316,7 +344,7 @@ bool Display::renderChart(Settings::Chart type)
     }
 
     m_tft.fillRect(periodX, periodY, widthPeriod, 2 * HEIGHT_CHART_VALUE, TFT_BLACK);
-    m_tft.setTextColor(TFT_PURPLE, TFT_BLACK);
+    m_tft.setTextColor(periodColor, TFT_BLACK);
     m_tft.setCursor(periodX, periodY);
     m_tft.println(period);
 
@@ -349,18 +377,32 @@ Settings::Chart Display::nextChartType()
             next = Settings::Chart::CHART_48_H;
         } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
             next = Settings::Chart::CHART_30_D;
+        } else if (m_settings.chart() & Settings::Chart::CHART_60_D) {
+            next = Settings::Chart::CHART_60_D;
         }
     } else if (m_last_chart == Settings::Chart::CHART_48_H) {
         if (m_settings.chart() & Settings::Chart::CHART_30_D) {
             next = Settings::Chart::CHART_30_D;
+        } else if (m_settings.chart() & Settings::Chart::CHART_60_D) {
+            next = Settings::Chart::CHART_60_D;
         } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
             next = Settings::Chart::CHART_48_H;
         }
     } else if (m_last_chart == Settings::Chart::CHART_30_D) {
+        if (m_settings.chart() & Settings::Chart::CHART_60_D) {
+            next = Settings::Chart::CHART_60_D;
+        } else if (m_settings.chart() & Settings::Chart::CHART_24_H) {
+            next = Settings::Chart::CHART_24_H;
+        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
+            next = Settings::Chart::CHART_48_H;
+        }
+    } else if (m_last_chart == Settings::Chart::CHART_60_D) {
         if (m_settings.chart() & Settings::Chart::CHART_24_H) {
             next = Settings::Chart::CHART_24_H;
         } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
             next = Settings::Chart::CHART_48_H;
+        } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
+            next = Settings::Chart::CHART_30_D;
         }
     }
 

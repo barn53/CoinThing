@@ -16,6 +16,7 @@ private:
 
     bool handleSet() const;
     bool handleReset() const;
+    bool handleVersion() const;
 
     const Gecko& m_gecko;
     Settings& m_settings;

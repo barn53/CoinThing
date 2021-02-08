@@ -101,15 +101,19 @@
                         <div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" name="co" id="co_1" value="1">
-                                <label class="form-check-label" for="co_1">24 hour</label>
+                                <label class="form-check-label" for="co_1">24 h</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" name="co" id="co_2" value="2">
-                                <label class="form-check-label" for="co_2">48 hour</label>
+                                <label class="form-check-label" for="co_2">48 h</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" name="co" id="co_4" value="4">
-                                <label class="form-check-label" for="co_4">30 day</label>
+                                <label class="form-check-label" for="co_4">30 d</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="co" id="co_8" value="8">
+                                <label class="form-check-label" for="co_8">60 d</label>
                             </div>
                         </div>
                     </div>
@@ -148,7 +152,7 @@
 
     <footer class="footer bg-dark text-light ">
         <div class="container">
-            &copy; 2020 barn53 &mdash; <a href="about.html">About</a>
+            &copy; 2021 barn53 &mdash; <a href="about.html">About</a>
         </div>
     </footer>
 
@@ -186,6 +190,9 @@
             }
             if ((chart & 4) > 0) {
                 $("#co_4")[0].checked = true
+            }
+            if ((chart & 8) > 0) {
+                $("#co_8")[0].checked = true
             }
 
             $("#heartbeat")[0].checked = (heartbeat !== 0)
@@ -264,6 +271,9 @@
                 }
                 if ($("#co_4")[0].checked) {
                     chart += 4
+                }
+                if ($("#co_8")[0].checked) {
+                    chart += 8
                 }
                 if (chart === 0) {
                     showError(": Chart option is not selected!")

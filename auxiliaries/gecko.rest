@@ -33,7 +33,7 @@ GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&
 ###
 
 
-GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&days=30&interval=daily HTTP/1.0
+GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&days=90&interval=daily HTTP/1.0
 
 
 ###

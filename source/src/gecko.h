@@ -132,7 +132,7 @@ public:
     gecko_t price_usd() const { return m_price_usd; }
     gecko_t change_pct() const { return m_change_pct; }
     const std::vector<gecko_t>& chart_48h();
-    const std::vector<gecko_t>& chart_30d();
+    const std::vector<gecko_t>& chart_60d();
 
     uint32_t lastPriceFetch() const { return m_last_price_fetch; }
 
@@ -148,11 +148,11 @@ private:
     gecko_t m_price_usd;
     gecko_t m_change_pct;
     std::vector<gecko_t> m_chart_48h;
-    std::vector<gecko_t> m_chart_30d;
+    std::vector<gecko_t> m_chart_60d;
 
     uint32_t m_last_price_fetch { 0 };
     uint32_t m_last_chart_48h_fetch { 0 };
-    uint32_t m_last_chart_30d_fetch { 0 };
+    uint32_t m_last_chart_60d_fetch { 0 };
     uint32_t m_last_seen_settings { 0 };
 
     HttpJson& m_http;

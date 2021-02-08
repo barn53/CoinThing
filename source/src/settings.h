@@ -18,7 +18,8 @@ public:
         CHART_24_H = 1,
         CHART_48_H = 2,
         CHART_30_D = 4,
-        CHART_ALL = CHART_24_H + CHART_48_H + CHART_30_D
+        CHART_60_D = 8,
+        CHART_ALL = CHART_24_H + CHART_48_H + CHART_30_D + CHART_60_D
     };
 
     Settings();

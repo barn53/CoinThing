@@ -49,6 +49,14 @@ bool Handler::handleReset() const
     return true;
 }
 
+bool Handler::handleVersion() const
+{
+    // todo: version from git??
+
+    server.send(200, "text/plain", "1.0.0");
+    return true;
+}
+
 bool Handler::streamFile(const char* filename)
 {
     String contentType = getContentType(filename);
@@ -113,6 +121,8 @@ bool Handler::handleAction() const
         return handleSet();
     } else if (path == "/action/reset") {
         return handleReset();
+    } else if (path == "/action/version") {
+        return handleVersion();
     }
     return false;
 }
