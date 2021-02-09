@@ -13,7 +13,7 @@
 #define SERIAL_PRINTLN(x) Serial.println(x);
 #define FILE_LINE           \
     Serial.print(__FILE__); \
-    Serial.print(" ");      \
+    Serial.print(":");      \
     Serial.println(__LINE__);
 #else
 #define SERIAL_PRINTLN(x)

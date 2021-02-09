@@ -213,35 +213,24 @@ bool Display::renderChart(Settings::Chart type)
     uint16_t periodColor;
     std::vector<gecko_t>::const_iterator beginIt;
     std::vector<gecko_t>::const_iterator endIt;
+    std::vector<gecko_t>::const_iterator it;
     if (type == Settings::Chart::CHART_24_H) {
         prices = &m_gecko.chart_48h();
-        if (prices->size() != 48) {
-            return false;
-        }
         beginIt = prices->end() - 24;
         period = "24h";
         periodColor = RGB(0xff, 0x30, 0xcc);
     } else if (type == Settings::Chart::CHART_48_H) {
         prices = &m_gecko.chart_48h();
-        if (prices->size() != 48) {
-            return false;
-        }
         beginIt = prices->begin();
         period = "48h";
         periodColor = TFT_PURPLE;
     } else if (type == Settings::Chart::CHART_30_D) {
         prices = &m_gecko.chart_60d();
-        if (prices->size() != 60) {
-            return false;
-        }
         beginIt = prices->end() - 30;
         period = "30d";
         periodColor = TFT_GOLD;
     } else if (type == Settings::Chart::CHART_60_D) {
         prices = &m_gecko.chart_60d();
-        if (prices->size() != 60) {
-            return false;
-        }
         beginIt = prices->begin();
         period = "60d";
         periodColor = TFT_SKYBLUE;
@@ -275,6 +264,23 @@ bool Display::renderChart(Settings::Chart type)
             xAtMax = x * xPerVaue;
         }
     }
+
+    Serial.printf("type: %u\n", type);
+    Serial.printf("prices.size: %u\n", prices->size());
+    Serial.printf("endIt - beginIt: %u\n", endIt - beginIt);
+    Serial.printf("max: %f min: %f\n", max, min);
+
+    for (it = beginIt; it != endIt; ++it) {
+        Serial.printf("%.2f;  ", *it);
+        if (*it >= max) {
+            xAtMax = ((endIt - it) * xPerVaue);
+        }
+    }
+    Serial.printf("\n");
+
+    //////////////////////////////////////////////////////////
+    m_last_chart_update = millis_test();
+    return true;
 
     m_tft.loadFont("NotoSans-Regular13");
     String maxMsg;

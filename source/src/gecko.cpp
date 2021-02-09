@@ -103,14 +103,17 @@ bool Gecko::fetchCoinChart(Settings::Chart type)
     url += m_settings.currency();
     std::vector<gecko_t>* targetChart;
 
+    uint8_t expectValues;
     if (type == Settings::Chart::CHART_24_H
         || type == Settings::Chart::CHART_48_H) {
         url += "&days=2";
+        expectValues = 48;
         m_last_chart_48h_fetch = millis_test();
         targetChart = &m_chart_48h;
     } else if (type == Settings::Chart::CHART_30_D
         || type == Settings::Chart::CHART_60_D) {
         url += "&days=60&interval=daily";
+        expectValues = 60;
         m_last_chart_60d_fetch = millis_test();
         targetChart = &m_chart_60d;
     } else {
@@ -125,13 +128,13 @@ bool Gecko::fetchCoinChart(Settings::Chart type)
 
     if (m_http.read(url.c_str(), doc, filter)) {
         JsonArray jPrices = doc["prices"];
-        bool first(true);
+        size_t jj(jPrices.size());
         for (const auto& p : jPrices) {
-            if (!first) { // omit the first (oldest), because there are +1 entries in JSON result
+            if (jj <= expectValues) { // omit oldest, because there are some more (1, 2) entries in JSON result than expected
                 auto f(p[1].as<gecko_t>());
                 targetChart->emplace_back(f);
             }
-            first = false;
+            --jj;
         }
         return !targetChart->empty();
     }
