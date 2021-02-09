@@ -271,10 +271,12 @@ bool Display::renderChart(Settings::Chart type)
     Serial.printf("max: %f min: %f\n", max, min);
 
     for (it = beginIt; it != endIt; ++it) {
-        Serial.printf("%.2f;  ", *it);
+        Serial.printf("%.2f", *it);
         if (*it >= max) {
             xAtMax = ((endIt - it) * xPerVaue);
+            Serial.printf(" max: %u", it - beginIt);
         }
+        Serial.printf("; ");
     }
     Serial.printf("\n");
 
