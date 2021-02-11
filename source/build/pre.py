@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import string
 import random
+import subprocess
 
 Import("env")
 #Import("env", "projenv")
@@ -14,13 +17,23 @@ print(env)
 #print(env.Dump())
 #print(projenv.Dump())
 
+version = subprocess.check_output(["git", "describe", "--tags", "--always"]).strip()
+version = version.decode('utf-8')
+changes = subprocess.check_output(["git", "status", "--porcelain"]).strip()
+changes = changes.decode('utf-8')
+
+if len(changes) > 0:
+    version = version+'-*'
+
 f = open(env["PROJECTSRC_DIR"] + "/pre.h", "w")
 
 letters = string.ascii_lowercase
 
 f.write('#pragma once\n')
 f.write('#define HOST_NAME "CoinThing-%s"\n'% (''.join(random.choice(letters) for i in range(6))))
-f.write('#define SECRET_AP_PASSWORD "%s"\n'% (''.join(random.choice(letters) for i in range(6)))) 
+f.write('#define SECRET_AP_PASSWORD "%s"\n'% (''.join(random.choice(letters) for i in range(6))))
+
+f.write('#define VERSION "%s"\n'% (version))
 
 f.close()
 
