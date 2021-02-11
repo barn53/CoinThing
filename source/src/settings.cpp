@@ -45,7 +45,7 @@ bool Settings::setBrightness(uint8_t b)
     return true;
 }
 
-Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chartPeriod, uint8_t chartStyle, bool heartbeat)
+Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chart_period, uint8_t chart_style, bool heartbeat)
 {
     Status ret = Status::OK;
     String cleanCoin(cleanUp(coin));
@@ -60,15 +60,15 @@ Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char*
             }
             m_number_format = static_cast<NumberFormat>(number_format);
 
-            if (chartPeriod > ChartPeriod::ALL_PERIODS) {
-                chartPeriod = ChartPeriod::ALL_PERIODS;
+            if (chart_period > ChartPeriod::ALL_PERIODS) {
+                chart_period = ChartPeriod::ALL_PERIODS;
             }
-            m_chart_period = chartPeriod;
+            m_chart_period = chart_period;
 
-            if (chartStyle > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
-                chartStyle = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
+            if (chart_style > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
+                chart_style = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
             }
-            m_chart_style = static_cast<ChartStyle>(chartStyle);
+            m_chart_style = static_cast<ChartStyle>(chart_style);
 
             m_heartbeat = heartbeat;
 
@@ -101,8 +101,8 @@ bool Settings::read(const Gecko& gecko)
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
             m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-            m_chart_period = static_cast<ChartPeriod>(doc["chartPeriod"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H));
-            m_chart_style = static_cast<ChartStyle>(doc["chartStyle"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
+            m_chart_period = static_cast<ChartPeriod>(doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H));
+            m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
             m_heartbeat = doc["heartbeat"] | true;
 
             m_name = doc["name"] | "";
@@ -117,6 +117,11 @@ bool Settings::read(const Gecko& gecko)
             if (m_chart_period > ChartPeriod::ALL_PERIODS) {
                 m_chart_period = ChartPeriod::ALL_PERIODS;
             }
+
+            if (m_chart_style > ChartStyle::HIGH_LOW_FIRST_LAST) {
+                m_chart_style = ChartStyle::HIGH_LOW_FIRST_LAST;
+            }
+
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
 
@@ -142,7 +147,8 @@ void Settings::write()
             doc["coin"] = m_coin.c_str();
             doc["currency"] = m_currency.c_str();
             doc["number_format"] = static_cast<uint8_t>(m_number_format);
-            doc["chartPeriod"] = static_cast<uint8_t>(m_chart_period);
+            doc["chart_period"] = static_cast<uint8_t>(m_chart_period);
+            doc["chart_style"] = static_cast<uint8_t>(m_chart_style);
             doc["heartbeat"] = m_heartbeat;
             doc["name"] = m_name.c_str();
             doc["symbol"] = m_symbol.c_str();

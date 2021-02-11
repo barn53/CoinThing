@@ -28,7 +28,7 @@ private:
     void renderTitle();
     void heartbeat();
     void renderCoin();
-    Settings::ChartPeriod nextChartType();
+    Settings::ChartPeriod nextChartPeriod();
     bool renderChart(Settings::ChartPeriod type);
     void chartFailed();
 
@@ -55,5 +55,5 @@ private:
     uint8_t m_heart_beat_count { 0 };
     uint32_t m_last_price_update { 0 };
     uint32_t m_last_chart_update { 0 };
-    Settings::ChartPeriod m_last_chart { Settings::ChartPeriod::PERIOD_NONE };
+    Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };
 };

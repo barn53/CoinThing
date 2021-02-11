@@ -215,7 +215,7 @@
             }
 
             try {
-                $("#cs_" + number_format)[0].checked = true
+                $("#cs_" + chart_style)[0].checked = true
             } catch (error) { }
 
             $("#heartbeat")[0].checked = (heartbeat !== 0)
@@ -285,21 +285,21 @@
                     return
                 }
 
-                chart = 0
+                chart_period = 0
                 if ($("#cp_1")[0].checked) {
-                    chart += 1
+                    chart_period += 1
                 }
                 if ($("#cp_2")[0].checked) {
-                    chart += 2
+                    chart_period += 2
                 }
                 if ($("#cp_4")[0].checked) {
-                    chart += 4
+                    chart_period += 4
                 }
                 if ($("#cp_8")[0].checked) {
-                    chart += 8
+                    chart_period += 8
                 }
-                if (chart === 0) {
-                    showError(": No chart option selected!")
+                if (chart_period === 0) {
+                    showError(": No chart period selected!")
                     return
                 }
 
@@ -312,7 +312,7 @@
                     chart_style = 2
                 }
                 if (chart_style === -1) {
-                    showError(": Chart style not selected!")
+                    showError(": No chart style selected!")
                     return
                 }
 

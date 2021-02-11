@@ -1,5 +1,6 @@
 #include "handler.h"
 #include "gecko.h"
+#include "pre.h"
 #include "settings.h"
 #include "utils.h"
 #include <FS.h>
@@ -51,9 +52,7 @@ bool Handler::handleReset() const
 
 bool Handler::handleVersion() const
 {
-    // todo: version from git??
-
-    server.send(200, "text/plain", "1.0.0");
+    server.send(200, "text/plain", VERSION);
     return true;
 }
 
