@@ -28,8 +28,8 @@ private:
     void renderTitle();
     void heartbeat();
     void renderCoin();
-    Settings::Chart nextChartType();
-    bool renderChart(Settings::Chart type);
+    Settings::ChartPeriod nextChartType();
+    bool renderChart(Settings::ChartPeriod type);
     void chartFailed();
 
     enum class Screen {
@@ -55,5 +55,5 @@ private:
     uint8_t m_heart_beat_count { 0 };
     uint32_t m_last_price_update { 0 };
     uint32_t m_last_chart_update { 0 };
-    Settings::Chart m_last_chart { Settings::Chart::CHART_24_H };
+    Settings::ChartPeriod m_last_chart { Settings::ChartPeriod::PERIOD_NONE };
 };

@@ -45,7 +45,7 @@ bool Settings::setBrightness(uint8_t b)
     return true;
 }
 
-Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chart, bool heartbeat)
+Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chartPeriod, uint8_t chartStyle, bool heartbeat)
 {
     Status ret = Status::OK;
     String cleanCoin(cleanUp(coin));
@@ -60,10 +60,15 @@ Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char*
             }
             m_number_format = static_cast<NumberFormat>(number_format);
 
-            if (chart > Chart::CHART_ALL) {
-                chart = Chart::CHART_ALL;
+            if (chartPeriod > ChartPeriod::ALL_PERIODS) {
+                chartPeriod = ChartPeriod::ALL_PERIODS;
             }
-            m_chart = chart;
+            m_chart_period = chartPeriod;
+
+            if (chartStyle > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
+                chartStyle = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
+            }
+            m_chart_style = static_cast<ChartStyle>(chartStyle);
 
             m_heartbeat = heartbeat;
 
@@ -96,7 +101,8 @@ bool Settings::read(const Gecko& gecko)
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
             m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-            m_chart = static_cast<Chart>(doc["chart"] | static_cast<uint8_t>(Chart::CHART_24_H));
+            m_chart_period = static_cast<ChartPeriod>(doc["chartPeriod"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H));
+            m_chart_style = static_cast<ChartStyle>(doc["chartStyle"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
             m_heartbeat = doc["heartbeat"] | true;
 
             m_name = doc["name"] | "";
@@ -108,8 +114,8 @@ bool Settings::read(const Gecko& gecko)
                 m_number_format = NumberFormat::DECIMAL_DOT;
             }
 
-            if (m_chart > Chart::CHART_ALL) {
-                m_chart = Chart::CHART_ALL;
+            if (m_chart_period > ChartPeriod::ALL_PERIODS) {
+                m_chart_period = ChartPeriod::ALL_PERIODS;
             }
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
@@ -136,7 +142,7 @@ void Settings::write()
             doc["coin"] = m_coin.c_str();
             doc["currency"] = m_currency.c_str();
             doc["number_format"] = static_cast<uint8_t>(m_number_format);
-            doc["chart"] = static_cast<uint8_t>(m_chart);
+            doc["chartPeriod"] = static_cast<uint8_t>(m_chart_period);
             doc["heartbeat"] = m_heartbeat;
             doc["name"] = m_name.c_str();
             doc["symbol"] = m_symbol.c_str();

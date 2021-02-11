@@ -138,7 +138,7 @@ public:
 
 private:
     bool fetchCoinPriceChange();
-    bool fetchCoinChart(Settings::Chart type);
+    bool fetchCoinChart(Settings::ChartPeriod type);
 
     // fallbacks use (slow) API calls
     bool fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const;

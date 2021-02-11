@@ -13,16 +13,19 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define Red565 RGB(0xd0, 0x10, 0x0)
-#define Green565 RGB(0x10, 0xd0, 0x0)
+#define RED565 RGB(0xd0, 0x10, 0x0)
+#define GREEN565 RGB(0x10, 0xd0, 0x0)
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
 #define SPRITE_WIDTH 30
 #define SPRITE_PRICE_HEIGHT 45
 #define SPRITE_CHANGE_HEIGHT 23
+
+#define CHART_Y_START 160
+#define CHART_HEIGHT (DISPLAY_HEIGHT - CHART_Y_START)
+#define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
-#define HEIGHT_CHART_VALUE 6
 
 #define CHART_UPDATE_INTERVAL (5 * 1000)
 
@@ -52,7 +55,7 @@ void Display::begin()
     digitalWrite(NEO_AND, 1);
 
     m_neo.Begin();
-    m_neo.SetPixelColor(0, RgbColor(0xff, 0x00, 0x10));
+    m_neo.SetPixelColor(0, RgbColor(0x00, 0x20, 0xff));
     m_neo.Show();
 }
 
@@ -108,7 +111,7 @@ void Display::renderTitle()
     m_tft.loadFont("NotoSans-Regular30");
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
-    m_tft.println(m_settings.name());
+    m_tft.print(m_settings.name());
     m_tft.unloadFont();
     m_tft.loadFont("NotoSans-Regular25");
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
@@ -117,7 +120,7 @@ void Display::renderTitle()
     m_tft.print(" - ");
     String upperCurrency(m_settings.currency());
     upperCurrency.toUpperCase();
-    m_tft.println(upperCurrency);
+    m_tft.print(upperCurrency);
     m_tft.unloadFont();
 }
 
@@ -125,9 +128,7 @@ void Display::renderCoin()
 {
     LOG_FUNC
 
-    uint16_t color(m_gecko.change_pct() >= 0.0
-            ? Green565
-            : Red565);
+    uint16_t color(m_gecko.change_pct() >= 0.0 ? GREEN565 : RED565);
 
     String msg;
     TFT_eSprite sprite(&m_tft);
@@ -203,37 +204,32 @@ void Display::renderCoin()
     m_last_price_update = millis_test();
 }
 
-bool Display::renderChart(Settings::Chart type)
+bool Display::renderChart(Settings::ChartPeriod type)
 {
     LOG_FUNC
 
     const std::vector<gecko_t>* prices(nullptr);
 
     String period;
-    uint16_t periodColor;
     std::vector<gecko_t>::const_iterator beginIt;
     std::vector<gecko_t>::const_iterator endIt;
     std::vector<gecko_t>::const_iterator it;
-    if (type == Settings::Chart::CHART_24_H) {
+    if (type == Settings::ChartPeriod::PERIOD_24_H) {
         prices = &m_gecko.chart_48h();
         beginIt = prices->end() - 24;
         period = "24h";
-        periodColor = RGB(0xff, 0x30, 0xcc);
-    } else if (type == Settings::Chart::CHART_48_H) {
+    } else if (type == Settings::ChartPeriod::PERIOD_48_H) {
         prices = &m_gecko.chart_48h();
         beginIt = prices->begin();
         period = "48h";
-        periodColor = TFT_PURPLE;
-    } else if (type == Settings::Chart::CHART_30_D) {
+    } else if (type == Settings::ChartPeriod::PERIOD_30_D) {
         prices = &m_gecko.chart_60d();
         beginIt = prices->end() - 30;
         period = "30d";
-        periodColor = TFT_GOLD;
-    } else if (type == Settings::Chart::CHART_60_D) {
+    } else if (type == Settings::ChartPeriod::PERIOD_60_D) {
         prices = &m_gecko.chart_60d();
         beginIt = prices->begin();
         period = "60d";
-        periodColor = TFT_SKYBLUE;
     } else {
         return false;
     }
@@ -242,124 +238,215 @@ bool Display::renderChart(Settings::Chart type)
         return false;
     }
 
+    m_tft.loadFont("NotoSans-Regular13");
+    int16_t textHeight(12);
+
     endIt = prices->end();
 
-    gecko_t max = *(std::max_element(beginIt, endIt));
-    gecko_t min = *(std::min_element(beginIt, endIt));
+    gecko_t low = *(std::min_element(beginIt, endIt));
+    gecko_t high = *(std::max_element(beginIt, endIt));
 
-    uint16_t color(*beginIt > *endIt
-            ? Red565
-            : Green565);
+    // clear chart area
+    m_tft.fillRect(0, CHART_Y_START - textHeight, DISPLAY_WIDTH, CHART_HEIGHT + textHeight, TFT_BLACK);
 
-    auto maxLabelColor(TFT_GOLD);
-
-    uint8_t yStart(170);
-    uint8_t height(DISPLAY_HEIGHT - yStart); // 70
-    m_tft.fillRect(0, yStart - HEIGHT_CHART_VALUE, DISPLAY_WIDTH, height + HEIGHT_CHART_VALUE, TFT_BLACK);
-
-    uint8_t xPerVaue(DISPLAY_WIDTH / (endIt - beginIt));
-    uint8_t xAtMax(0);
-    for (uint8_t x = 1; x < prices->size(); ++x) {
-        if (prices->at(x) >= max) {
-            xAtMax = x * xPerVaue;
-        }
-    }
-
-    Serial.printf("type: %u\n", type);
-    Serial.printf("prices.size: %u\n", prices->size());
-    Serial.printf("endIt - beginIt: %u\n", endIt - beginIt);
-    Serial.printf("max: %f min: %f\n", max, min);
+    uint8_t xPerValue(DISPLAY_WIDTH / (endIt - beginIt));
+    uint8_t xAtLow(0);
+    uint8_t xAtHigh(0);
 
     for (it = beginIt; it != endIt; ++it) {
-        Serial.printf("%.2f", *it);
-        if (*it >= max) {
-            xAtMax = ((endIt - it) * xPerVaue);
-            Serial.printf(" max: %u", it - beginIt);
+        if (*it <= low) {
+            xAtLow = ((it - beginIt) * xPerValue);
         }
-        Serial.printf("; ");
-    }
-    Serial.printf("\n");
-
-    //////////////////////////////////////////////////////////
-    m_last_chart_update = millis_test();
-    return true;
-
-    m_tft.loadFont("NotoSans-Regular13");
-    String maxMsg;
-    formatNumber(max, maxMsg, m_settings.numberFormat(), false, true);
-    auto maxWidth(m_tft.textWidth(maxMsg));
-    uint8_t lineXLeft(0);
-    uint8_t lineXRight(0);
-    uint8_t maxLabelX;
-    uint8_t maxLabelY(yStart - 2 - (HEIGHT_CHART_VALUE / 2));
-    bool maxLabelLeft(true);
-
-    if (xAtMax > DISPLAY_WIDTH / 2) { // at the left display side
-        lineXLeft = maxWidth + (2 * DISTANCE_CHART_VALUE);
-        lineXRight = xAtMax - DISTANCE_CHART_VALUE;
-
-        // m_tft.drawLine(maxWidth + DISTANCE_CHART_VALUE, (yStart - HEIGHT_CHART_VALUE), lineXLeft, yStart, maxLabelColor);
-        // m_tft.drawLine(maxWidth + DISTANCE_CHART_VALUE, (yStart + HEIGHT_CHART_VALUE), lineXLeft, yStart, maxLabelColor);
-
-        maxLabelX = 0;
-    } else { // at the right display side
-        maxLabelLeft = false;
-        lineXLeft = xAtMax + DISTANCE_CHART_VALUE;
-        lineXRight = DISPLAY_WIDTH - maxWidth - (2 * DISTANCE_CHART_VALUE);
-
-        // m_tft.drawLine(DISPLAY_WIDTH - maxWidth - DISTANCE_CHART_VALUE, (yStart - HEIGHT_CHART_VALUE), lineXRight, yStart, maxLabelColor);
-        // m_tft.drawLine(DISPLAY_WIDTH - maxWidth - DISTANCE_CHART_VALUE, (yStart + HEIGHT_CHART_VALUE), lineXRight, yStart, maxLabelColor);
-
-        maxLabelX = DISPLAY_WIDTH - maxWidth;
+        if (*it >= high) {
+            xAtHigh = ((it - beginIt) * xPerValue);
+        }
     }
 
-    auto calcY = [&max, &min, &height](gecko_t price) -> uint8_t {
-        return height - ((height / (max - min)) * (price - min));
+    auto calcY = [&high, &low](gecko_t price) -> uint8_t {
+        return (CHART_HEIGHT - ((CHART_HEIGHT / (high - low)) * (price - low))) + CHART_Y_START;
     };
 
+    ///////////////////////////////////////////////////////////
+    // draw vertical time lines
+    for (uint8_t x = 0; x < DISPLAY_WIDTH; x += 24) {
+        m_tft.drawLine(x, DISPLAY_HEIGHT, x, CHART_Y_START, RGB(0x03, 0x04, 0x03));
+    }
+    m_tft.drawLine(DISPLAY_WIDTH - 1, DISPLAY_HEIGHT, DISPLAY_WIDTH - 1, CHART_Y_START, RGB(0x03, 0x04, 0x03));
+
+    ///////////////////////////////////////////////////////////
+    // draw dotted line with first and last price
     uint8_t dotted(0);
-    for (uint8_t x = lineXLeft; x < lineXRight; ++x) {
-        if (dotted >= 0 && dotted < 5) {
-            m_tft.drawPixel(x, yStart, maxLabelColor);
+    uint8_t yFirst(min<uint8_t>(calcY(*beginIt), DISPLAY_HEIGHT - 1));
+    uint8_t yLast(min<uint8_t>(calcY(prices->back()), DISPLAY_HEIGHT - 1));
+    for (uint8_t x = 0; x < DISPLAY_WIDTH; ++x) {
+        if (dotted >= 0 && dotted < 4) {
+            m_tft.drawPixel(x, yFirst, TFT_PURPLE);
+            m_tft.drawPixel(x, yLast, TFT_BROWN);
         }
         ++dotted;
-        dotted %= 9;
+        dotted %= 10;
     }
 
-    for (uint8_t x = 1; x < prices->size(); ++x) {
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart, x * xPerVaue, calcY(prices->at(x)) + yStart, color);
-        m_tft.drawLine(((x - 1) * xPerVaue) + 1, calcY(prices->at(x - 1)) + yStart, (x * xPerVaue) + 1, calcY(prices->at(x)) + yStart, color);
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart - 1, x * xPerVaue, calcY(prices->at(x)) + yStart - 1, color);
-        m_tft.drawLine((x - 1) * xPerVaue, calcY(prices->at(x - 1)) + yStart - 2, x * xPerVaue, calcY(prices->at(x)) + yStart - 2, color);
+    ///////////////////////////////////////////////////////////
+    // draw values as chart
+    uint16_t color((*beginIt < prices->back()) ? GREEN565 : RED565);
+    color = m_tft.color16to8(color);
+    color = m_tft.color8to16(color); // align color with 8 bit sprite color for price
+
+    size_t x(1);
+    for (auto v = beginIt + 1; v != endIt; ++v, ++x) {
+        m_tft.drawLine((x - 1) * xPerValue, calcY(*(v - 1)), x * xPerValue, calcY(*v), color);
+        m_tft.drawLine(((x - 1) * xPerValue) + 1, calcY(*(v - 1)), (x * xPerValue) + 1, calcY(*v), color);
+        m_tft.drawLine((x - 1) * xPerValue, calcY(*(v - 1)) - 1, x * xPerValue, calcY(*v) - 1, color);
+    }
+
+    ///////////////////////////////////////////////////////////
+    // draw low and high attached to the curve
+    for (auto ii : { 0, 1 }) {
+        String number;
+        uint8_t xAt;
+        uint8_t yMarker;
+        if (ii == 0) {
+            xAt = xAtHigh;
+            yMarker = CHART_Y_START;
+            formatNumber(high, number, m_settings.numberFormat(), false, true);
+            m_tft.setTextColor(TFT_DARKGREEN, TFT_BLACK);
+        } else {
+            xAt = xAtLow;
+            yMarker = DISPLAY_HEIGHT - (textHeight / 2);
+            formatNumber(low, number, m_settings.numberFormat(), false, true);
+            m_tft.setTextColor(TFT_MAROON, TFT_BLACK);
+        }
+        number += getCurrencySymbol(m_settings.currency());
+        int16_t widthNumber(m_tft.textWidth(number));
+
+        if (xAt < DISPLAY_WIDTH / 2) {
+            m_tft.fillRect(xAt + 30, yMarker - (textHeight / 2) - DISTANCE_CHART_VALUE,
+                widthNumber + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
+
+            m_tft.drawLine(xAt - 1, yMarker - 1, xAt + 31, yMarker - 1, TFT_BLACK);
+            m_tft.drawLine(xAt - 1, yMarker + 1, xAt + 31, yMarker + 1, TFT_BLACK);
+
+            m_tft.drawLine(xAt + 1, yMarker, xAt + 6, yMarker - 4, TFT_BLACK);
+            m_tft.drawLine(xAt - 1, yMarker, xAt + 4, yMarker - 4, TFT_BLACK);
+
+            m_tft.drawLine(xAt + 1, yMarker, xAt + 6, yMarker + 4, TFT_BLACK);
+            m_tft.drawLine(xAt - 1, yMarker, xAt + 4, yMarker + 4, TFT_BLACK);
+
+            m_tft.drawLine(xAt, yMarker, xAt + 30, yMarker, TFT_DARKGREY);
+            m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker - 4, TFT_DARKGREY);
+            m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker + 4, TFT_DARKGREY);
+
+            m_tft.setCursor(xAt + 30 + DISTANCE_CHART_VALUE, yMarker - (textHeight / 2));
+            m_tft.print(number);
+        } else {
+            m_tft.fillRect(xAt - 30 - widthNumber - (2 * DISTANCE_CHART_VALUE), yMarker - (textHeight / 2) - DISTANCE_CHART_VALUE,
+                widthNumber + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
+
+            m_tft.drawLine(xAt + 1, yMarker - 1, xAt - 31, yMarker - 1, TFT_BLACK);
+            m_tft.drawLine(xAt + 1, yMarker + 1, xAt - 31, yMarker + 1, TFT_BLACK);
+
+            m_tft.drawLine(xAt + 1, yMarker, xAt - 4, yMarker - 4, TFT_BLACK);
+            m_tft.drawLine(xAt - 1, yMarker, xAt - 6, yMarker - 4, TFT_BLACK);
+
+            m_tft.drawLine(xAt + 1, yMarker, xAt - 4, yMarker + 4, TFT_BLACK);
+            m_tft.drawLine(xAt - 1, yMarker, xAt - 6, yMarker + 4, TFT_BLACK);
+
+            m_tft.drawLine(xAt, yMarker, xAt - 30, yMarker, TFT_DARKGREY);
+            m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker - 4, TFT_DARKGREY);
+            m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker + 4, TFT_DARKGREY);
+
+            m_tft.setCursor(xAt - 30 - widthNumber - DISTANCE_CHART_VALUE, yMarker - (textHeight / 2));
+            m_tft.print(number);
+        }
+    }
+
+#if 0
+    ///////////////////////////////////////////////////////////
+    // draw first, last, low and high to box
+    gecko_t first10avg(0.);
+    for (auto v = beginIt; v != beginIt + 10; ++v) {
+        first10avg += *v;
+    }
+    first10avg /= 10;
+
+    uint8_t boxY(CHART_Y_START - 3);
+    if (first10avg > ((high - low) / 2) + low) {
+        boxY = DISPLAY_HEIGHT - (4 * (textHeight + 2)) - 4;
+    }
+
+    String numberFirst, numberLast, numberLow, numberHigh;
+    formatNumber(*beginIt, numberFirst, m_settings.numberFormat(), false, true);
+    formatNumber(prices->back(), numberLast, m_settings.numberFormat(), false, true);
+    formatNumber(low, numberLow, m_settings.numberFormat(), false, true);
+    formatNumber(high, numberHigh, m_settings.numberFormat(), false, true);
+    numberHigh += getCurrencySymbol(m_settings.currency());
+    numberLow += getCurrencySymbol(m_settings.currency());
+    numberFirst += getCurrencySymbol(m_settings.currency());
+    numberLast += getCurrencySymbol(m_settings.currency());
+    int16_t widthHigh(m_tft.textWidth(numberHigh));
+    int16_t widthLow(m_tft.textWidth(numberLow));
+    int16_t widthFirst(m_tft.textWidth(numberFirst));
+    int16_t widthLast(m_tft.textWidth(numberLast));
+    int16_t maxWidth(widthHigh);
+    if (widthLow > maxWidth) {
+        maxWidth = widthLow;
+    }
+    if (widthFirst > maxWidth) {
+        maxWidth = widthFirst;
+    }
+    if (widthLast > maxWidth) {
+        maxWidth = widthLast;
+    }
+    uint16_t boxBG(RGB(0x03, 0x03, 0x03));
+    m_tft.fillRect(20 - 5, boxY - 4, 50 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, boxBG);
+    m_tft.drawRect(20 - 5, boxY - 4, 50 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, RGB(0x20, 0x20, 0x20));
+
+    m_tft.setTextColor(TFT_DARKGREEN, boxBG);
+    m_tft.setCursor(20, boxY);
+    m_tft.print("high");
+    m_tft.setCursor(50 + maxWidth - widthHigh, boxY);
+    m_tft.print(numberHigh);
+
+    m_tft.setTextColor(TFT_MAROON, boxBG);
+    m_tft.setCursor(20, boxY + (textHeight + 2));
+    m_tft.print("low");
+    m_tft.setCursor(50 + maxWidth - widthLow, boxY + (textHeight + 2));
+    m_tft.print(numberLow);
+
+    m_tft.setTextColor(TFT_PURPLE, boxBG);
+    m_tft.setCursor(20, boxY + (2 * (textHeight + 2)));
+    m_tft.print("first");
+    m_tft.setCursor(50 + maxWidth - widthFirst, boxY + (2 * (textHeight + 2)));
+    m_tft.print(numberFirst);
+
+    m_tft.setTextColor(TFT_BROWN, boxBG);
+    m_tft.setCursor(20, boxY + (3 * (textHeight + 2)));
+    m_tft.print("last");
+    m_tft.setCursor(50 + maxWidth - widthLast, boxY + (3 * (textHeight + 2)));
+    m_tft.print(numberLast);
+#endif
+
+    ///////////////////////////////////////////////////////////
+    // draw chart time period
+    gecko_t last4avg(0.);
+    for (auto v = endIt - 4; v != endIt; ++v) {
+        last4avg += *v;
+    }
+    last4avg /= 4;
+
+    uint8_t periodY(CHART_Y_START);
+    if (last4avg > ((high - low) / 2) + low) {
+        periodY = DISPLAY_HEIGHT - textHeight - DISTANCE_CHART_VALUE;
     }
 
     auto widthPeriod(m_tft.textWidth(period));
-    uint8_t periodX(DISTANCE_CHART_VALUE);
-    uint8_t periodY(0);
-    uint8_t yPrice(0);
+    m_tft.fillRect(DISPLAY_WIDTH - widthPeriod - (2 * DISTANCE_CHART_VALUE), periodY - DISTANCE_CHART_VALUE,
+        widthPeriod + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
+    m_tft.setTextColor(RGB(0xff, 0x30, 0xcc), TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - widthPeriod, periodY);
+    m_tft.print(period);
 
-    if (maxLabelLeft) { // then period label right
-        periodX = DISPLAY_WIDTH - widthPeriod - DISTANCE_CHART_VALUE;
-        yPrice = calcY(prices->back());
-    } else {
-        yPrice = calcY(prices->front());
-    }
-
-    if (yPrice < (height / 2)) {
-        periodY = DISPLAY_HEIGHT - 12;
-    } else {
-        periodY = yStart;
-    }
-
-    m_tft.fillRect(periodX, periodY, widthPeriod, 2 * HEIGHT_CHART_VALUE, TFT_BLACK);
-    m_tft.setTextColor(periodColor, TFT_BLACK);
-    m_tft.setCursor(periodX, periodY);
-    m_tft.println(period);
-
-    m_tft.fillRect(maxLabelX, yStart - HEIGHT_CHART_VALUE, maxWidth, DISTANCE_CHART_VALUE + (2 * HEIGHT_CHART_VALUE), TFT_BLACK);
-    m_tft.setTextColor(maxLabelColor, TFT_BLACK);
-    m_tft.setCursor(maxLabelX, maxLabelY);
-    m_tft.println(maxMsg);
     m_tft.unloadFont();
 
     m_last_chart_update = millis_test();
@@ -371,46 +458,56 @@ void Display::chartFailed()
     m_tft.loadFont("NotoSans-Regular20");
     m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
     m_tft.setCursor(10, 185);
-    m_tft.println("Chart update failed!");
+    m_tft.print("Chart update failed!");
     m_tft.unloadFont();
     m_last_chart_update = 0;
 }
 
-Settings::Chart Display::nextChartType()
+Settings::ChartPeriod Display::nextChartType()
 {
-    Settings::Chart next(m_last_chart);
+    Settings::ChartPeriod next(m_last_chart);
 
-    if (m_last_chart == Settings::Chart::CHART_24_H) {
-        if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            next = Settings::Chart::CHART_48_H;
-        } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
-            next = Settings::Chart::CHART_30_D;
-        } else if (m_settings.chart() & Settings::Chart::CHART_60_D) {
-            next = Settings::Chart::CHART_60_D;
+    if (m_last_chart == Settings::ChartPeriod::PERIOD_24_H) {
+        if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_48_H) {
+            next = Settings::ChartPeriod::PERIOD_48_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_30_D) {
+            next = Settings::ChartPeriod::PERIOD_30_D;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_60_D) {
+            next = Settings::ChartPeriod::PERIOD_60_D;
         }
-    } else if (m_last_chart == Settings::Chart::CHART_48_H) {
-        if (m_settings.chart() & Settings::Chart::CHART_30_D) {
-            next = Settings::Chart::CHART_30_D;
-        } else if (m_settings.chart() & Settings::Chart::CHART_60_D) {
-            next = Settings::Chart::CHART_60_D;
-        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            next = Settings::Chart::CHART_48_H;
+    } else if (m_last_chart == Settings::ChartPeriod::PERIOD_48_H) {
+        if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_30_D) {
+            next = Settings::ChartPeriod::PERIOD_30_D;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_60_D) {
+            next = Settings::ChartPeriod::PERIOD_60_D;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_24_H) {
+            next = Settings::ChartPeriod::PERIOD_24_H;
         }
-    } else if (m_last_chart == Settings::Chart::CHART_30_D) {
-        if (m_settings.chart() & Settings::Chart::CHART_60_D) {
-            next = Settings::Chart::CHART_60_D;
-        } else if (m_settings.chart() & Settings::Chart::CHART_24_H) {
-            next = Settings::Chart::CHART_24_H;
-        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            next = Settings::Chart::CHART_48_H;
+    } else if (m_last_chart == Settings::ChartPeriod::PERIOD_30_D) {
+        if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_60_D) {
+            next = Settings::ChartPeriod::PERIOD_60_D;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_24_H) {
+            next = Settings::ChartPeriod::PERIOD_24_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_48_H) {
+            next = Settings::ChartPeriod::PERIOD_48_H;
         }
-    } else if (m_last_chart == Settings::Chart::CHART_60_D) {
-        if (m_settings.chart() & Settings::Chart::CHART_24_H) {
-            next = Settings::Chart::CHART_24_H;
-        } else if (m_settings.chart() & Settings::Chart::CHART_48_H) {
-            next = Settings::Chart::CHART_48_H;
-        } else if (m_settings.chart() & Settings::Chart::CHART_30_D) {
-            next = Settings::Chart::CHART_30_D;
+    } else if (m_last_chart == Settings::ChartPeriod::PERIOD_60_D) {
+        if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_24_H) {
+            next = Settings::ChartPeriod::PERIOD_24_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_48_H) {
+            next = Settings::ChartPeriod::PERIOD_48_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_30_D) {
+            next = Settings::ChartPeriod::PERIOD_30_D;
+        }
+    } else { // initial
+        if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_24_H) {
+            next = Settings::ChartPeriod::PERIOD_24_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_48_H) {
+            next = Settings::ChartPeriod::PERIOD_48_H;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_30_D) {
+            next = Settings::ChartPeriod::PERIOD_30_D;
+        } else if (m_settings.chartPeriod() & Settings::ChartPeriod::PERIOD_60_D) {
+            next = Settings::ChartPeriod::PERIOD_60_D;
         }
     }
 
@@ -424,8 +521,9 @@ void Display::showCoin()
     if (m_last_screen != Screen::COIN
         || doChange(m_settings.lastChange(), m_last_seen_settings)) {
         renderTitle();
-        rewrite = true;
+        m_last_chart = Settings::ChartPeriod::PERIOD_NONE;
         m_last_seen_settings = millis_test();
+        rewrite = true;
     }
     heartbeat();
 
@@ -436,7 +534,7 @@ void Display::showCoin()
 
     if (rewrite
         || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
-        Settings::Chart next(nextChartType());
+        Settings::ChartPeriod next(nextChartType());
 #if COIN_THING_SERIAL > 0
         Serial.printf("last type: %u -> next type: %u, setting: %u\n", m_last_chart, next, m_settings.chart());
 #endif
@@ -468,11 +566,11 @@ void Display::showAPQR()
         constexpr const char* msg = "WiFi Connect:";
 
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 5);
-        m_tft.println(msg);
+        m_tft.print(msg);
         m_tft.unloadFont();
 
         m_tft.loadFont("NotoSans-Regular15");
-        m_tft.println(qrText.c_str());
+        m_tft.print(qrText.c_str());
         m_tft.unloadFont();
 
         m_last_screen = Screen::AP_QR;
@@ -493,12 +591,12 @@ void Display::showSettingsQR()
         m_tft.loadFont("NotoSans-Regular20");
         m_tft.setCursor(5, 5);
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
-        m_tft.println("Open Settings:");
+        m_tft.print("Open Settings:");
         m_tft.unloadFont();
 
         m_tft.loadFont("NotoSans-Regular15");
         m_tft.setCursor(5, 30);
-        m_tft.println(url.c_str());
+        m_tft.print(url.c_str());
         m_tft.unloadFont();
 
         m_last_screen = Screen::SETTINGS_QR;
@@ -513,7 +611,7 @@ void Display::showAPIOK()
         constexpr const char* msg = "To The Moon!";
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.setTextColor(TFT_WHITE, TFT_SKYBLUE);
-        m_tft.println(msg);
+        m_tft.print(msg);
         m_tft.unloadFont();
         m_last_screen = Screen::API_OK;
     }
@@ -527,7 +625,7 @@ void Display::showAPIFailed()
         constexpr const char* msg = "Gecko API failed!";
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.setTextColor(TFT_BLACK, TFT_RED);
-        m_tft.println(msg);
+        m_tft.print(msg);
         m_tft.unloadFont();
         m_last_screen = Screen::API_FAILED;
     }

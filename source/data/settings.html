@@ -97,23 +97,41 @@
                     </div>
 
                     <div class="form-group">
-                        <label><b>Chart</b></label>
+                        <label><b>Chart Period</b></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="co" id="co_1" value="1">
-                                <label class="form-check-label" for="co_1">24 h</label>
+                                <input class="form-check-input" type="checkbox" name="cp" id="cp_1" value="1">
+                                <label class="form-check-label" for="cp_1">24 h</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="co" id="co_2" value="2">
-                                <label class="form-check-label" for="co_2">48 h</label>
+                                <input class="form-check-input" type="checkbox" name="cp" id="cp_2" value="2">
+                                <label class="form-check-label" for="cp_2">48 h</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="co" id="co_4" value="4">
-                                <label class="form-check-label" for="co_4">30 d</label>
+                                <input class="form-check-input" type="checkbox" name="cp" id="cp_4" value="4">
+                                <label class="form-check-label" for="cp_4">30 d</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="co" id="co_8" value="8">
-                                <label class="form-check-label" for="co_8">60 d</label>
+                                <input class="form-check-input" type="checkbox" name="cp" id="cp_8" value="8">
+                                <label class="form-check-label" for="cp_8">60 d</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><b>Chart Style</b></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cs" id="cs_0" value="0">
+                                <label class="form-check-label" for="cs_0">Simple</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cs" id="cs_1" value="1">
+                                <label class="form-check-label" for="cs_1">High Low</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="cs" id="cs_2" value="2">
+                                <label class="form-check-label" for="cs_2">High Low First Last</label>
                             </div>
                         </div>
                     </div>
@@ -175,25 +193,30 @@
             $("#coin").val(settings['coin'] || '')
             $("#currency").val(settings['currency'] || '')
             number_format = settings['number_format'] || 0
-            chart = settings['chart'] || 0
+            chart_period = settings['chart_period'] || 0
+            chart_style = settings['chart_style'] || 0
             heartbeat = settings['heartbeat'] || 0
 
             try {
                 $("#nf_" + number_format)[0].checked = true
             } catch (error) { }
 
-            if ((chart & 1) > 0) {
-                $("#co_1")[0].checked = true
+            if ((chart_period & 1) > 0) {
+                $("#cp_1")[0].checked = true
             }
-            if ((chart & 2) > 0) {
-                $("#co_2")[0].checked = true
+            if ((chart_period & 2) > 0) {
+                $("#cp_2")[0].checked = true
             }
-            if ((chart & 4) > 0) {
-                $("#co_4")[0].checked = true
+            if ((chart_period & 4) > 0) {
+                $("#cp_4")[0].checked = true
             }
-            if ((chart & 8) > 0) {
-                $("#co_8")[0].checked = true
+            if ((chart_period & 8) > 0) {
+                $("#cp_8")[0].checked = true
             }
+
+            try {
+                $("#cs_" + number_format)[0].checked = true
+            } catch (error) { }
 
             $("#heartbeat")[0].checked = (heartbeat !== 0)
 
@@ -258,25 +281,38 @@
                     number_format = 5
                 }
                 if (number_format === -1) {
-                    showError(": Number format is not selected!")
+                    showError(": Number format not selected!")
                     return
                 }
 
                 chart = 0
-                if ($("#co_1")[0].checked) {
+                if ($("#cp_1")[0].checked) {
                     chart += 1
                 }
-                if ($("#co_2")[0].checked) {
+                if ($("#cp_2")[0].checked) {
                     chart += 2
                 }
-                if ($("#co_4")[0].checked) {
+                if ($("#cp_4")[0].checked) {
                     chart += 4
                 }
-                if ($("#co_8")[0].checked) {
+                if ($("#cp_8")[0].checked) {
                     chart += 8
                 }
                 if (chart === 0) {
-                    showError(": Chart option is not selected!")
+                    showError(": No chart option selected!")
+                    return
+                }
+
+                chart_style = -1
+                if ($("#cs_0")[0].checked) {
+                    chart_style = 0
+                } else if ($("#cs_1")[0].checked) {
+                    chart_style = 1
+                } else if ($("#cs_2")[0].checked) {
+                    chart_style = 2
+                }
+                if (chart_style === -1) {
+                    showError(": Chart style not selected!")
                     return
                 }
 
@@ -288,7 +324,9 @@
                 $.get("/action/set?coin=" + $("#coin").val()
                     + "&currency=" + $("#currency").val()
                     + "&number_format=" + number_format
-                    + "&chart=" + chart + "&heartbeat=" + heartbeat, function (data) {
+                    + "&chart_period=" + chart_period
+                    + "&chart_style=" + chart_style
+                    + "&heartbeat=" + heartbeat, function (data) {
 
                         if (data["error"]) {
                             showError(": " + data["error"])

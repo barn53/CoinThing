@@ -41,7 +41,7 @@ void Gecko::loop()
 const std::vector<gecko_t>& Gecko::chart_48h()
 {
     if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
-        if (fetchCoinChart(Settings::Chart::CHART_48_H)) {
+        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_48_H)) {
             m_last_chart_48h_fetch = millis_test();
         } else {
             m_last_chart_48h_fetch = 0;
@@ -53,7 +53,7 @@ const std::vector<gecko_t>& Gecko::chart_48h()
 const std::vector<gecko_t>& Gecko::chart_60d()
 {
     if (doInterval(m_last_chart_60d_fetch, CHART_30_D_FETCH_INTERVAL)) {
-        if (fetchCoinChart(Settings::Chart::CHART_30_D)) {
+        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_30_D)) {
             m_last_chart_60d_fetch = millis_test();
         } else {
             m_last_chart_60d_fetch = 0;
@@ -90,7 +90,7 @@ bool Gecko::fetchCoinPriceChange()
     return false;
 }
 
-bool Gecko::fetchCoinChart(Settings::Chart type)
+bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
 {
     LOG_FUNC
 #if COIN_THING_SERIAL == 1
@@ -104,14 +104,14 @@ bool Gecko::fetchCoinChart(Settings::Chart type)
     std::vector<gecko_t>* targetChart;
 
     uint8_t expectValues;
-    if (type == Settings::Chart::CHART_24_H
-        || type == Settings::Chart::CHART_48_H) {
+    if (type == Settings::ChartPeriod::PERIOD_24_H
+        || type == Settings::ChartPeriod::PERIOD_48_H) {
         url += "&days=2";
         expectValues = 48;
         m_last_chart_48h_fetch = millis_test();
         targetChart = &m_chart_48h;
-    } else if (type == Settings::Chart::CHART_30_D
-        || type == Settings::Chart::CHART_60_D) {
+    } else if (type == Settings::ChartPeriod::PERIOD_30_D
+        || type == Settings::ChartPeriod::PERIOD_60_D) {
         url += "&days=60&interval=daily";
         expectValues = 60;
         m_last_chart_60d_fetch = millis_test();

@@ -88,7 +88,8 @@ bool Handler::handleSet() const
             server.arg("coin").c_str(),
             server.arg("currency").c_str(),
             static_cast<uint8_t>(server.arg("number_format").toInt()),
-            static_cast<uint8_t>(server.arg("chart").toInt()),
+            static_cast<uint8_t>(server.arg("chart_period").toInt()),
+            static_cast<uint8_t>(server.arg("chart_style").toInt()),
             server.arg("heartbeat").toInt() != 0));
 
         String error;
