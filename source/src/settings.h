@@ -33,6 +33,7 @@ public:
     bool begin(const Gecko& gecko);
     bool read(const Gecko& gecko);
     void write();
+    void deleteFile();
     const char* coin() const { return m_coin.c_str(); }
     const char* currency() const { return m_currency.c_str(); }
     NumberFormat numberFormat() const { return m_number_format; }

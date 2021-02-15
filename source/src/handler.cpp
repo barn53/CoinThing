@@ -19,19 +19,19 @@ namespace {
 String getContentType(const String& filename)
 {
     if (filename.endsWith(".html")) {
-        return "text/html";
+        return F("text/html");
     } else if (filename.endsWith(".css")) {
-        return "text/css";
+        return F("text/css");
     } else if (filename.endsWith(".json")) {
-        return "application/json";
+        return F("application/json");
     } else if (filename.endsWith(".js")) {
-        return "application/javascript";
+        return F("application/javascript");
     } else if (filename.endsWith(".ico")) {
-        return "image/x-icon";
+        return F("image/x-icon");
     } else if (filename.endsWith(".jpg")) {
-        return "image/jpeg";
+        return F("image/jpeg");
     }
-    return "text/plain";
+    return F("text/plain");
 }
 
 } // anonymous namespace
@@ -42,17 +42,51 @@ Handler::Handler(const Gecko& gecko, Settings& settings)
 {
 }
 
-bool Handler::handleReset() const
+bool Handler::handleResetESP() const
 {
-    // todo: handle wifi and settings reset
+    server.send(200, F("text/plain"), "1");
 
-    server.send(200, "text/plain", "1");
+    delay(200);
+    ESP.reset();
+    return true;
+}
+
+bool Handler::handleResetSettings() const
+{
+    server.send(200, F("text/plain"), "1");
+
+    m_settings.deleteFile();
+    delay(200);
+    ESP.reset();
+    return true;
+}
+
+bool Handler::handleResetWiFi() const
+{
+    server.send(200, F("text/plain"), "1");
+
+    delay(200);
+    WiFi.disconnect();
+    delay(200);
+    ESP.reset();
+    return true;
+}
+
+bool Handler::handleResetAll() const
+{
+    server.send(200, F("text/plain"), "1");
+
+    m_settings.deleteFile();
+    delay(200);
+    WiFi.disconnect();
+    delay(200);
+    ESP.reset();
     return true;
 }
 
 bool Handler::handleVersion() const
 {
-    server.send(200, "text/plain", VERSION);
+    server.send(200, F("text/plain"), VERSION);
     return true;
 }
 
@@ -79,35 +113,39 @@ bool Handler::handleSet() const
     }
 #endif
 
-    if (server.hasArg("brightness")) {
-        server.send(200, "text/plain", server.arg("brightness").c_str());
-        m_settings.setBrightness(static_cast<uint8_t>(server.arg("brightness").toInt()));
+    if (server.hasArg(F("brightness"))) {
+        server.send(200, F("text/plain"), server.arg(F("brightness")).c_str());
+        m_settings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
     } else {
         Settings::Status status(m_settings.set(m_gecko,
-            server.arg("coin").c_str(),
-            server.arg("currency").c_str(),
-            static_cast<uint8_t>(server.arg("number_format").toInt()),
-            static_cast<uint8_t>(server.arg("chart_period").toInt()),
-            static_cast<uint8_t>(server.arg("chart_style").toInt()),
-            server.arg("heartbeat").toInt() != 0));
+            server.arg(F("coin")).c_str(),
+            server.arg(F("currency")).c_str(),
+            static_cast<uint8_t>(server.arg(F("number_format")).toInt()),
+            static_cast<uint8_t>(server.arg(F("chart_period")).toInt()),
+            static_cast<uint8_t>(server.arg(F("chart_style")).toInt()),
+            server.arg(F("heartbeat")).toInt() != 0));
 
         String error;
         switch (status) {
         case Settings::Status::OK:
             if (!streamFile("/settings.json")) {
-                error = R"({"error":"file 'settings.json' not found!"})";
+                error = F(R"({"error":"file 'settings.json' not found!"})");
             }
             break;
         case Settings::Status::COIN_INVALID:
-            error = R"({"error":"Coin ID ')" + server.arg("coin") + R"(' is invalid!"})";
+            error = F(R"({"error":"Coin ID ')");
+            error += server.arg(F("coin"));
+            error += F(R"(' is invalid!"})");
             break;
         case Settings::Status::CURRENCY_INVALID:
-            error = R"({"error":"Currency ')" + server.arg("currency") + R"(' is invalid!"})";
+            error = F(R"({"error":"Currency ')");
+            error += server.arg(F("currency"));
+            error += F(R"(' is invalid!"})");
             break;
         }
 
         if (!error.isEmpty()) {
-            server.send(200, "application/json", error.c_str());
+            server.send(200, F("application/json"), error.c_str());
         }
     }
 
@@ -117,11 +155,17 @@ bool Handler::handleSet() const
 bool Handler::handleAction() const
 {
     String path(server.uri());
-    if (path == "/action/set") {
+    if (path == F("/action/set")) {
         return handleSet();
-    } else if (path == "/action/reset") {
-        return handleReset();
-    } else if (path == "/action/version") {
+    } else if (path == F("/action/reset/esp")) {
+        return handleResetESP();
+    } else if (path == F("/action/reset/settings")) {
+        return handleResetSettings();
+    } else if (path == F("/action/reset/wifi")) {
+        return handleResetWiFi();
+    } else if (path == F("/action/reset/all")) {
+        return handleResetAll();
+    } else if (path == F("/action/get/version")) {
         return handleVersion();
     }
     return false;
@@ -132,7 +176,7 @@ bool Handler::handleFileRead()
     String path(server.uri());
     Serial.printf("handleFileRead: %s\n", path.c_str());
     if (path.endsWith("/")) {
-        path += "settings.html";
+        path += F("settings.html");
     }
     return streamFile(path.c_str());
 }

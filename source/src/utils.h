@@ -38,7 +38,7 @@ struct Currency {
     const char* currency;
     const char* symbol;
 };
-static const Currency currencies[] = {
+static const Currency currencies[] PROGMEM = {
     { "usd", "$" }, // US Dollar
     { "eur", "€" }, // Euro
     { "btc", "₿" }, // Bitcoin - U+20BF - U+20BF

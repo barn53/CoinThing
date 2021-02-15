@@ -50,7 +50,7 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            $.get("/action/version", function (data) {
+            $.get("/action/get/version", function (data) {
                 $("#version").empty().append(data)
             })
         })

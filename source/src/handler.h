@@ -15,7 +15,10 @@ private:
     static bool streamFile(const char* filename);
 
     bool handleSet() const;
-    bool handleReset() const;
+    bool handleResetESP() const;
+    bool handleResetSettings() const;
+    bool handleResetWiFi() const;
+    bool handleResetAll() const;
     bool handleVersion() const;
 
     const Gecko& m_gecko;

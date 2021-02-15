@@ -111,11 +111,11 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     if (dash00) {
         String dotZero;
         dotZero = decimalSeparator;
-        dotZero += "00";
+        dotZero += F("00");
         if (s.endsWith(dotZero)) {
             String repl;
             repl = decimalSeparator;
-            repl += "\u2012"; // Figure Dash U+2012
+            repl += F("\u2012"); // Figure Dash U+2012
             s.replace(dotZero, repl);
         }
     }

@@ -28,7 +28,7 @@ void setupWiFi()
     WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
     WiFi.hostname(HOST_NAME);
 
-    Serial.print("Connecting ");
+    Serial.print(F("Connecting "));
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print(".");
         delay(100);

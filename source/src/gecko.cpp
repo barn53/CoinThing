@@ -18,6 +18,8 @@ Gecko::Gecko(HttpJson& http, Settings& settings)
     : m_http(http)
     , m_settings(settings)
 {
+    m_chart_48h.reserve(48);
+    m_chart_60d.reserve(60);
 }
 
 void Gecko::loop()
@@ -69,13 +71,13 @@ bool Gecko::fetchCoinPriceChange()
     const char* coin(m_settings.coin());
     const char* currency(m_settings.currency());
     String change24h(currency);
-    change24h += "_24h_change";
+    change24h += F("_24h_change");
 
-    String url("https://api.coingecko.com/api/v3/simple/price?ids=");
+    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
     url += coin;
-    url += "&vs_currencies=usd,";
+    url += F("&vs_currencies=usd,");
     url += currency;
-    url += "&include_24hr_change=true";
+    url += F("&include_24hr_change=true");
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
@@ -97,22 +99,22 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
     Serial.printf("type: %u\n", type);
 #endif
 
-    String url("https://api.coingecko.com/api/v3/coins/");
+    String url(F("https://api.coingecko.com/api/v3/coins/"));
     url += m_settings.coin();
-    url += "/market_chart?vs_currency=";
+    url += F("/market_chart?vs_currency=");
     url += m_settings.currency();
     std::vector<gecko_t>* targetChart;
 
     uint8_t expectValues;
     if (type == Settings::ChartPeriod::PERIOD_24_H
         || type == Settings::ChartPeriod::PERIOD_48_H) {
-        url += "&days=2";
+        url += F("&days=2");
         expectValues = 48;
         m_last_chart_48h_fetch = millis_test();
         targetChart = &m_chart_48h;
     } else if (type == Settings::ChartPeriod::PERIOD_30_D
         || type == Settings::ChartPeriod::PERIOD_60_D) {
-        url += "&days=60&interval=daily";
+        url += F("&days=60&interval=daily");
         expectValues = 60;
         m_last_chart_60d_fetch = millis_test();
         targetChart = &m_chart_60d;
@@ -143,9 +145,9 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
 
 bool Gecko::fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const
 {
-    String url("https://api.coingecko.com/api/v3/coins/");
+    String url(F("https://api.coingecko.com/api/v3/coins/"));
     url += coin;
-    url += "?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false";
+    url += F("?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false");
 
     DynamicJsonDocument filter(32);
     filter["symbol"] = true;
@@ -166,9 +168,9 @@ bool Gecko::fetchCoinDetails(const char* coin, String& symbolInto, String& nameI
 
 bool Gecko::fetchIsValidCoin(const char* coin) const
 {
-    String url("https://api.coingecko.com/api/v3/simple/price?ids=");
+    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
     url += coin;
-    url += "&vs_currencies=usd";
+    url += F("&vs_currencies=usd");
 
     DynamicJsonDocument doc(DYNAMIC_JSON_VALID_SIZE);
 
@@ -179,13 +181,14 @@ bool Gecko::fetchIsValidCoin(const char* coin) const
     return false;
 }
 
-bool Gecko::ping() const
+bool Gecko::ping()
 {
     DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
 
     if (m_http.read("https://api.coingecko.com/api/v3/ping", doc)) {
         const char* gecko_says = doc["gecko_says"] | ""; // "(V3) To the Moon!"
-        return strcmp(gecko_says, "(V3) To the Moon!") == 0;
+        m_succeeded = strcmp(gecko_says, "(V3) To the Moon!") == 0;
+        return m_succeeded;
     }
     return false;
 }

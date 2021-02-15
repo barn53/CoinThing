@@ -13,14 +13,11 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define RED565 RGB(0xd0, 0x10, 0x0)
-#define GREEN565 RGB(0x10, 0xd0, 0x0)
+#define RED565 (0xd800)
+#define GREEN565 (0x06c0)
 
 #define DISPLAY_WIDTH 240
 #define DISPLAY_HEIGHT 240
-#define SPRITE_WIDTH 30
-#define SPRITE_PRICE_HEIGHT 45
-#define SPRITE_CHANGE_HEIGHT 23
 
 #define CHART_Y_START 160
 #define CHART_HEIGHT (DISPLAY_HEIGHT - CHART_Y_START)
@@ -44,9 +41,7 @@ void Display::begin()
 
     m_tft.begin();
     m_tft.setRotation(0); // 0 & 2 Portrait. 1 & 3 landscape
-#if COIN_THING_SERIAL == 1
-    m_fex.listSPIFFS(); // Lists the files so you can see what is in the SPIFFS}
-#endif
+    m_tft.setTextWrap(false);
 
     analogWriteRange(std::numeric_limits<uint8_t>::max());
     analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
@@ -61,12 +56,17 @@ void Display::begin()
 
 void Display::loop()
 {
-    m_gecko.loop();
-    analogWrite(TFT_BL, m_settings.brightness());
-    if (m_settings.valid()) {
-        showCoin();
+    if (m_gecko.succeeded()) {
+        m_gecko.loop();
+        analogWrite(TFT_BL, m_settings.brightness());
+
+        if (m_settings.valid()) {
+            showCoin();
+        } else {
+            showSettingsQR();
+        }
     } else {
-        showSettingsQR();
+        showAPIFailed();
     }
 }
 
@@ -84,9 +84,9 @@ void Display::heartbeat()
             || ((millis_test() - m_last_heartbeat) > 1500
                 && (m_heart_beat_count == 3)))) {
         if (m_heart_beat_count % 2 == 0) {
-            m_fex.drawJpeg("/heart2.jpg", 220, 0);
+            m_fex.drawJpeg(F("/heart2.jpg"), 220, 0);
         } else {
-            m_fex.drawJpeg("/heart.jpg", 220, 0);
+            m_fex.drawJpeg(F("/heart.jpg"), 220, 0);
         }
         m_last_heartbeat = millis_test();
         ++m_heart_beat_count;
@@ -99,7 +99,6 @@ void Display::renderTitle()
     LOG_FUNC
 
     m_tft.fillScreen(TFT_BLACK);
-    m_tft.setTextWrap(false);
     String symbol("/");
     symbol += m_settings.symbol();
     symbol += ".jpg";
@@ -108,12 +107,12 @@ void Display::renderTitle()
         m_fex.drawJpeg(symbol, 0, 0);
         x_name = 60;
     }
-    m_tft.loadFont("NotoSans-Regular30");
+    m_tft.loadFont(F("NotoSans-Regular30"));
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
     m_tft.print(m_settings.name());
     m_tft.unloadFont();
-    m_tft.loadFont("NotoSans-Regular25");
+    m_tft.loadFont(F("NotoSans-Regular25"));
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
     m_tft.setCursor(x_name, 30);
     m_tft.print(m_settings.symbol());
@@ -131,75 +130,56 @@ void Display::renderCoin()
     uint16_t color(m_gecko.change_pct() >= 0.0 ? GREEN565 : RED565);
 
     String msg;
-    TFT_eSprite sprite(&m_tft);
-    sprite.setColorDepth(8);
-    sprite.createSprite(SPRITE_WIDTH, SPRITE_PRICE_HEIGHT);
-    sprite.setTextColor(color, TFT_BLACK);
-
-    sprite.loadFont("NotoSans-Regular50");
-    sprite.setTextWrap(false);
+    m_tft.setTextColor(color, TFT_BLACK);
+    m_tft.loadFont(F("NotoSans-Regular50"));
     formatNumber(m_gecko.price(), msg, m_settings.numberFormat(), false, true);
     msg += getCurrencySymbol(m_settings.currency());
 
-    auto priceWidth(sprite.textWidth(msg));
+    auto priceWidth(m_tft.textWidth(msg));
     if (priceWidth > DISPLAY_WIDTH) {
-        sprite.unloadFont();
-        sprite.loadFont("NotoSans-Condensed50");
-        priceWidth = sprite.textWidth(msg);
+        m_tft.unloadFont();
+        m_tft.loadFont(F("NotoSans-Condensed50"));
+        priceWidth = m_tft.textWidth(msg);
         if (priceWidth > DISPLAY_WIDTH) {
-            sprite.unloadFont();
-            sprite.loadFont("NotoSans-ExtraCondensed50");
-            priceWidth = sprite.textWidth(msg);
+            m_tft.unloadFont();
+            m_tft.loadFont(F("NotoSans-ExtraCondensed50"));
+            priceWidth = m_tft.textWidth(msg);
         }
     }
-
-    for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
-        sprite.fillSprite(TFT_BLACK);
-        auto x((DISPLAY_WIDTH - priceWidth) - (page * SPRITE_WIDTH));
-        sprite.setCursor(x, 0);
-        sprite.println(msg);
-
-        sprite.pushSprite(page * SPRITE_WIDTH, 70);
-    }
-    sprite.unloadFont();
-    sprite.deleteSprite();
-
-    sprite.loadFont("NotoSans-Regular25");
-    sprite.createSprite(SPRITE_WIDTH, SPRITE_CHANGE_HEIGHT);
+    m_tft.fillRect(0, 70, DISPLAY_WIDTH - priceWidth, 50, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - priceWidth, 70);
+    m_tft.print(msg);
+    m_tft.unloadFont();
 
     String usdMsg;
     formatNumber(m_gecko.price_usd(), usdMsg, m_settings.numberFormat(), false, true);
     formatNumber(m_gecko.change_pct(), msg, m_settings.numberFormat(), true, false, 2);
     usdMsg += "$";
     msg += "%";
-    auto usdWidth(sprite.textWidth(usdMsg));
-    auto changeWidth(sprite.textWidth(msg));
+    m_tft.loadFont(F("NotoSans-Regular25"));
+    auto usdWidth(m_tft.textWidth(usdMsg));
+    auto changeWidth(m_tft.textWidth(msg));
 
     if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
-        sprite.unloadFont();
-        sprite.loadFont("NotoSans-Condensed25");
-        usdWidth = sprite.textWidth(usdMsg);
-        changeWidth = sprite.textWidth(msg);
+        m_tft.unloadFont();
+        m_tft.loadFont(F("NotoSans-Condensed25"));
+        usdWidth = m_tft.textWidth(usdMsg);
+        changeWidth = m_tft.textWidth(msg);
     }
 
-    for (uint8_t page = 0; page < (DISPLAY_WIDTH / SPRITE_WIDTH); ++page) {
-        sprite.fillSprite(TFT_BLACK);
+    m_tft.fillRect(0, 125, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 125);
+    m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+    m_tft.println(usdMsg);
 
-        auto x((DISPLAY_WIDTH - usdWidth - changeWidth - 15) - (page * SPRITE_WIDTH));
-        sprite.setTextColor(TFT_DARKGREY, TFT_BLACK);
-        sprite.setCursor(x, 0);
-        sprite.println(usdMsg);
+    m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 125, 15, 25, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - changeWidth, 125);
+    m_tft.setTextColor(color, TFT_BLACK);
+    m_tft.println(msg);
 
-        x = (DISPLAY_WIDTH - changeWidth) - (page * SPRITE_WIDTH);
-        sprite.setTextColor(color, TFT_BLACK);
-        sprite.setCursor(x, 0);
-        sprite.println(msg);
+    m_tft.unloadFont();
 
-        sprite.pushSprite(page * SPRITE_WIDTH, 125);
-    }
-
-    sprite.unloadFont();
-    sprite.deleteSprite();
+    delay(1000);
 
     m_last_price_update = millis_test();
 }
@@ -217,19 +197,19 @@ bool Display::renderChart(Settings::ChartPeriod type)
     if (type == Settings::ChartPeriod::PERIOD_24_H) {
         prices = &m_gecko.chart_48h();
         beginIt = prices->end() - 24;
-        period = "24h";
+        period = F("24h");
     } else if (type == Settings::ChartPeriod::PERIOD_48_H) {
         prices = &m_gecko.chart_48h();
         beginIt = prices->begin();
-        period = "48h";
+        period = F("48h");
     } else if (type == Settings::ChartPeriod::PERIOD_30_D) {
         prices = &m_gecko.chart_60d();
         beginIt = prices->end() - 30;
-        period = "30d";
+        period = F("30d");
     } else if (type == Settings::ChartPeriod::PERIOD_60_D) {
         prices = &m_gecko.chart_60d();
         beginIt = prices->begin();
-        period = "60d";
+        period = F("60d");
     } else {
         return false;
     }
@@ -238,7 +218,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
         return false;
     }
 
-    m_tft.loadFont("NotoSans-Regular13");
+    m_tft.loadFont(F("NotoSans-Regular13"));
     int16_t textHeight(12);
 
     endIt = prices->end();
@@ -292,8 +272,6 @@ bool Display::renderChart(Settings::ChartPeriod type)
     ///////////////////////////////////////////////////////////
     // draw values as chart
     uint16_t color((*beginIt < prices->back()) ? GREEN565 : RED565);
-    color = m_tft.color16to8(color);
-    color = m_tft.color8to16(color); // align color with 8 bit sprite color for price
 
     size_t x(1);
     for (auto v = beginIt + 1; v != endIt; ++v, ++x) {
@@ -459,10 +437,10 @@ bool Display::renderChart(Settings::ChartPeriod type)
 
 void Display::chartFailed()
 {
-    m_tft.loadFont("NotoSans-Regular20");
+    m_tft.loadFont(F("NotoSans-Regular20"));
     m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
     m_tft.setCursor(10, 185);
-    m_tft.print("Chart update failed!");
+    m_tft.print(F("Chart update failed!"));
     m_tft.unloadFont();
     m_last_chart_update = 0;
 }
@@ -558,25 +536,31 @@ void Display::showAPQR()
     if (m_last_screen != Screen::AP_QR) {
         m_tft.fillScreen(TFT_WHITE);
 
-        std::string qrText;
-        qrText = "WIFI:T:WPA;S:";
+        String qrText(F("WIFI:T:WPA;S:"));
         qrText += HOST_NAME;
-        qrText += ";P:";
+        qrText += F(";P:");
         qrText += SECRET_AP_PASSWORD;
-        qrText += ";H:;";
+        qrText += F(";H:;");
         ESP_QRcode tftQR(&m_tft);
         tftQR.qrcode(qrText.c_str(), 20, 40, 200, 3);
 
-        m_tft.loadFont("NotoSans-Regular20");
+        m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
-        constexpr const char* msg = "WiFi Connect:";
 
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 5);
+        String msg = F("WiFi Connect:");
+        m_tft.setCursor(5, 5);
         m_tft.print(msg);
         m_tft.unloadFont();
 
-        m_tft.loadFont("NotoSans-Regular15");
-        m_tft.print(qrText.c_str());
+        msg = F("Host: ");
+        msg += HOST_NAME;
+        m_tft.loadFont(F("NotoSans-Regular13"));
+        m_tft.setCursor(5, 25);
+        m_tft.print(msg);
+        msg = F("Password: ");
+        msg += SECRET_AP_PASSWORD;
+        m_tft.setCursor(5, 40);
+        m_tft.print(msg);
         m_tft.unloadFont();
 
         m_last_screen = Screen::AP_QR;
@@ -588,21 +572,21 @@ void Display::showSettingsQR()
     if (m_last_screen != Screen::SETTINGS_QR) {
         m_tft.fillScreen(TFT_WHITE);
 
-        std::string url("http://");
+        String url(F("http://"));
         url += WiFi.localIP().toString().c_str();
         url += "/";
         ESP_QRcode tftQR(&m_tft);
         tftQR.qrcode(url.c_str(), 20, 40, 200, 3);
 
-        m_tft.loadFont("NotoSans-Regular20");
+        m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setCursor(5, 5);
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
-        m_tft.print("Open Settings:");
+        m_tft.print(F("Open Settings:"));
         m_tft.unloadFont();
 
-        m_tft.loadFont("NotoSans-Regular15");
+        m_tft.loadFont(F("NotoSans-Regular15"));
         m_tft.setCursor(5, 30);
-        m_tft.print(url.c_str());
+        m_tft.print(url);
         m_tft.unloadFont();
 
         m_last_screen = Screen::SETTINGS_QR;
@@ -612,9 +596,9 @@ void Display::showSettingsQR()
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
-        m_tft.loadFont("NotoSans-Regular30");
+        m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.fillScreen(TFT_SKYBLUE);
-        constexpr const char* msg = "To The Moon!";
+        String msg = F("To The Moon!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.setTextColor(TFT_WHITE, TFT_SKYBLUE);
         m_tft.print(msg);
@@ -626,9 +610,9 @@ void Display::showAPIOK()
 void Display::showAPIFailed()
 {
     if (m_last_screen != Screen::API_FAILED) {
-        m_tft.loadFont("NotoSans-Regular30");
+        m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.fillScreen(TFT_RED);
-        constexpr const char* msg = "Gecko API failed!";
+        String msg = F("Gecko API failed!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.setTextColor(TFT_BLACK, TFT_RED);
         m_tft.print(msg);

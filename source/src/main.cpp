@@ -8,6 +8,7 @@
 #include "wifi_utils.h"
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
+#include <WiFiManager.h>
 
 ESP8266WebServer server(80);
 
@@ -23,50 +24,69 @@ Handler handler(gecko, settings);
 
 void setup(void)
 {
-    rst_info* ri(ESP.getResetInfoPtr());
     Serial.begin(115200);
+
+#if COIN_THING_SERIAL > 0
+    rst_info* ri(ESP.getResetInfoPtr());
     Serial.printf("\n---------------------\n");
     Serial.printf("Reset Info reason:   %u\n", ri->reason);
     Serial.printf("Reset Info exccause: %u", ri->exccause);
     Serial.printf("\n---------------------\n");
+#endif
 
     display.begin();
     display.showAPQR();
 
-    setupWiFi();
+    // setupWiFi();
+
+    //WiFiManager
+    //Local intialization. Once its business is done, there is no need to keep it around
+    WiFiManager wifiManager;
+
+    //reset settings - for testing
+    //wifiManager.resetSettings();
+
+    if (!wifiManager.autoConnect(String(HOST_NAME).c_str(), String(SECRET_AP_PASSWORD).c_str())) {
+        Serial.println(F("failed to connect, we should reset as see if it connects"));
+        delay(3000);
+        ESP.reset();
+        delay(5000);
+    }
+
+    //setupWiFi();
+
+    Serial.printf("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
+    Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
+    Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 
     if (gecko.ping()) {
         display.showAPIOK();
         delay(1500);
-    } else {
-        display.showAPIFailed();
-        while (1)
-            yield();
     }
 
     if (settings.begin(gecko)) {
-        Serial.println("Settings valid!");
+        Serial.println(F("Settings valid!"));
     } else {
-        Serial.println("Settings invalid!");
+        Serial.println(F("Settings invalid!"));
     }
+
+#if COIN_THING_SERIAL > 0
     Serial.printf("Settings coin:          >%s<\n", settings.coin());
     Serial.printf("Settings currency:      >%s<\n", settings.currency());
     Serial.printf("Settings number format: >%u<\n", settings.numberFormat());
     Serial.printf("Settings symbol:        >%s<\n", settings.symbol());
     Serial.printf("Settings name:          >%s<\n", settings.name());
+#endif
 
     server.onNotFound([]() { // If the client requests any URI
         if (!handler.handleAction()
             && !handler.handleFileRead()) { // send it if it exists
-            server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
+            server.send(404, F("text/plain"), F("404: Not Found")); // otherwise, respond with a 404 (Not Found) error
         }
     });
     server.begin(); // Actually start the server
 
-    Serial.println("\r\nInitialisation done.");
-
-    display.showSettingsQR();
-    delay(1000);
+    Serial.println(F("\r\nInitialisation done."));
 }
 
 void loop()

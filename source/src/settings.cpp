@@ -93,10 +93,15 @@ bool Settings::read(const Gecko& gecko)
         file = SPIFFS.open(USER_CONFIG, "r");
         if (file) {
             Serial.println("open " USER_CONFIG);
-            ReadLoggingStream loggingStream(file, Serial);
             DynamicJsonDocument doc(DYNAMIC_JSON_CONFIG_SIZE);
+
+#if COIN_THING_SERIAL > 0
+            ReadLoggingStream loggingStream(file, Serial);
             deserializeJson(doc, loggingStream);
             Serial.println();
+#else
+            deserializeJson(doc, file);
+#endif
 
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
@@ -137,7 +142,7 @@ bool Settings::read(const Gecko& gecko)
 
 void Settings::write()
 {
-    SPIFFS.remove(USER_CONFIG);
+    deleteFile();
 
     if (m_valid) {
         File file = SPIFFS.open(USER_CONFIG, "w");
@@ -158,4 +163,9 @@ void Settings::write()
             file.close();
         }
     }
+}
+
+void Settings::deleteFile()
+{
+    SPIFFS.remove(USER_CONFIG);
 }

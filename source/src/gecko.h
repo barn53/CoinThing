@@ -11,7 +11,7 @@ struct Coin {
     const char* name;
 };
 
-static const Coin coins[] = {
+static const Coin coins[] PROGMEM = {
     { "bitcoin", "BTC", "Bitcoin" },
     { "ethereum", "ETH", "Ethereum" },
     { "tether", "USDT", "Tether" },
@@ -122,7 +122,8 @@ public:
 
     void loop();
 
-    bool ping() const;
+    bool ping();
+    bool succeeded() const { return m_succeeded; }
 
     bool coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const;
     bool isValidCoin(const char* coinOrSymbol) const;
@@ -143,6 +144,8 @@ private:
     // fallbacks use (slow) API calls
     bool fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const;
     bool fetchIsValidCoin(const char* coin) const;
+
+    bool m_succeeded { false };
 
     gecko_t m_price;
     gecko_t m_price_usd;
