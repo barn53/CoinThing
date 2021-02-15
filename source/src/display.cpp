@@ -3,7 +3,7 @@
 #include "pre.h"
 #include "settings.h"
 #include <Arduino.h>
-#include <ESP_QRcode.h> // https://github.com/peteha99/esp_gen_qr
+#include <ESP_QRcode.h>
 #include <SPI.h>
 #include <locale>
 #include <sstream>
