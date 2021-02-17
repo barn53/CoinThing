@@ -2,7 +2,6 @@
 #include "common.h"
 #include "display.h"
 #include "pre.h"
-#include "secrets.h"
 #include "utils.h"
 #include <Arduino.h>
 
@@ -11,6 +10,7 @@
 
 extern String HostName;
 
+#if 0
 void wifiSleep()
 {
     WiFi.disconnect();
@@ -43,6 +43,7 @@ void setupWiFi()
     Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
     Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 }
+#endif
 
 void handleWifiManager(WiFiManager& wifiManager, Display& display)
 {
