@@ -30,10 +30,35 @@
             </div>
             <div class="col-sm-7 text-left">
                 <p>
-                    <b>CoinThing Version:</b>&nbsp;<span id="version"></span>
+                    <b>Name</b>
+                    <br><span id="name"></span>
+                </p>
+
+                <hr>
+                <p>
+                    <b>CoinThing Version</b>
+                    <br><span id="version"></span>&nbsp;<button id="update1"
+                        class="btn btn-warning btn-sm">Update</button>&nbsp;<button id="update2"
+                        class="btn btn-danger btn-sm" style="visibility:hidden;">Really?</button>
+                    <br><span id="wait" style="visibility:hidden;" class="text-danger">Please wait...</span>
                 </p>
                 <p>
-                    <b>Powered by CoinGecko</b>
+                    <b>Project Page</b>
+                    <br><a href="https://barn53.github.io/CoinThing/"
+                        target="_blank">https://barn53.github.io/CoinThing/</a>
+                </p>
+
+                <hr>
+                <p>
+                    <b>Credits</b>
+                </p>
+                <p>
+                    <small>&bull; Powered by CoinGecko</small><br>
+                    <small>&bull; https://github.com/Bodmer/TFT_eSPI</small><br>
+                    <small>&bull; https://github.com/tzapu/WiFiManager</small><br>
+                    <small>&bull; https://github.com/bblanchon/ArduinoJson</small><br>
+                    <small>&bull; https://github.com/peteha99/esp_gen_qr</small><br>
+
                 </p>
             </div>
             <div class="col-sm-3 sidenav">
@@ -52,6 +77,26 @@
         $(document).ready(function () {
             $.get("/action/get/version", function (data) {
                 $("#version").empty().append(data)
+            })
+            $.get("/action/get/name", function (data) {
+                $("#name").empty().append(data)
+            })
+
+            $('#update1').off().click(function (e) {
+                $("#update2").css("visibility", "visible")
+                setTimeout(function () {
+                    $("#update2").css("visibility", "hidden")
+                }, 5000)
+            })
+            $('#update2').off().click(function (e) {
+                $("#update1").css("visibility", "hidden")
+                $("#update2").css("visibility", "hidden")
+                $("#wait").css("visibility", "visible")
+                $.get("/action/forupdate", function (data) {
+                    setTimeout(function () {
+                        location.href = "/"
+                    }, 10000)
+                })
             })
         })
 

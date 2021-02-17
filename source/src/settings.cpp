@@ -15,7 +15,6 @@ using fs::File;
 
 Settings::Settings()
 {
-    SPIFFS.begin();
 }
 
 bool Settings::begin(const Gecko& gecko)

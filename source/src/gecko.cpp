@@ -95,7 +95,7 @@ bool Gecko::fetchCoinPriceChange()
 bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
 {
     LOG_FUNC
-#if COIN_THING_SERIAL == 1
+#if COIN_THING_SERIAL > 0
     Serial.printf("type: %u\n", type);
 #endif
 

@@ -20,6 +20,7 @@ public:
 
     void showCoin();
     void showAPQR();
+    void showUpdateQR();
     void showSettingsQR();
     void showAPIOK();
     void showAPIFailed();
@@ -35,6 +36,7 @@ private:
     enum class Screen {
         NONE,
         AP_QR,
+        UPDATE_QR,
         API_OK,
         API_FAILED,
         SETTINGS_QR,

@@ -20,6 +20,8 @@ private:
     bool handleResetWiFi() const;
     bool handleResetAll() const;
     bool handleVersion() const;
+    bool handleName() const;
+    bool handleForUpdate() const;
 
     const Gecko& m_gecko;
     Settings& m_settings;

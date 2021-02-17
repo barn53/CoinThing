@@ -30,7 +30,6 @@ f = open(env["PROJECTSRC_DIR"] + "/pre.h", "w")
 letters = string.ascii_lowercase
 
 f.write('#pragma once\n')
-f.write('#define HOST_NAME F("CoinThing-%s")\n'% (''.join(random.choice(letters) for i in range(6))))
 f.write('#define SECRET_AP_PASSWORD F("%s")\n'% (''.join(random.choice(letters) for i in range(8))))
 
 f.write('#define VERSION F("%s")\n'% (version))

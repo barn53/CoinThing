@@ -26,6 +26,8 @@
 
 #define CHART_UPDATE_INTERVAL (5 * 1000)
 
+extern String HostName;
+
 Display::Display(Gecko& gecko, const Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
@@ -537,7 +539,7 @@ void Display::showAPQR()
         m_tft.fillScreen(TFT_WHITE);
 
         String qrText(F("WIFI:T:WPA;S:"));
-        qrText += HOST_NAME;
+        qrText += HostName;
         qrText += F(";P:");
         qrText += SECRET_AP_PASSWORD;
         qrText += F(";H:;");
@@ -553,7 +555,7 @@ void Display::showAPQR()
         m_tft.unloadFont();
 
         msg = F("Host: ");
-        msg += HOST_NAME;
+        msg += HostName;
         m_tft.loadFont(F("NotoSans-Regular13"));
         m_tft.setCursor(5, 25);
         m_tft.print(msg);
@@ -564,6 +566,32 @@ void Display::showAPQR()
         m_tft.unloadFont();
 
         m_last_screen = Screen::AP_QR;
+    }
+}
+
+void Display::showUpdateQR()
+{
+    if (m_last_screen != Screen::UPDATE_QR) {
+        m_tft.fillScreen(TFT_WHITE);
+
+        String url(F("http://"));
+        url += WiFi.localIP().toString().c_str();
+        url += "/";
+        ESP_QRcode tftQR(&m_tft);
+        tftQR.qrcode(url.c_str(), 20, 40, 200, 3);
+
+        m_tft.loadFont(F("NotoSans-Regular20"));
+        m_tft.setCursor(5, 5);
+        m_tft.setTextColor(TFT_RED, TFT_WHITE);
+        m_tft.print(F("Open for Update:"));
+        m_tft.unloadFont();
+
+        m_tft.loadFont(F("NotoSans-Regular15"));
+        m_tft.setCursor(5, 30);
+        m_tft.print(url);
+        m_tft.unloadFont();
+
+        m_last_screen = Screen::UPDATE_QR;
     }
 }
 

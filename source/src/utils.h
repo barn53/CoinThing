@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-#if COIN_THING_SERIAL == 1
+#if COIN_THING_SERIAL > 0
 #define LOG_FUNC            \
     Serial.print(__func__); \
     Serial.println("()");
@@ -9,7 +9,7 @@
 #define LOG_FUNC
 #endif
 
-#if COIN_THING_SERIAL == 1
+#if COIN_THING_SERIAL > 0
 #define SERIAL_PRINTLN(x) Serial.println(x);
 #define FILE_LINE           \
     Serial.print(__FILE__); \

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "display.h"
 #include "gecko.h"
 #include "handler.h"
@@ -22,9 +23,15 @@ Gecko gecko(httpJson, settings);
 Display display(gecko, settings);
 Handler handler(gecko, settings);
 
+String HostName;
+
 void setup(void)
 {
     Serial.begin(115200);
+    SPIFFS.begin();
+
+    HostName = F("CoinThing-");
+    HostName += ESP.getChipId();
 
 #if COIN_THING_SERIAL > 0
     rst_info* ri(ESP.getResetInfoPtr());
@@ -35,25 +42,9 @@ void setup(void)
 #endif
 
     display.begin();
-    display.showAPQR();
 
-    // setupWiFi();
-
-    //WiFiManager
-    //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
-
-    //reset settings - for testing
-    //wifiManager.resetSettings();
-
-    if (!wifiManager.autoConnect(String(HOST_NAME).c_str(), String(SECRET_AP_PASSWORD).c_str())) {
-        Serial.println(F("failed to connect, we should reset as see if it connects"));
-        delay(3000);
-        ESP.reset();
-        delay(5000);
-    }
-
-    //setupWiFi();
+    handleWifiManager(wifiManager, display);
 
     Serial.printf("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
     Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());

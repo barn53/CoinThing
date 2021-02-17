@@ -1,5 +1,7 @@
 #include "handler.h"
+#include "common.h"
 #include "gecko.h"
+#include "handler.h"
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
@@ -11,6 +13,7 @@
 
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
+extern String HostName;
 
 using namespace std;
 
@@ -90,6 +93,24 @@ bool Handler::handleVersion() const
     return true;
 }
 
+bool Handler::handleName() const
+{
+    server.send(200, F("text/plain"), HostName);
+    return true;
+}
+
+bool Handler::handleForUpdate() const
+{
+    server.send(200, F("text/plain"), "1");
+
+    // if file exists on startup ESP goes into update mode
+    SPIFFS.open(FOR_UPDATE_FILE, "w");
+
+    delay(200);
+    ESP.reset();
+    return true;
+}
+
 bool Handler::streamFile(const char* filename)
 {
     String contentType = getContentType(filename);
@@ -104,7 +125,7 @@ bool Handler::streamFile(const char* filename)
 
 bool Handler::handleSet() const
 {
-#if COIN_THING_SERIAL == 1
+#if COIN_THING_SERIAL > 0
     Serial.printf("handleAction: set - parsed Query:\n");
     for (int ii = 0; ii < server.args(); ++ii) {
         Serial.print(server.argName(ii));
@@ -155,6 +176,10 @@ bool Handler::handleSet() const
 bool Handler::handleAction() const
 {
     String path(server.uri());
+#if COIN_THING_SERIAL > 0
+    Serial.printf("handleAction: path: %s\n", path.c_str());
+#endif
+
     if (path == F("/action/set")) {
         return handleSet();
     } else if (path == F("/action/reset/esp")) {
@@ -167,6 +192,10 @@ bool Handler::handleAction() const
         return handleResetAll();
     } else if (path == F("/action/get/version")) {
         return handleVersion();
+    } else if (path == F("/action/get/name")) {
+        return handleName();
+    } else if (path == F("/action/forupdate")) {
+        return handleForUpdate();
     }
     return false;
 }
@@ -174,7 +203,10 @@ bool Handler::handleAction() const
 bool Handler::handleFileRead()
 {
     String path(server.uri());
+#if COIN_THING_SERIAL > 0
     Serial.printf("handleFileRead: %s\n", path.c_str());
+#endif
+
     if (path.endsWith("/")) {
         path += F("settings.html");
     }
