@@ -104,7 +104,8 @@ bool Handler::handleForUpdate() const
     server.send(200, F("text/plain"), "1");
 
     // if file exists on startup ESP goes into update mode
-    SPIFFS.open(FOR_UPDATE_FILE, "w");
+    File f = SPIFFS.open(FOR_UPDATE_FILE, "w");
+    f.close();
 
     delay(200);
     ESP.reset();
@@ -190,12 +191,12 @@ bool Handler::handleAction() const
         return handleResetWiFi();
     } else if (path == F("/action/reset/all")) {
         return handleResetAll();
+    } else if (path == F("/action/reset/forupdate")) {
+        return handleForUpdate();
     } else if (path == F("/action/get/version")) {
         return handleVersion();
     } else if (path == F("/action/get/name")) {
         return handleName();
-    } else if (path == F("/action/forupdate")) {
-        return handleForUpdate();
     }
     return false;
 }

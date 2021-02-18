@@ -408,7 +408,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
         m_tft.print("last");
         m_tft.setCursor(55 + maxWidth - widthLast, boxY + (3 * (textHeight + 2)));
         m_tft.print(numberLast);
-        
+
         m_tft.drawRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, RGB(0x20, 0x20, 0x20));
     }
 
@@ -577,7 +577,7 @@ void Display::showUpdateQR()
 
         String url(F("http://"));
         url += WiFi.localIP().toString().c_str();
-        url += "/";
+        url += F("/update");
         ESP_QRcode tftQR(&m_tft);
         tftQR.qrcode(url.c_str(), 20, 40, 200, 3);
 

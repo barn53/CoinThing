@@ -95,7 +95,7 @@
                 $("#update1").css("visibility", "hidden")
                 $("#update2").css("visibility", "hidden")
                 $("#wait").css("visibility", "visible")
-                $.get("/action/forupdate", function (data) {
+                $.get("/action/reset/forupdate", function (data) {
                     setTimeout(function () {
                         location.href = "/update"
                     }, 10000)
