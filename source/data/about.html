@@ -42,6 +42,8 @@
                         class="btn btn-danger btn-sm" style="visibility:hidden;">Really?</button>
                     <br><span id="wait" style="visibility:hidden;" class="text-danger">Please wait...</span>
                 </p>
+
+                <hr>
                 <p>
                     <b>Project Page</b>
                     <br><a href="https://barn53.github.io/CoinThing/"
@@ -95,7 +97,7 @@
                 $("#wait").css("visibility", "visible")
                 $.get("/action/forupdate", function (data) {
                     setTimeout(function () {
-                        location.href = "/"
+                        location.href = "/update"
                     }, 10000)
                 })
             })

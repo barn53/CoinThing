@@ -220,8 +220,8 @@ bool Display::renderChart(Settings::ChartPeriod type)
         return false;
     }
 
-    m_tft.loadFont(F("NotoSans-Regular13"));
-    int16_t textHeight(12);
+    m_tft.loadFont(F("NotoSans-Regular15"));
+    int16_t textHeight(14);
 
     endIt = prices->end();
 
@@ -383,32 +383,33 @@ bool Display::renderChart(Settings::ChartPeriod type)
             maxWidth = widthLast;
         }
         uint16_t boxBG(RGB(0x03, 0x03, 0x03));
-        m_tft.fillRect(20 - 5, boxY - 4, 50 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, boxBG);
-        m_tft.drawRect(20 - 5, boxY - 4, 50 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, RGB(0x20, 0x20, 0x20));
+        m_tft.fillRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, boxBG);
 
         m_tft.setTextColor(TFT_DARKGREEN, boxBG);
         m_tft.setCursor(20, boxY);
         m_tft.print("high");
-        m_tft.setCursor(50 + maxWidth - widthHigh, boxY);
+        m_tft.setCursor(55 + maxWidth - widthHigh, boxY);
         m_tft.print(numberHigh);
 
         m_tft.setTextColor(TFT_RED, boxBG);
         m_tft.setCursor(20, boxY + (textHeight + 2));
         m_tft.print("low");
-        m_tft.setCursor(50 + maxWidth - widthLow, boxY + (textHeight + 2));
+        m_tft.setCursor(55 + maxWidth - widthLow, boxY + (textHeight + 2));
         m_tft.print(numberLow);
 
         m_tft.setTextColor(TFT_PURPLE, boxBG);
         m_tft.setCursor(20, boxY + (2 * (textHeight + 2)));
         m_tft.print("first");
-        m_tft.setCursor(50 + maxWidth - widthFirst, boxY + (2 * (textHeight + 2)));
+        m_tft.setCursor(55 + maxWidth - widthFirst, boxY + (2 * (textHeight + 2)));
         m_tft.print(numberFirst);
 
         m_tft.setTextColor(TFT_BROWN, boxBG);
         m_tft.setCursor(20, boxY + (3 * (textHeight + 2)));
         m_tft.print("last");
-        m_tft.setCursor(50 + maxWidth - widthLast, boxY + (3 * (textHeight + 2)));
+        m_tft.setCursor(55 + maxWidth - widthLast, boxY + (3 * (textHeight + 2)));
         m_tft.print(numberLast);
+        
+        m_tft.drawRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, RGB(0x20, 0x20, 0x20));
     }
 
     ///////////////////////////////////////////////////////////
