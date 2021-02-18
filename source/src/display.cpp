@@ -298,7 +298,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
                 xAt = xAtLow;
                 yMarker = DISPLAY_HEIGHT - (textHeight / 2);
                 formatNumber(low, number, m_settings.numberFormat(), false, true);
-                m_tft.setTextColor(TFT_MAROON, TFT_BLACK);
+                m_tft.setTextColor(TFT_RED, TFT_BLACK);
             }
             number += getCurrencySymbol(m_settings.currency());
             int16_t widthNumber(m_tft.textWidth(number));
@@ -392,7 +392,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
         m_tft.setCursor(50 + maxWidth - widthHigh, boxY);
         m_tft.print(numberHigh);
 
-        m_tft.setTextColor(TFT_MAROON, boxBG);
+        m_tft.setTextColor(TFT_RED, boxBG);
         m_tft.setCursor(20, boxY + (textHeight + 2));
         m_tft.print("low");
         m_tft.setCursor(50 + maxWidth - widthLow, boxY + (textHeight + 2));
