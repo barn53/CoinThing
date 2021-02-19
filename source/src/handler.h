@@ -19,8 +19,8 @@ private:
     bool handleResetSettings() const;
     bool handleResetWiFi() const;
     bool handleResetAll() const;
-    bool handleVersion() const;
-    bool handleName() const;
+    bool handleGetVersion() const;
+    bool handleGetName() const;
     bool handleForUpdate() const;
 
     const Gecko& m_gecko;

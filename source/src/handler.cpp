@@ -87,13 +87,13 @@ bool Handler::handleResetAll() const
     return true;
 }
 
-bool Handler::handleVersion() const
+bool Handler::handleGetVersion() const
 {
     server.send(200, F("text/plain"), VERSION);
     return true;
 }
 
-bool Handler::handleName() const
+bool Handler::handleGetName() const
 {
     server.send(200, F("text/plain"), HostName);
     return true;
@@ -194,9 +194,9 @@ bool Handler::handleAction() const
     } else if (path == F("/action/reset/forupdate")) {
         return handleForUpdate();
     } else if (path == F("/action/get/version")) {
-        return handleVersion();
+        return handleGetVersion();
     } else if (path == F("/action/get/name")) {
-        return handleName();
+        return handleGetName();
     }
     return false;
 }

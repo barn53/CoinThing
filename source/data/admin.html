@@ -29,21 +29,44 @@
             <div class="col-sm-2 sidenav">
             </div>
             <div class="col-sm-7 text-left">
+                <p><b>Sites</b></p>
+                <p><a href="/settings.html" target="_blank">/settings.html</a></p>
+                <p><a href="/about.html" target="_blank">/about.html</a></p>
+                <p><a href="/admin.html" target="_blank">/admin.html</a></p>
                 <p><b>Getters</b></p>
-                <p><a href="/settings.html">/settings.html</a></p>
-                <p><a href="/about.html">/about.html</a></p>
-                <p><a href="/settings.json">/settings.json</a></p>
-                <p><a href="/action/get/version">/action/get/version</a></p>
-                <p><a href="/action/get/name">/action/get/name</a></p>
+                <p><a href="/settings.json" target="_blank">/settings.json</a></p>
+                <p>
+                    <button id="getVersion" class="btn btn-info btn-sm">Get Version</button>
+                    &nbsp;<span id="forVersion" class="text-info"></span>
+                </p>
+                <p>
+                    <button id="getName" class="btn btn-info btn-sm">Get Name</button>
+                    &nbsp;<span id="forName" class="text-info"></span>
+                </p>
+
                 <hr>
                 <p class="text-danger"><b>Danger-Zone</b></p>
-                <p><a href="/action/reset/esp">/action/reset/esp</a></p>
-                <p><a href="/action/reset/settings">/action/reset/settings</a></p>
-                <p><a href="/action/reset/wifi">/action/reset/wifi</a></p>
-                <p><a href="/action/reset/all">/action/reset/all</a></p>
-                <p><a href="/action/reset/forupdate">/action/reset/forupdate</a></p>
-                <p style="height:50px;">
+                <p>
+                    <button id="resetESP" class="btn btn-warning btn-sm">Reset ESP</button>
+                    &nbsp;<span id="forResetESP" class="text-warning"></span>
                 </p>
+                <p>
+                    <button id="resetSettings" class="btn btn-warning btn-sm">Reset Settings</button>
+                    &nbsp;<span id="forResetSettings" class="text-warning"></span>
+                </p>
+                <p>
+                    <button id="resetWiFi" class="btn btn-warning btn-sm">Reset WiFi</button>
+                    &nbsp;<span id="forResetWiFi" class="text-warning"></span>
+                </p>
+                <p>
+                    <button id="resetAll" class="btn btn-warning btn-sm">Reset All</button>
+                    &nbsp;<span id="forResetAll" class="text-warning"></span>
+                </p>
+                <p>
+                    <button id="resetUpdate" class="btn btn-warning btn-sm">Reset For Update</button>
+                    &nbsp;<span id="forResetUpdate" class="text-warning"></span>
+                </p>
+                <p style="height:50px;"></p>
             </div>
             <div class="col-sm-3 sidenav">
             </div>
@@ -55,6 +78,55 @@
             &copy; 2021 barn53
         </div>
     </footer>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#getVersion').off().click(function (e) {
+                $.get("/action/get/version", function (data) {
+                    $("#forVersion").empty().append(data);
+                })
+            })
+
+            $('#getName').off().click(function (e) {
+                $.get("/action/get/name", function (data) {
+                    $("#forName").empty().append(data);
+                })
+            })
+
+            $('#resetESP').off().click(function (e) {
+                $.get("/action/reset/esp", function (data) {
+                    $("#forResetESP").empty().append(data);
+                })
+            })
+
+            $('#resetSettings').off().click(function (e) {
+                $.get("/action/reset/settings", function (data) {
+                    $("#forResetSettings").empty().append(data);
+                })
+            })
+
+            $('#resetWiFi').off().click(function (e) {
+                $.get("/action/reset/wifi", function (data) {
+                    $("#forResetWiFi").empty().append(data);
+                })
+            })
+
+            $('#resetAll').off().click(function (e) {
+                $.get("/action/reset/all", function (data) {
+                    $("#forResetAll").empty().append(data);
+                })
+            })
+
+            $('#resetUpdate').off().click(function (e) {
+                $.get("/action/reset/forupdate", function (data) {
+                    $("#forResetUpdate").empty().append(data);
+                })
+            })
+
+        })
+
+    </script>
 
 </body>
 
