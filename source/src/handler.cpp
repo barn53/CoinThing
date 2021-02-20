@@ -99,11 +99,24 @@ bool Handler::handleGetName() const
     return true;
 }
 
+bool Handler::handleGetPrice() const
+{
+    String price;
+    formatNumber(m_gecko.price(), price, m_settings.numberFormat(), false, true);
+    String ret;
+    ret = m_settings.symbol();
+    ret += F(": ");
+    ret += price;
+    ret += getCurrencySymbol(m_settings.currency());
+    server.send(200, F("text/plain"), ret);
+    return true;
+}
+
 bool Handler::handleForUpdate() const
 {
     server.send(200, F("text/plain"), "1");
 
-    // if file exists on startup ESP goes into update mode
+    // if file exists on startup, ESP goes into update mode
     File f = SPIFFS.open(FOR_UPDATE_FILE, "w");
     f.close();
 
@@ -197,6 +210,8 @@ bool Handler::handleAction() const
         return handleGetVersion();
     } else if (path == F("/action/get/name")) {
         return handleGetName();
+    } else if (path == F("/action/get/price")) {
+        return handleGetPrice();
     }
     return false;
 }

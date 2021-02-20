@@ -11,6 +11,11 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 
+#define FS_NO_GLOBALS
+#include <FS.h>
+
+using fs::File;
+
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
 #define RED565 (0xd800)
@@ -58,8 +63,8 @@ void Display::begin()
 
 void Display::loop()
 {
+    m_gecko.loop();
     if (m_gecko.succeeded()) {
-        m_gecko.loop();
         analogWrite(TFT_BL, m_settings.brightness());
 
         if (m_settings.valid()) {
@@ -523,7 +528,7 @@ void Display::showCoin()
         || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
         Settings::ChartPeriod next(nextChartPeriod());
 #if COIN_THING_SERIAL > 0
-        Serial.printf("last type: %u -> next type: %u, setting: %u\n", m_last_chart_period, next, m_settings.chart());
+        Serial.printf("last type: %u -> next type: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
 #endif
         if (!renderChart(next)) {
             chartFailed();
@@ -627,11 +632,20 @@ void Display::showAPIOK()
     if (m_last_screen != Screen::API_OK) {
         m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.fillScreen(TFT_SKYBLUE);
-        String msg = F("To The Moon!");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.setTextColor(TFT_WHITE, TFT_SKYBLUE);
+
+        String msg = F("CoinThing");
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 65);
         m_tft.print(msg);
+
+        msg = F("To The Moon!");
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 110);
+        m_tft.print(msg);
+
         m_tft.unloadFont();
+
+        drawBmp("/BTC.bmp", 10, 10);
+
         m_last_screen = Screen::API_OK;
     }
 }
@@ -648,4 +662,78 @@ void Display::showAPIFailed()
         m_tft.unloadFont();
         m_last_screen = Screen::API_FAILED;
     }
+}
+
+// Bodmers BMP image rendering function
+
+uint16_t read16(File& f)
+{
+    uint16_t result;
+    ((uint8_t*)&result)[0] = f.read(); // LSB
+    ((uint8_t*)&result)[1] = f.read(); // MSB
+    return result;
+}
+
+uint32_t read32(File& f)
+{
+    uint32_t result;
+    ((uint8_t*)&result)[0] = f.read(); // LSB
+    ((uint8_t*)&result)[1] = f.read();
+    ((uint8_t*)&result)[2] = f.read();
+    ((uint8_t*)&result)[3] = f.read(); // MSB
+    return result;
+}
+
+void Display::drawBmp(const char* filename, int16_t x, int16_t y)
+{
+    File bmpFS;
+
+    // Open requested file on SD card
+    bmpFS = SPIFFS.open(filename, "r");
+
+    if (!bmpFS) {
+        return;
+    }
+
+    uint32_t seekOffset;
+    uint16_t w, h, row;
+    uint8_t r, g, b;
+
+    if (read16(bmpFS) == 0x4D42) {
+        read32(bmpFS);
+        read32(bmpFS);
+        seekOffset = read32(bmpFS);
+        read32(bmpFS);
+        w = read32(bmpFS);
+        h = read32(bmpFS);
+
+        if ((read16(bmpFS) == 1) && (read16(bmpFS) == 24) && (read32(bmpFS) == 0)) {
+            y += h - 1;
+
+            bool oldSwapBytes = m_tft.getSwapBytes();
+            m_tft.setSwapBytes(true);
+            bmpFS.seek(seekOffset);
+
+            uint16_t padding = (4 - ((w * 3) & 3)) & 3;
+            uint8_t lineBuffer[w * 3 + padding];
+
+            for (row = 0; row < h; row++) {
+                bmpFS.read(lineBuffer, sizeof(lineBuffer));
+                uint8_t* bptr = lineBuffer;
+                uint16_t* tptr = (uint16_t*)lineBuffer;
+                // Convert 24 to 16 bit colours
+                for (uint16_t col = 0; col < w; col++) {
+                    b = *bptr++;
+                    g = *bptr++;
+                    r = *bptr++;
+                    *tptr++ = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+                }
+                // Push the pixel row to screen, pushImage will crop the line if needed
+                // y is decremented as the BMP image is drawn bottom up
+                m_tft.pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);
+            }
+            m_tft.setSwapBytes(oldSwapBytes);
+        }
+    }
+    bmpFS.close();
 }

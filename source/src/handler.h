@@ -19,8 +19,11 @@ private:
     bool handleResetSettings() const;
     bool handleResetWiFi() const;
     bool handleResetAll() const;
+
     bool handleGetVersion() const;
     bool handleGetName() const;
+    bool handleGetPrice() const;
+
     bool handleForUpdate() const;
 
     const Gecko& m_gecko;

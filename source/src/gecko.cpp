@@ -24,19 +24,24 @@ Gecko::Gecko(HttpJson& http, Settings& settings)
 
 void Gecko::loop()
 {
-    if (doChange(m_settings.lastChange(), m_last_seen_settings)) {
-        m_last_seen_settings = millis_test();
-        m_last_price_fetch = 0;
-        m_last_chart_48h_fetch = 0;
-        m_last_chart_60d_fetch = 0;
-    }
-
-    if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
-        if (fetchCoinPriceChange()) {
-            m_last_price_fetch = millis_test();
-        } else {
+    if (m_settings.valid()) {
+        if (doChange(m_settings.lastChange(), m_last_seen_settings)) {
+            m_last_seen_settings = millis_test();
             m_last_price_fetch = 0;
+            m_last_chart_48h_fetch = 0;
+            m_last_chart_60d_fetch = 0;
         }
+
+        if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
+            if (fetchCoinPriceChange()) {
+                m_last_price_fetch = millis_test();
+            } else {
+                m_last_price_fetch = 0;
+            }
+        }
+    } else {
+        m_last_price_fetch = 0;
+        m_last_seen_settings = 0;
     }
 }
 
@@ -95,6 +100,7 @@ bool Gecko::fetchCoinPriceChange()
 bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
 {
     LOG_FUNC
+
 #if COIN_THING_SERIAL > 0
     Serial.printf("type: %u\n", type);
 #endif
@@ -122,6 +128,7 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
         return false;
     }
     targetChart->clear();
+    targetChart->reserve(expectValues);
 
     DynamicJsonDocument filter(16);
     filter["prices"] = true;

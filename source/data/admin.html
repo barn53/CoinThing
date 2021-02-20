@@ -34,7 +34,14 @@
                 <p><a href="/about.html" target="_blank">/about.html</a></p>
                 <p><a href="/admin.html" target="_blank">/admin.html</a></p>
                 <p><b>Getters</b></p>
-                <p><a href="/settings.json" target="_blank">/settings.json</a></p>
+                <p>
+                    <button id="getPrice" class="btn btn-info btn-sm">Get Price</button>
+                    &nbsp;<code id="forPrice" class="text-info"></code>
+                </p>
+                <p>
+                    <button id="getSettings" class="btn btn-info btn-sm">Get Settings</button>
+                    &nbsp;<code id="forSettings" class="text-info"></code>
+                </p>
                 <p>
                     <button id="getVersion" class="btn btn-info btn-sm">Get Version</button>
                     &nbsp;<span id="forVersion" class="text-info"></span>
@@ -82,46 +89,68 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+
             $('#getVersion').off().click(function (e) {
+                $("#forVersion").empty()
                 $.get("/action/get/version", function (data) {
-                    $("#forVersion").empty().append(data);
-                })
+                    $("#forVersion").append(data)
+                }).fail(function () { $("#forVersion").append("failure") })
             })
 
             $('#getName').off().click(function (e) {
+                $("#forName").empty()
                 $.get("/action/get/name", function (data) {
-                    $("#forName").empty().append(data);
-                })
+                    $("#forName").append(data)
+                }).fail(function () { $("#forName").append("failure") })
+            })
+
+            $('#getPrice').off().click(function (e) {
+                $("#forPrice").empty()
+                $.get("/action/get/price", function (data) {
+                    $("#forPrice").append(data)
+                }).fail(function () { $("#forPrice").append("failure") })
+            })
+
+            $('#getSettings').off().click(function (e) {
+                $("#forSettings").empty()
+                $.get("/settings.json", function (data) {
+                    $("#forSettings").append(JSON.stringify(data))
+                }).fail(function () { $("#forSettings").append("failure") })
             })
 
             $('#resetESP').off().click(function (e) {
+                $("#forResetESP").empty()
                 $.get("/action/reset/esp", function (data) {
-                    $("#forResetESP").empty().append(data);
-                })
+                    $("#forResetESP").append(data)
+                }).fail(function () { $("#forResetESP").append("failure") })
             })
 
             $('#resetSettings').off().click(function (e) {
+                $("#forResetSettings").empty()
                 $.get("/action/reset/settings", function (data) {
-                    $("#forResetSettings").empty().append(data);
-                })
+                    $("#forResetSettings").append(data)
+                }).fail(function () { $("#forResetSettings").append("failure") })
             })
 
             $('#resetWiFi').off().click(function (e) {
+                $("#forResetWiFi").empty()
                 $.get("/action/reset/wifi", function (data) {
-                    $("#forResetWiFi").empty().append(data);
-                })
+                    $("#forResetWiFi").append(data)
+                }).fail(function () { $("#forResetWiFi").append("failure") })
             })
 
             $('#resetAll').off().click(function (e) {
+                $("#forResetAll").empty()
                 $.get("/action/reset/all", function (data) {
-                    $("#forResetAll").empty().append(data);
-                })
+                    $("#forResetAll").append(data)
+                }).fail(function () { $("#forResetAll").append("failure") })
             })
 
             $('#resetUpdate').off().click(function (e) {
+                $("#forResetUpdate").empty()
                 $.get("/action/reset/forupdate", function (data) {
-                    $("#forResetUpdate").empty().append(data);
-                })
+                    $("#forResetUpdate").append(data)
+                }).fail(function () { $("#forResetUpdate").append("failure") })
             })
 
         })

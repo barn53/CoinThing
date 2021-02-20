@@ -33,6 +33,8 @@ private:
     bool renderChart(Settings::ChartPeriod type);
     void chartFailed();
 
+    void drawBmp(const char* filename, int16_t x, int16_t y);
+
     enum class Screen {
         NONE,
         AP_QR,
@@ -51,11 +53,11 @@ private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> m_neo { 1 };
 
     Screen m_last_screen { Screen::NONE };
+    Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };
 
     uint32_t m_last_seen_settings { 0 };
     uint32_t m_last_heartbeat { 0 };
     uint8_t m_heart_beat_count { 0 };
     uint32_t m_last_price_update { 0 };
     uint32_t m_last_chart_update { 0 };
-    Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };
 };
