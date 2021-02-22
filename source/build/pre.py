@@ -31,8 +31,13 @@ letters = string.ascii_lowercase
 
 f.write('#pragma once\n')
 f.write('#define SECRET_AP_PASSWORD F("%s")\n'% (''.join(random.choice(letters) for i in range(8))))
-
 f.write('#define VERSION F("%s")\n'% (version))
+f.close()
+
+
+f = open(env["PROJECTDATA_DIR"] + "/version.spiffs", "w")
+
+f.write('%s' % (version))
 
 f.close()
 

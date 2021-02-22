@@ -36,7 +36,7 @@
                 <p><b>Getters</b></p>
                 <p>
                     <button id="getPrice" class="btn btn-info btn-sm">Get Price</button>
-                    &nbsp;<code id="forPrice" class="text-info"></code>
+                    &nbsp;<span id="forPrice" class="text-info"></span>
                 </p>
                 <p>
                     <button id="getSettings" class="btn btn-info btn-sm">Get Settings</button>
@@ -93,8 +93,11 @@
             $('#getVersion').off().click(function (e) {
                 $("#forVersion").empty()
                 $.get("/action/get/version", function (data) {
-                    $("#forVersion").append(data)
-                }).fail(function () { $("#forVersion").append("failure") })
+                    $("#forVersion").append("Code: " + data + "<br>")
+                }).fail(function () { $("#forVersion").append("Code: failure") })
+                $.get("/version.spiffs", function (data) {
+                    $("#forVersion").append("SPIFFS: " + data + "<br>")
+                }).fail(function () { $("#forVersion").append("SPIFFS: failure") })
             })
 
             $('#getName').off().click(function (e) {

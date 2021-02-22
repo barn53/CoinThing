@@ -74,6 +74,8 @@ void Display::loop()
         }
     } else {
         showAPIFailed();
+        delay(1000);
+        m_gecko.ping();
     }
 }
 
@@ -225,7 +227,6 @@ bool Display::renderChart(Settings::ChartPeriod type)
         return false;
     }
 
-    m_tft.loadFont(F("NotoSans-Regular15"));
     int16_t textHeight(14);
 
     endIt = prices->end();
@@ -261,19 +262,36 @@ bool Display::renderChart(Settings::ChartPeriod type)
     m_tft.drawLine(DISPLAY_WIDTH - 1, DISPLAY_HEIGHT, DISPLAY_WIDTH - 1, CHART_Y_START - (textHeight / 2), RGB(0x03, 0x04, 0x03));
 
     ///////////////////////////////////////////////////////////
-    // draw dotted line with first and last price
-    if (true || m_settings.chartStyle() != Settings::ChartStyle::SIMPLE) {
-        uint8_t dotted(0);
-        uint8_t yFirst(min<uint8_t>(calcY(*beginIt), DISPLAY_HEIGHT - 1));
-        uint8_t yLast(min<uint8_t>(calcY(prices->back()), DISPLAY_HEIGHT - 1));
-        for (uint8_t x = 0; x < DISPLAY_WIDTH; ++x) {
-            if (dotted >= 0 && dotted < 4) {
-                m_tft.drawPixel(x, yFirst, TFT_PURPLE);
-                m_tft.drawPixel(x, yLast, TFT_BROWN);
-            }
-            ++dotted;
-            dotted %= 10;
+    // draw period as background
+    if (m_settings.chartStyle() == Settings::ChartStyle::HIGH_LOW) {
+        m_tft.loadFont(F("NotoSans-Regular30"));
+        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
+
+        auto widthPeriod(m_tft.textWidth(period));
+        uint8_t periodX(DISPLAY_WIDTH - widthPeriod);
+        if (xAtLow > (DISPLAY_WIDTH / 2)) {
+            periodX = 0;
         }
+
+        m_tft.setCursor(periodX, (DISPLAY_HEIGHT - 24));
+        m_tft.print(period);
+        m_tft.unloadFont();
+    }
+
+    m_tft.loadFont(F("NotoSans-Regular15"));
+
+    ///////////////////////////////////////////////////////////
+    // draw dotted line with first and last price
+    uint8_t dotted(0);
+    uint8_t yFirst(min<uint8_t>(calcY(*beginIt), DISPLAY_HEIGHT - 1));
+    uint8_t yLast(min<uint8_t>(calcY(prices->back()), DISPLAY_HEIGHT - 1));
+    for (uint8_t x = 0; x < DISPLAY_WIDTH; ++x) {
+        if (dotted >= 0 && dotted < 4) {
+            m_tft.drawPixel(x, yFirst, TFT_PURPLE);
+            m_tft.drawPixel(x, yLast, TFT_BROWN);
+        }
+        ++dotted;
+        dotted %= 10;
     }
 
     ///////////////////////////////////////////////////////////
@@ -419,24 +437,27 @@ bool Display::renderChart(Settings::ChartPeriod type)
 
     ///////////////////////////////////////////////////////////
     // draw chart time period
-    gecko_t last4avg(0.);
-    for (auto v = endIt - 4; v != endIt; ++v) {
-        last4avg += *v;
+    if (m_settings.chartStyle() != Settings::ChartStyle::HIGH_LOW) {
+        gecko_t last4avg(0.);
+        for (auto v = endIt - 4; v != endIt; ++v) {
+            last4avg += *v;
+        }
+        last4avg /= 4;
+
+        uint8_t periodY(CHART_Y_START);
+        if (last4avg > ((high - low) / 2) + low) {
+            periodY = DISPLAY_HEIGHT - textHeight - DISTANCE_CHART_VALUE;
+        }
+
+        auto widthPeriod(m_tft.textWidth(period));
+        m_tft.fillRect(DISPLAY_WIDTH - widthPeriod - (2 * DISTANCE_CHART_VALUE), periodY - DISTANCE_CHART_VALUE,
+            widthPeriod + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
+        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
+        m_tft.setCursor(DISPLAY_WIDTH - widthPeriod, periodY);
+        m_tft.print(period);
     }
-    last4avg /= 4;
-
-    uint8_t periodY(CHART_Y_START);
-    if (last4avg > ((high - low) / 2) + low) {
-        periodY = DISPLAY_HEIGHT - textHeight - DISTANCE_CHART_VALUE;
-    }
-
-    auto widthPeriod(m_tft.textWidth(period));
-    m_tft.fillRect(DISPLAY_WIDTH - widthPeriod - (2 * DISTANCE_CHART_VALUE), periodY - DISTANCE_CHART_VALUE,
-        widthPeriod + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
-    m_tft.setTextColor(RGB(0xff, 0x30, 0xcc), TFT_BLACK);
-    m_tft.setCursor(DISPLAY_WIDTH - widthPeriod, periodY);
-    m_tft.print(period);
-
+    ///////////////////////////////////////////////////////////
+    // done
     m_tft.unloadFont();
 
     m_last_chart_update = millis_test();
@@ -630,16 +651,18 @@ void Display::showSettingsQR()
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
-        m_tft.loadFont(F("NotoSans-Regular30"));
-        m_tft.fillScreen(TFT_SKYBLUE);
-        m_tft.setTextColor(TFT_WHITE, TFT_SKYBLUE);
+        m_tft.loadFont(F("NotoSans-Regular50"));
+        m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
+        m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
 
         String msg = F("CoinThing");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 65);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
         m_tft.print(msg);
 
+        m_tft.unloadFont();
+        m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("To The Moon!");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 110);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
         m_tft.print(msg);
 
         m_tft.unloadFont();
