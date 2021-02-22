@@ -716,6 +716,7 @@ void Display::drawBmp(const char* filename, int16_t x, int16_t y)
     uint32_t seekOffset;
     uint16_t w, h, row;
 
+    // https://de.wikipedia.org/wiki/Windows_Bitmap
     if (read16(f) == 0x4D42) { // bitmap signature
         read32(f); // file size 4 bytes
         read32(f); // reserved 4 bytes
