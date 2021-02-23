@@ -13,6 +13,7 @@
 #define PRICE_FETCH_INTERVAL (10 * 1000)
 #define CHART_48_H_FETCH_INTERVAL (15 * 60 * 1000)
 #define CHART_30_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
+#define PING_INTERVAL (2 * 1000)
 
 Gecko::Gecko(HttpJson& http, Settings& settings)
     : m_http(http)
@@ -22,24 +23,35 @@ Gecko::Gecko(HttpJson& http, Settings& settings)
     m_chart_60d.reserve(60);
 }
 
+void Gecko::begin()
+{
+    ping();
+}
+
 void Gecko::loop()
 {
-    if (m_settings.valid()) {
-        if (doChange(m_settings.lastChange(), m_last_seen_settings)) {
-            m_last_seen_settings = millis_test();
-            m_last_price_fetch = 0;
-            m_last_chart_48h_fetch = 0;
-            m_last_chart_60d_fetch = 0;
-        }
-
-        if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
-            if (fetchCoinPriceChange()) {
-                m_last_price_fetch = millis_test();
-            } else {
+    if (m_succeeded) {
+        if (m_settings.valid()) {
+            if (doChange(m_settings.lastChange(), m_last_seen_settings)) {
+                m_last_seen_settings = millis_test();
                 m_last_price_fetch = 0;
+                m_last_chart_48h_fetch = 0;
+                m_last_chart_60d_fetch = 0;
             }
+
+            if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
+                if (fetchCoinPriceChange()) {
+                    m_last_price_fetch = millis_test();
+                } else {
+                    m_last_price_fetch = 0;
+                }
+            }
+        } else {
+            m_last_price_fetch = 0;
+            m_last_seen_settings = 0;
         }
     } else {
+        ping();
         m_last_price_fetch = 0;
         m_last_seen_settings = 0;
     }
@@ -190,14 +202,16 @@ bool Gecko::fetchIsValidCoin(const char* coin) const
 
 bool Gecko::ping()
 {
-    DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
-
-    if (m_http.read("https://api.coingecko.com/api/v3/ping", doc)) {
-        const char* gecko_says = doc["gecko_says"] | ""; // "(V3) To the Moon!"
-        m_succeeded = strcmp(gecko_says, "(V3) To the Moon!") == 0;
-        return m_succeeded;
+    if (doInterval(m_last_ping, PING_INTERVAL)) {
+        m_succeeded = false;
+        DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
+        if (m_http.read("https://api.coingecko.com/api/v3/ping", doc)) {
+            const char* gecko_says = doc["gecko_says"] | ""; // "(V3) To the Moon!"
+            m_succeeded = strcmp(gecko_says, "(V3) To the Moon!") == 0;
+        }
+        m_last_ping = millis_test();
     }
-    return false;
+    return m_succeeded;
 }
 
 bool Gecko::coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const

@@ -50,16 +50,8 @@ void setup(void)
     Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
     Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 
-    if (gecko.ping()) {
-        display.showAPIOK();
-        delay(1500);
-    }
-
-    if (settings.begin(gecko)) {
-        Serial.println(F("Settings valid!"));
-    } else {
-        Serial.println(F("Settings invalid!"));
-    }
+    gecko.begin();
+    settings.begin(gecko);
 
 #if COIN_THING_SERIAL > 0
     Serial.printf("Settings coin:          >%s<\n", settings.coin());

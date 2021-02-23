@@ -64,10 +64,10 @@ void Display::begin()
 
 void Display::loop()
 {
+    analogWrite(TFT_BL, m_settings.brightness());
+
     m_gecko.loop();
     if (m_gecko.succeeded()) {
-        analogWrite(TFT_BL, m_settings.brightness());
-
         if (m_settings.valid()) {
             showCoin();
         } else {
@@ -75,8 +75,6 @@ void Display::loop()
         }
     } else {
         showAPIFailed();
-        delay(1000);
-        m_gecko.ping();
     }
 }
 
@@ -667,8 +665,6 @@ void Display::showAPIOK()
         m_tft.print(msg);
 
         m_tft.unloadFont();
-
-        drawBmp("/BTC.bmp", 10, 10);
 
         m_last_screen = Screen::API_OK;
     }

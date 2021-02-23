@@ -120,6 +120,7 @@ class Gecko {
 public:
     Gecko(HttpJson& http, Settings& settings);
 
+    void begin();
     void loop();
 
     bool ping();
@@ -157,6 +158,7 @@ private:
     uint32_t m_last_chart_48h_fetch { 0 };
     uint32_t m_last_chart_60d_fetch { 0 };
     uint32_t m_last_seen_settings { 0 };
+    uint32_t m_last_ping { 0 };
 
     HttpJson& m_http;
     Settings& m_settings;
