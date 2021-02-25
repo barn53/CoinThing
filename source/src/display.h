@@ -2,7 +2,6 @@
 #include "settings.h"
 #include "utils.h"
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 #include <TFT_eFEX.h>
 #include <TFT_eSPI.h>
 
@@ -29,11 +28,11 @@ private:
     void renderTitle();
     void heartbeat();
     void renderCoin();
-    Settings::ChartPeriod nextChartPeriod();
-    bool renderChart(Settings::ChartPeriod type);
+    Settings::ChartPeriod nextChartPeriod() const;
+    bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
 
-    void drawBmp(const char* filename, int16_t x, int16_t y);
+    bool drawBmp(const char* filename, int16_t x, int16_t y);
 
     enum class Screen {
         NONE,
@@ -49,8 +48,6 @@ private:
     const Settings& m_settings;
     TFT_eSPI m_tft;
     TFT_eFEX m_fex;
-
-    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> m_neo { 1 };
 
     Screen m_last_screen { Screen::NONE };
     Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };

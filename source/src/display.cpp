@@ -56,10 +56,6 @@ void Display::begin()
 
     pinMode(NEO_AND, OUTPUT);
     digitalWrite(NEO_AND, 1);
-
-    m_neo.Begin();
-    m_neo.SetPixelColor(0, RgbColor(0x00, 0x20, 0xff));
-    m_neo.Show();
 }
 
 void Display::loop()
@@ -192,7 +188,7 @@ void Display::renderCoin()
     m_last_price_update = millis_test();
 }
 
-bool Display::renderChart(Settings::ChartPeriod type)
+bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 {
     LOG_FUNC
 
@@ -203,19 +199,19 @@ bool Display::renderChart(Settings::ChartPeriod type)
     std::vector<gecko_t>::const_iterator beginIt;
     std::vector<gecko_t>::const_iterator endIt;
     std::vector<gecko_t>::const_iterator it;
-    if (type == Settings::ChartPeriod::PERIOD_24_H) {
+    if (chartPeriod == Settings::ChartPeriod::PERIOD_24_H) {
         prices = &m_gecko.chart_48h(refetched);
         beginIt = prices->end() - 24;
         period = F("24h");
-    } else if (type == Settings::ChartPeriod::PERIOD_48_H) {
+    } else if (chartPeriod == Settings::ChartPeriod::PERIOD_48_H) {
         prices = &m_gecko.chart_48h(refetched);
         beginIt = prices->begin();
         period = F("48h");
-    } else if (type == Settings::ChartPeriod::PERIOD_30_D) {
+    } else if (chartPeriod == Settings::ChartPeriod::PERIOD_30_D) {
         prices = &m_gecko.chart_60d(refetched);
         beginIt = prices->end() - 30;
         period = F("30d");
-    } else if (type == Settings::ChartPeriod::PERIOD_60_D) {
+    } else if (chartPeriod == Settings::ChartPeriod::PERIOD_60_D) {
         prices = &m_gecko.chart_60d(refetched);
         beginIt = prices->begin();
         period = F("60d");
@@ -227,12 +223,12 @@ bool Display::renderChart(Settings::ChartPeriod type)
         return false;
     }
 
-    static Settings::ChartPeriod lastType(Settings::ChartPeriod::PERIOD_NONE);
-    if (lastType == type
+    if (m_last_chart_period == chartPeriod
         && !refetched) {
+        Serial.println("Chart unchanged - skip");
+        m_last_chart_update = millis_test();
         return true; // omit overwriting the chart with the same values
     }
-    lastType = type;
 
     int16_t textHeight(14);
 
@@ -270,7 +266,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
 
     ///////////////////////////////////////////////////////////
     // draw period as background
-    if (m_settings.chartStyle() == Settings::ChartStyle::HIGH_LOW) {
+    if (m_settings.chartStyle() != Settings::ChartStyle::HIGH_LOW_FIRST_LAST) {
         m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
 
@@ -444,7 +440,7 @@ bool Display::renderChart(Settings::ChartPeriod type)
 
     ///////////////////////////////////////////////////////////
     // draw chart time period
-    if (m_settings.chartStyle() != Settings::ChartStyle::HIGH_LOW) {
+    if (m_settings.chartStyle() == Settings::ChartStyle::HIGH_LOW_FIRST_LAST) {
         gecko_t last4avg(0.);
         for (auto v = endIt - 4; v != endIt; ++v) {
             last4avg += *v;
@@ -478,10 +474,9 @@ void Display::chartFailed()
     m_tft.setCursor(10, 185);
     m_tft.print(F("Chart update failed!"));
     m_tft.unloadFont();
-    m_last_chart_update = 0;
 }
 
-Settings::ChartPeriod Display::nextChartPeriod()
+Settings::ChartPeriod Display::nextChartPeriod() const
 {
     Settings::ChartPeriod next(m_last_chart_period);
 
@@ -556,10 +551,11 @@ void Display::showCoin()
         || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
         Settings::ChartPeriod next(nextChartPeriod());
 #if COIN_THING_SERIAL > 0
-        Serial.printf("last type: %u -> next type: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
+        Serial.printf("last chartPeriod: %u -> next chartPeriod: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
 #endif
         if (!renderChart(next)) {
             chartFailed();
+            m_last_chart_update = 0;
         }
         m_last_chart_period = next;
     }
@@ -710,11 +706,11 @@ uint32_t read32(File& f)
     return result;
 }
 
-void Display::drawBmp(const char* filename, int16_t x, int16_t y)
+bool Display::drawBmp(const char* filename, int16_t x, int16_t y)
 {
     File f = SPIFFS.open(filename, "r");
     if (!f) {
-        return;
+        return false;
     }
 
     uint32_t seekOffset;
@@ -748,4 +744,5 @@ void Display::drawBmp(const char* filename, int16_t x, int16_t y)
     }
 
     f.close();
+    return true;
 }
