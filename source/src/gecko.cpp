@@ -57,11 +57,13 @@ void Gecko::loop()
     }
 }
 
-const std::vector<gecko_t>& Gecko::chart_48h()
+const std::vector<gecko_t>& Gecko::chart_48h(bool& refetched)
 {
+    refetched = false;
     if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::ChartPeriod::PERIOD_48_H)) {
             m_last_chart_48h_fetch = millis_test();
+            refetched = true;
         } else {
             m_last_chart_48h_fetch = 0;
         }
@@ -69,11 +71,13 @@ const std::vector<gecko_t>& Gecko::chart_48h()
     return m_chart_48h;
 }
 
-const std::vector<gecko_t>& Gecko::chart_60d()
+const std::vector<gecko_t>& Gecko::chart_60d(bool& refetched)
 {
+    refetched = false;
     if (doInterval(m_last_chart_60d_fetch, CHART_30_D_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::ChartPeriod::PERIOD_30_D)) {
             m_last_chart_60d_fetch = millis_test();
+            refetched = true;
         } else {
             m_last_chart_60d_fetch = 0;
         }

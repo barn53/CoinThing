@@ -197,25 +197,26 @@ bool Display::renderChart(Settings::ChartPeriod type)
     LOG_FUNC
 
     const std::vector<gecko_t>* prices(nullptr);
+    bool refetched(false);
 
     String period;
     std::vector<gecko_t>::const_iterator beginIt;
     std::vector<gecko_t>::const_iterator endIt;
     std::vector<gecko_t>::const_iterator it;
     if (type == Settings::ChartPeriod::PERIOD_24_H) {
-        prices = &m_gecko.chart_48h();
+        prices = &m_gecko.chart_48h(refetched);
         beginIt = prices->end() - 24;
         period = F("24h");
     } else if (type == Settings::ChartPeriod::PERIOD_48_H) {
-        prices = &m_gecko.chart_48h();
+        prices = &m_gecko.chart_48h(refetched);
         beginIt = prices->begin();
         period = F("48h");
     } else if (type == Settings::ChartPeriod::PERIOD_30_D) {
-        prices = &m_gecko.chart_60d();
+        prices = &m_gecko.chart_60d(refetched);
         beginIt = prices->end() - 30;
         period = F("30d");
     } else if (type == Settings::ChartPeriod::PERIOD_60_D) {
-        prices = &m_gecko.chart_60d();
+        prices = &m_gecko.chart_60d(refetched);
         beginIt = prices->begin();
         period = F("60d");
     } else {
@@ -225,6 +226,13 @@ bool Display::renderChart(Settings::ChartPeriod type)
     if (prices->empty()) {
         return false;
     }
+
+    static Settings::ChartPeriod lastType(Settings::ChartPeriod::PERIOD_NONE);
+    if (lastType == type
+        && !refetched) {
+        return true; // omit overwriting the chart with the same values
+    }
+    lastType = type;
 
     int16_t textHeight(14);
 

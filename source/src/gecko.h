@@ -133,8 +133,8 @@ public:
     gecko_t price() const { return m_price; }
     gecko_t price_usd() const { return m_price_usd; }
     gecko_t change_pct() const { return m_change_pct; }
-    const std::vector<gecko_t>& chart_48h();
-    const std::vector<gecko_t>& chart_60d();
+    const std::vector<gecko_t>& chart_48h(bool& refetched);
+    const std::vector<gecko_t>& chart_60d(bool& refetched);
 
     uint32_t lastPriceFetch() const { return m_last_price_fetch; }
 
