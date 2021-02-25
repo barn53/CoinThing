@@ -225,7 +225,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 
     if (m_last_chart_period == chartPeriod
         && !refetched) {
-        Serial.println("Chart unchanged - skip");
+        SERIAL_PRINTLN("Chart unchanged - skip");
         m_last_chart_update = millis_test();
         return true; // omit overwriting the chart with the same values
     }
