@@ -2,7 +2,6 @@
 #include "settings.h"
 #include "utils.h"
 #include <Arduino.h>
-#include <TFT_eFEX.h>
 #include <TFT_eSPI.h>
 
 #define NEO_AND PIN_D1 // enable NeoPixel in
@@ -32,7 +31,7 @@ private:
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
 
-    bool drawBmp(const char* filename, int16_t x, int16_t y);
+    bool drawBmp(const String& filename, int16_t x, int16_t y);
 
     enum class Screen {
         NONE,
@@ -47,7 +46,6 @@ private:
     Gecko& m_gecko;
     const Settings& m_settings;
     TFT_eSPI m_tft;
-    TFT_eFEX m_fex;
 
     Screen m_last_screen { Screen::NONE };
     Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };

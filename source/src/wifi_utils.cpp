@@ -4,9 +4,9 @@
 #include "pre.h"
 #include "utils.h"
 #include <Arduino.h>
-
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
+#include <WiFiManager.h>
 
 extern String HostName;
 

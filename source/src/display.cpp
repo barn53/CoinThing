@@ -37,7 +37,6 @@ Display::Display(Gecko& gecko, const Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
     , m_tft(TFT_eSPI())
-    , m_fex(TFT_eFEX(&m_tft))
 {
 }
 
@@ -82,15 +81,11 @@ void Display::heartbeat()
         return;
     }
 
-    if (m_last_screen == Screen::COIN
-        && (((millis_test() - m_last_heartbeat) > 300
-                && (m_heart_beat_count == 0 || m_heart_beat_count == 1 || m_heart_beat_count == 2))
-            || ((millis_test() - m_last_heartbeat) > 1500
-                && (m_heart_beat_count == 3)))) {
+    if (m_last_screen == Screen::COIN && (((millis_test() - m_last_heartbeat) > 300 && (m_heart_beat_count == 0 || m_heart_beat_count == 1 || m_heart_beat_count == 2)) || ((millis_test() - m_last_heartbeat) > 1500 && (m_heart_beat_count == 3)))) {
         if (m_heart_beat_count % 2 == 0) {
-            m_fex.drawJpeg(F("/heart2.jpg"), 220, 0);
+            drawBmp(F("/heart2.jpg"), 220, 0);
         } else {
-            m_fex.drawJpeg(F("/heart.jpg"), 220, 0);
+            drawBmp(F("/heart.jpg"), 220, 0);
         }
         m_last_heartbeat = millis_test();
         ++m_heart_beat_count;
@@ -103,12 +98,11 @@ void Display::renderTitle()
     LOG_FUNC
 
     m_tft.fillScreen(TFT_BLACK);
-    String symbol("/");
+    String symbol(F("/"));
     symbol += m_settings.symbol();
-    symbol += ".jpg";
+    symbol += F(".bmp");
     int16_t x_name(0);
-    if (SPIFFS.exists(symbol)) {
-        m_fex.drawJpeg(symbol, 0, 0);
+    if (drawBmp(symbol, 0, 0)) {
         x_name = 60;
     }
     m_tft.loadFont(F("NotoSans-Regular30"));
@@ -223,8 +217,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         return false;
     }
 
-    if (m_last_chart_period == chartPeriod
-        && !refetched) {
+    if (m_last_chart_period == chartPeriod && !refetched) {
         SERIAL_PRINTLN("Chart unchanged - skip");
         m_last_chart_update = millis_test();
         return true; // omit overwriting the chart with the same values
@@ -533,8 +526,7 @@ void Display::showCoin()
 {
     bool rewrite(false);
 
-    if (m_last_screen != Screen::COIN
-        || doChange(m_settings.lastChange(), m_last_seen_settings)) {
+    if (m_last_screen != Screen::COIN || doChange(m_settings.lastChange(), m_last_seen_settings)) {
         renderTitle();
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_last_seen_settings = millis_test();
@@ -542,13 +534,11 @@ void Display::showCoin()
     }
     heartbeat();
 
-    if (rewrite
-        || doChange(m_gecko.lastPriceFetch(), m_last_price_update)) {
+    if (rewrite || doChange(m_gecko.lastPriceFetch(), m_last_price_update)) {
         renderCoin();
     }
 
-    if (rewrite
-        || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
+    if (rewrite || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
         Settings::ChartPeriod next(nextChartPeriod());
 #if COIN_THING_SERIAL > 0
         Serial.printf("last chartPeriod: %u -> next chartPeriod: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
@@ -706,11 +696,12 @@ uint32_t read32(File& f)
     return result;
 }
 
-bool Display::drawBmp(const char* filename, int16_t x, int16_t y)
+bool Display::drawBmp(const String& filename, int16_t x, int16_t y)
 {
+    bool ret(false);
     File f = SPIFFS.open(filename, "r");
     if (!f) {
-        return false;
+        return ret;
     }
 
     uint32_t seekOffset;
@@ -738,11 +729,11 @@ bool Display::drawBmp(const char* filename, int16_t x, int16_t y)
                 f.read(lineBuffer, sizeof(lineBuffer));
                 m_tft.pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);
             }
-
+            ret = true;
             m_tft.setSwapBytes(oldSwapBytes);
         }
     }
 
     f.close();
-    return true;
+    return ret;
 }

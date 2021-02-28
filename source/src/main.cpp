@@ -9,7 +9,6 @@
 #include "wifi_utils.h"
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>
 
 ESP8266WebServer server(80);
 

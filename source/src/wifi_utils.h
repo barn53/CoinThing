@@ -1,6 +1,6 @@
 #pragma once
-#include <WiFiManager.h>
 
+class WiFiManager;
 class Display;
 
 void wifiSleep();
