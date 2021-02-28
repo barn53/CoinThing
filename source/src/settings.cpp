@@ -1,15 +1,9 @@
 #include "settings.h"
+#include "common.h"
 #include "gecko.h"
 #include "utils.h"
-#include <Arduino.h>
 #include <ArduinoJson.h>
 #include <StreamUtils.h>
-
-// Call up the SPIFFS FLASH filing system this is part of the ESP Core
-#define FS_NO_GLOBALS
-#include <FS.h>
-
-using fs::File;
 
 #define MIN_BRIGHTNESS 10
 

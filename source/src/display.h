@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 
-#define NEO_AND PIN_D1 // enable NeoPixel in
 #define TFT_BL PIN_D2 // Backlight PWM
 
 class Gecko;

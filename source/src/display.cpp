@@ -1,8 +1,8 @@
 #include "display.h"
+#include "common.h"
 #include "gecko.h"
 #include "pre.h"
 #include "settings.h"
-#include <Arduino.h>
 #include <ESP_QRcode.h>
 #include <SPI.h>
 #include <locale>
@@ -10,11 +10,6 @@
 
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
-
-#define FS_NO_GLOBALS
-#include <FS.h>
-
-using fs::File;
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
@@ -52,9 +47,6 @@ void Display::begin()
 
     analogWriteRange(std::numeric_limits<uint8_t>::max());
     analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
-
-    pinMode(NEO_AND, OUTPUT);
-    digitalWrite(NEO_AND, 1);
 }
 
 void Display::loop()
@@ -83,9 +75,9 @@ void Display::heartbeat()
 
     if (m_last_screen == Screen::COIN && (((millis_test() - m_last_heartbeat) > 300 && (m_heart_beat_count == 0 || m_heart_beat_count == 1 || m_heart_beat_count == 2)) || ((millis_test() - m_last_heartbeat) > 1500 && (m_heart_beat_count == 3)))) {
         if (m_heart_beat_count % 2 == 0) {
-            drawBmp(F("/heart2.jpg"), 220, 0);
+            drawBmp(F("/heart2.bmp"), 220, 0);
         } else {
-            drawBmp(F("/heart.jpg"), 220, 0);
+            drawBmp(F("/heart.bmp"), 220, 0);
         }
         m_last_heartbeat = millis_test();
         ++m_heart_beat_count;
@@ -699,11 +691,11 @@ uint32_t read32(File& f)
 bool Display::drawBmp(const String& filename, int16_t x, int16_t y)
 {
     bool ret(false);
-    File f = SPIFFS.open(filename, "r");
-    if (!f) {
+    if (!SPIFFS.exists(filename)) {
         return ret;
     }
 
+    File f = SPIFFS.open(filename, "r");
     uint32_t seekOffset;
     uint16_t w, h, row;
 
@@ -717,14 +709,14 @@ bool Display::drawBmp(const String& filename, int16_t x, int16_t y)
         h = read32(f); // height 4 bytes
 
         if ((read16(f) == 1) // number of planes 2 bytes
-            && (read16(f) == 16) // bit count 2 bytes
+            && (read16(f) == 16) // bit count 2 bytes -> R5 G6 B5
             && (read32(f) == 3)) { // compression 4 bytes
             y += h - 1;
             bool oldSwapBytes = m_tft.getSwapBytes();
             m_tft.setSwapBytes(true);
             f.seek(seekOffset);
 
-            uint8_t lineBuffer[w * 2];
+            uint8_t lineBuffer[(w * 2) + ((w * 2) % 4)];
             for (row = 0; row < h; ++row) {
                 f.read(lineBuffer, sizeof(lineBuffer));
                 m_tft.pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);

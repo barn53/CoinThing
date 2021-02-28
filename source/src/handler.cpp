@@ -5,11 +5,6 @@
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
-#include <FS.h>
-
-// Call up the SPIFFS FLASH filing system this is part of the ESP Core
-#define FS_NO_GLOBALS
-#include <FS.h>
 
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
