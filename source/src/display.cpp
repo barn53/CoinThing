@@ -119,7 +119,7 @@ void Display::renderTitle()
     m_tft.unloadFont();
     m_tft.loadFont(F("NotoSans-Regular25"));
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    m_tft.setCursor(x_name, 30);
+    m_tft.setCursor(x_name, 35);
     m_tft.print(m_settings.symbol());
     m_tft.print(" - ");
     String upperCurrency(m_settings.currency());
