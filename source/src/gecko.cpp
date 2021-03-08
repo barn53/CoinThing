@@ -32,8 +32,8 @@ void Gecko::loop()
 {
     if (m_succeeded) {
         if (m_settings.valid()) {
-            if (doChange(m_settings.lastChange(), m_last_seen_settings)) {
-                m_last_seen_settings = millis_test();
+            if (m_settings.lastChange() != m_last_seen_settings) {
+                m_last_seen_settings = m_settings.lastChange();
                 m_last_price_fetch = 0;
                 m_last_chart_48h_fetch = 0;
                 m_last_chart_60d_fetch = 0;
@@ -59,6 +59,8 @@ void Gecko::loop()
 
 const std::vector<gecko_t>& Gecko::chart_48h(bool& refetched)
 {
+    LOG_FUNC
+
     refetched = false;
     if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::ChartPeriod::PERIOD_48_H)) {
@@ -73,6 +75,8 @@ const std::vector<gecko_t>& Gecko::chart_48h(bool& refetched)
 
 const std::vector<gecko_t>& Gecko::chart_60d(bool& refetched)
 {
+    LOG_FUNC
+
     refetched = false;
     if (doInterval(m_last_chart_60d_fetch, CHART_30_D_FETCH_INTERVAL)) {
         if (fetchCoinChart(Settings::ChartPeriod::PERIOD_30_D)) {
@@ -168,6 +172,8 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
 
 bool Gecko::fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const
 {
+    LOG_FUNC
+
     String url(F("https://api.coingecko.com/api/v3/coins/"));
     url += coin;
     url += F("?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false");
@@ -191,6 +197,8 @@ bool Gecko::fetchCoinDetails(const char* coin, String& symbolInto, String& nameI
 
 bool Gecko::fetchIsValidCoin(const char* coin) const
 {
+    LOG_FUNC
+
     String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
     url += coin;
     url += F("&vs_currencies=usd");
@@ -220,6 +228,8 @@ bool Gecko::ping()
 
 bool Gecko::coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const
 {
+    LOG_FUNC
+
     String upperCoinOrSymbol(coinOrSymbol);
     upperCoinOrSymbol.toUpperCase();
 
@@ -241,6 +251,8 @@ bool Gecko::coinDetails(const char* coinOrSymbol, String& coinInto, String& symb
 
 bool Gecko::isValidCoin(const char* coinOrSymbol) const
 {
+    LOG_FUNC
+
     String upperCoinOrSymbol(coinOrSymbol);
     upperCoinOrSymbol.toUpperCase();
 

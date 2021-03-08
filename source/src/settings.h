@@ -48,7 +48,7 @@ public:
     Status set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chartPeriod, uint8_t chartStyle, bool heartbeat);
     bool setBrightness(uint8_t b);
 
-    uint32_t lastChange() const { return m_lastChange; }
+    uint32_t lastChange() const { return m_last_change; }
 
 private:
     String m_coin;
@@ -62,5 +62,5 @@ private:
     uint8_t m_brightness { std::numeric_limits<uint8_t>::max() };
     bool m_valid { false };
 
-    uint32_t m_lastChange { 0 };
+    uint32_t m_last_change { 0 };
 };
