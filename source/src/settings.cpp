@@ -15,7 +15,7 @@ bool Settings::begin(const Gecko& gecko)
 {
     read(gecko);
     write();
-    m_lastChange = millis_test();
+    m_last_change = millis_test();
 
     return m_valid;
 }
@@ -66,7 +66,7 @@ Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char*
             m_heartbeat = heartbeat;
 
             m_valid = true;
-            m_lastChange = millis_test();
+            m_last_change = millis_test();
             write();
         } else {
             ret = Status::CURRENCY_INVALID;

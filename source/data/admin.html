@@ -54,6 +54,14 @@
                 <hr>
                 <p class="text-danger"><b>Danger-Zone</b></p>
                 <p>
+                    <button id="wifiSleep" class="btn btn-warning btn-sm">WiFi Sleep</button>
+                    &nbsp;<span id="forWifiSleep" class="text-warning"></span>
+                </p>
+                <p>
+                    <button id="wifiWake" class="btn btn-warning btn-sm">WiFi Wake</button>
+                    &nbsp;<span id="forWifiWake" class="text-warning"></span>
+                </p>
+                <p>
                     <button id="resetESP" class="btn btn-warning btn-sm">Reset ESP</button>
                     &nbsp;<span id="forResetESP" class="text-warning"></span>
                 </p>
@@ -119,6 +127,20 @@
                 $.get("/settings.json", function (data) {
                     $("#forSettings").append(JSON.stringify(data))
                 }).fail(function () { $("#forSettings").append("failure") })
+            })
+
+            $('#wifiSleep').off().click(function (e) {
+                $("#forWifiSleep").empty()
+                $.get("/action/wifi/sleep", function (data) {
+                    $("#forWifiSleep").append(data)
+                }).fail(function () { $("#forwifiSleep").append("failure") })
+            })
+
+            $('#wifiWake').off().click(function (e) {
+                $("#forWifiWake").empty()
+                $.get("/action/wifi/wake", function (data) {
+                    $("#forWifiWake").append(data)
+                }).fail(function () { $("#forwifiWake").append("failure") })
             })
 
             $('#resetESP').off().click(function (e) {

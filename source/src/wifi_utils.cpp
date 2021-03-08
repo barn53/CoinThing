@@ -9,7 +9,6 @@
 
 extern String HostName;
 
-#if 0
 void wifiSleep()
 {
     WiFi.disconnect();
@@ -25,6 +24,7 @@ void wifiWake()
     WiFi.mode(WIFI_STA);
 }
 
+#if 0
 void setupWiFi()
 {
     wifiWake();

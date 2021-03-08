@@ -1,4 +1,5 @@
 #include "http_json.h"
+#include "utils.h"
 #include <Arduino.h>
 #include <StreamUtils.h>
 
@@ -19,6 +20,8 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc)
 
 bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDocument& jsonFilter)
 {
+    LOG_FUNC
+
 #if COIN_THING_SERIAL > 0
     Serial.printf("read from URL: %s\n", url);
 #endif

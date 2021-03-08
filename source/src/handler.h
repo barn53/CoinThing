@@ -15,6 +15,8 @@ private:
     static bool streamFile(const char* filename);
 
     bool handleSet() const;
+    bool handleWiFiSleep() const;
+    bool handleWiFiWake() const;
     bool handleResetESP() const;
     bool handleResetSettings() const;
     bool handleResetWiFi() const;

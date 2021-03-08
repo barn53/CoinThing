@@ -2,9 +2,9 @@
 #include <Arduino.h>
 
 #if COIN_THING_SERIAL > 0
-#define LOG_FUNC            \
-    Serial.print(__func__); \
-    Serial.println("()");
+#define LOG_FUNC         \
+    Serial.print("-> "); \
+    Serial.println(__PRETTY_FUNCTION__);
 #else
 #define LOG_FUNC
 #endif
@@ -105,4 +105,3 @@ const char* getCurrencySymbol(const char* currency);
 
 uint32_t millis_test();
 bool doInterval(uint32_t change, uint32_t interval);
-bool doChange(uint32_t change, uint32_t seen);

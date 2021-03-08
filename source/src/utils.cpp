@@ -143,7 +143,13 @@ bool isCurrency(const char* currency)
 
 uint32_t millis_test()
 {
-    return millis() + 1;
+    uint32_t ret(millis() + (0xffffffff - 10000));
+    static uint32_t last(ret);
+    if (ret < last) {
+        Serial.println("millis() overflow");
+        last = ret;
+    }
+    return ret;
 }
 
 bool doInterval(uint32_t change, uint32_t interval)
@@ -152,17 +158,6 @@ bool doInterval(uint32_t change, uint32_t interval)
         return true;
     }
     if ((millis_test() - change) >= interval) {
-        return true;
-    }
-    return false;
-}
-
-bool doChange(uint32_t change, uint32_t seen)
-{
-    if (seen == 0) {
-        return true;
-    }
-    if (change > seen) {
         return true;
     }
     return false;

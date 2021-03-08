@@ -65,6 +65,21 @@ void Display::loop()
     }
 }
 
+void Display::showWiFiConnected()
+{
+    if (WiFi.isConnected()) {
+        if (m_shows_wifi_not_connected) {
+            m_tft.fillCircle(230, 40, 10, RGB(0x05, 0x05, 0x05));
+            m_shows_wifi_not_connected = false;
+        }
+    } else {
+        if (!m_shows_wifi_not_connected) {
+            m_tft.fillCircle(230, 40, 10, TFT_RED);
+            m_shows_wifi_not_connected = true;
+        }
+    }
+}
+
 void Display::heartbeat()
 {
     if (!m_settings.heartbeat()) {
@@ -171,7 +186,7 @@ void Display::renderCoin()
 
     delay(1000);
 
-    m_last_price_update = millis_test();
+    m_last_price_update = m_gecko.lastPriceFetch();
 }
 
 bool Display::renderChart(Settings::ChartPeriod chartPeriod)
@@ -518,15 +533,16 @@ void Display::showCoin()
 {
     bool rewrite(false);
 
-    if (m_last_screen != Screen::COIN || doChange(m_settings.lastChange(), m_last_seen_settings)) {
+    if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
         renderTitle();
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
-        m_last_seen_settings = millis_test();
+        m_last_seen_settings = m_settings.lastChange();
         rewrite = true;
     }
     heartbeat();
+    showWiFiConnected();
 
-    if (rewrite || doChange(m_gecko.lastPriceFetch(), m_last_price_update)) {
+    if (rewrite || m_gecko.lastPriceFetch() != m_last_price_update) {
         renderCoin();
     }
 
