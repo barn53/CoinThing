@@ -11,6 +11,10 @@ html {
     min-height: 100%;
 }
 
+small{
+    font-size: .7em;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
