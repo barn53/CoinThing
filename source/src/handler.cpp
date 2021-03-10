@@ -5,7 +5,6 @@
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
-#include "wifi_utils.h"
 
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
@@ -39,24 +38,6 @@ Handler::Handler(const Gecko& gecko, Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
 {
-}
-
-bool Handler::handleWiFiSleep() const
-{
-    server.send(200, F("text/plain"), "1");
-
-    delay(200);
-    wifiSleep();
-    return true;
-}
-
-bool Handler::handleWiFiWake() const
-{
-    server.send(200, F("text/plain"), "1");
-
-    delay(200);
-    wifiWake();
-    return true;
 }
 
 bool Handler::handleResetESP() const
@@ -171,6 +152,7 @@ bool Handler::handleSet() const
             server.arg(F("currency")).c_str(),
             static_cast<uint8_t>(server.arg(F("number_format")).toInt()),
             static_cast<uint8_t>(server.arg(F("chart_period")).toInt()),
+            static_cast<uint8_t>(server.arg(F("chart_swap_interval")).toInt()),
             static_cast<uint8_t>(server.arg(F("chart_style")).toInt()),
             server.arg(F("heartbeat")).toInt() != 0));
 
@@ -210,10 +192,6 @@ bool Handler::handleAction() const
 
     if (path == F("/action/set")) {
         return handleSet();
-    } else if (path == F("/action/wifi/sleep")) {
-        return handleWiFiSleep();
-    } else if (path == F("/action/wifi/wake")) {
-        return handleWiFiWake();
     } else if (path == F("/action/reset/esp")) {
         return handleResetESP();
     } else if (path == F("/action/reset/settings")) {

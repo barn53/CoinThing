@@ -148,12 +148,12 @@ uint32_t millis_test()
     static uint32_t last(ret);
     if (ret < last) {
         Serial.println("millis() overflow");
-        last = ret;
     }
+    last = ret;
     return ret;
-#endif
-
+#else
     return millis();
+#endif
 }
 
 bool doInterval(uint32_t change, uint32_t interval)

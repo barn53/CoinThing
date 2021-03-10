@@ -54,15 +54,16 @@ void setup(void)
     settings.begin(gecko);
 
 #if COIN_THING_SERIAL > 0
-    Serial.printf("Settings coin:          >%s<\n", settings.coin());
-    Serial.printf("Settings currency:      >%s<\n", settings.currency());
-    Serial.printf("Settings number format: >%u<\n", settings.numberFormat());
-    Serial.printf("Settings chart period:  >%u<\n", settings.chartPeriod());
-    Serial.printf("Settings chart style:   >%u<\n", settings.chartStyle());
-    Serial.printf("Settings heart beat:    >%s<\n", (settings.heartbeat() ? "true" : "false"));
-    Serial.printf("Settings brightness:    >%u<\n", settings.brightness());
-    Serial.printf("Settings name:          >%s<\n", settings.name());
-    Serial.printf("Settings symbol:        >%s<\n", settings.symbol());
+    Serial.printf("Settings coin:                >%s<\n", settings.coin());
+    Serial.printf("Settings currency:            >%s<\n", settings.currency());
+    Serial.printf("Settings number format:       >%u<\n", settings.numberFormat());
+    Serial.printf("Settings chart period:        >%u<\n", settings.chartPeriod());
+    Serial.printf("Settings chart swap interval: >%u<\n", settings.chartSwapInterval());
+    Serial.printf("Settings chart style:         >%u<\n", settings.chartStyle());
+    Serial.printf("Settings heart beat:          >%s<\n", (settings.heartbeat() ? "true" : "false"));
+    Serial.printf("Settings brightness:          >%u<\n", settings.brightness());
+    Serial.printf("Settings name:                >%s<\n", settings.name());
+    Serial.printf("Settings symbol:              >%s<\n", settings.symbol());
 #endif
 
     server.onNotFound([]() { // If the client requests any URI

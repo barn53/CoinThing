@@ -119,6 +119,28 @@
                     </div>
 
                     <div class="form-group">
+                        <label><b>Chart Swap Interval</b></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="csi" id="csi_0" value="0">
+                                <label class="form-check-label" for="csi_0">5 sec</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="csi" id="csi_1" value="1">
+                                <label class="form-check-label" for="csi_1">30 sec</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="csi" id="csi_2" value="2">
+                                <label class="form-check-label" for="csi_2">1 min</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="csi" id="csi_3" value="3">
+                                <label class="form-check-label" for="csi_3">5 min</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label><b>Chart Style</b></label>
                         <div>
                             <div class="form-check form-check-inline">
@@ -194,6 +216,7 @@
             $("#currency").val(settings['currency'] || '')
             number_format = settings['number_format'] || 0
             chart_period = settings['chart_period'] || 0
+            chart_swap_interval = settings['chart_swap_interval'] || 0
             chart_style = settings['chart_style'] || 0
             heartbeat = settings['heartbeat'] || 0
 
@@ -213,6 +236,10 @@
             if ((chart_period & 8) > 0) {
                 $("#cp_8")[0].checked = true
             }
+
+            try {
+                $("#csi_" + chart_swap_interval)[0].checked = true
+            } catch (error) { }
 
             try {
                 $("#cs_" + chart_style)[0].checked = true
@@ -288,6 +315,21 @@
                 return
             }
 
+            chart_swap_interval = -1
+            if ($("#csi_0")[0].checked) {
+                chart_swap_interval = 0
+            } else if ($("#csi_1")[0].checked) {
+                chart_swap_interval = 1
+            } else if ($("#csi_2")[0].checked) {
+                chart_swap_interval = 2
+            } else if ($("#csi_3")[0].checked) {
+                chart_swap_interval = 3
+            }
+            if (chart_swap_interval === -1) {
+                showError(": No chart swap interval selected!")
+                return
+            }
+
             chart_style = -1
             if ($("#cs_0")[0].checked) {
                 chart_style = 0
@@ -310,6 +352,7 @@
                 + "&currency=" + $("#currency").val()
                 + "&number_format=" + number_format
                 + "&chart_period=" + chart_period
+                + "&chart_swap_interval=" + chart_swap_interval
                 + "&chart_style=" + chart_style
                 + "&heartbeat=" + heartbeat, function (data) {
 

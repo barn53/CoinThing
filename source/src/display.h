@@ -22,8 +22,11 @@ public:
     void showAPIOK();
     void showAPIFailed();
 
+    void showUpdated();
+    void showNotUpdated();
+
 private:
-    void showWiFiConnected();
+    void wifiConnect();
     void renderTitle();
     void heartbeat();
     void renderCoin();
@@ -55,6 +58,8 @@ private:
     uint8_t m_heart_beat_count { 0 };
     uint32_t m_last_price_update { 0 };
     uint32_t m_last_chart_update { 0 };
+    uint32_t m_display_start { 0 };
+    bool m_show_api_ok { true };
 
     bool m_shows_wifi_not_connected { false };
 };

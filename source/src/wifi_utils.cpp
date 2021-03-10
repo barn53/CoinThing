@@ -9,6 +9,7 @@
 
 extern String HostName;
 
+#if 0
 void wifiSleep()
 {
     WiFi.disconnect();
@@ -24,7 +25,6 @@ void wifiWake()
     WiFi.mode(WIFI_STA);
 }
 
-#if 0
 void setupWiFi()
 {
     wifiWake();
@@ -46,43 +46,61 @@ void setupWiFi()
 
 void handleWifiManager(WiFiManager& wifiManager, Display& display)
 {
-    bool forUpdate(false);
+    if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
+        File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "r");
+        String beforeVersion(f.readString());
+        f.close();
+        SPIFFS.remove(VERSION_BEFORE_UPDATE_FILE);
 
-    WiFi.hostname(HostName);
+        String currentVersion(VERSION);
+        if (beforeVersion != currentVersion) {
+            display.showUpdated();
+        } else {
+            display.showNotUpdated();
+        }
+        delay(2500);
+    }
+
     if (SPIFFS.exists(FOR_UPDATE_FILE)) {
         SPIFFS.remove(FOR_UPDATE_FILE);
+        File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
+        f.print(VERSION);
+        f.close();
         SERIAL_PRINTLN(F("CoinThing in update mode"));
-        forUpdate = true;
+
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
             SERIAL_PRINTLN("AP Callback For Update");
             display.showUpdateQR();
         });
+
+        wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
     } else {
+        const char* menu[] = { "wifi" };
+        wifiManager.setMenu(menu, 1);
+
+        WiFi.hostname(HostName);
+
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
             SERIAL_PRINTLN("AP Callback For WiFi Config");
             display.showAPQR();
         });
-    }
 
-    wifiManager.setSaveConfigCallback([&]() {
-        SERIAL_PRINTLN("Save Config Callback");
-        if (wifiManager.getWiFiIsSaved()) {
-            SERIAL_PRINTLN(F("WiFi Saved - reset"));
-        } else {
-            SERIAL_PRINTLN(F("WiFi NOT Saved"));
+        wifiManager.setSaveConfigCallback([&]() {
+            SERIAL_PRINTLN("Save Config Callback");
+            if (wifiManager.getWiFiIsSaved()) {
+                SERIAL_PRINTLN(F("WiFi Saved - reset"));
+            } else {
+                SERIAL_PRINTLN(F("WiFi NOT Saved"));
+            }
+            delay(1000);
+            ESP.reset();
+        });
+
+        if (!wifiManager.autoConnect(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
+            SERIAL_PRINTLN(F("failed to connect, we should reset and see if it connects"));
+            delay(3000);
+            ESP.reset();
+            delay(5000);
         }
-        delay(1000);
-        ESP.reset();
-    });
-
-    if (!wifiManager.autoConnect(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
-        SERIAL_PRINTLN(F("failed to connect, we should reset and see if it connects"));
-        delay(3000);
-        ESP.reset();
-        delay(5000);
-    }
-
-    if (forUpdate) {
-        wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
     }
 }

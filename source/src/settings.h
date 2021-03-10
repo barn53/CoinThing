@@ -2,9 +2,6 @@
 #include "utils.h"
 #include <Arduino.h>
 
-#define USER_CONFIG "/settings.json"
-#define DYNAMIC_JSON_CONFIG_SIZE 256
-
 class Gecko;
 
 class Settings {
@@ -19,6 +16,13 @@ public:
         HIGH_LOW,
         HIGH_LOW_FIRST_LAST
     };
+    enum class ChartSwapInterval : uint8_t {
+        SEC_5 = 0,
+        SEC_30,
+        MIN_1,
+        MIN_5
+    };
+
     enum ChartPeriod : uint8_t {
         PERIOD_NONE = 0,
         PERIOD_24_H = 1,
@@ -38,6 +42,7 @@ public:
     const char* currency() const { return m_currency.c_str(); }
     NumberFormat numberFormat() const { return m_number_format; }
     uint8_t chartPeriod() const { return m_chart_period; }
+    ChartSwapInterval chartSwapInterval() const { return m_chart_swap_interval; }
     ChartStyle chartStyle() const { return m_chart_style; }
     bool heartbeat() const { return m_heartbeat; }
     const char* name() const { return m_name.c_str(); }
@@ -45,7 +50,14 @@ public:
     uint8_t brightness() const;
     bool valid() const { return m_valid; }
 
-    Status set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chartPeriod, uint8_t chartStyle, bool heartbeat);
+    Status set(const Gecko& gecko,
+        const char* coin,
+        const char* currency,
+        uint8_t number_format,
+        uint8_t chart_period,
+        uint8_t chart_swap_interval,
+        uint8_t chart_style,
+        bool heartbeat);
     bool setBrightness(uint8_t b);
 
     uint32_t lastChange() const { return m_last_change; }
@@ -55,6 +67,7 @@ private:
     String m_currency;
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };
+    ChartSwapInterval m_chart_swap_interval { ChartSwapInterval::SEC_5 };
     ChartStyle m_chart_style { ChartStyle::SIMPLE };
     bool m_heartbeat { true };
     String m_name;

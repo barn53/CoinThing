@@ -6,6 +6,8 @@
 #include <StreamUtils.h>
 
 #define MIN_BRIGHTNESS 10
+#define USER_CONFIG "/settings.json"
+#define DYNAMIC_JSON_CONFIG_SIZE 384
 
 Settings::Settings()
 {
@@ -38,7 +40,14 @@ bool Settings::setBrightness(uint8_t b)
     return true;
 }
 
-Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char* currency, uint8_t number_format, uint8_t chart_period, uint8_t chart_style, bool heartbeat)
+Settings::Status Settings::set(const Gecko& gecko,
+    const char* coin,
+    const char* currency,
+    uint8_t number_format,
+    uint8_t chart_period,
+    uint8_t chart_swap_interval,
+    uint8_t chart_style,
+    bool heartbeat)
 {
     Status ret = Status::OK;
     String cleanCoin(cleanUp(coin));
@@ -57,6 +66,11 @@ Settings::Status Settings::set(const Gecko& gecko, const char* coin, const char*
                 chart_period = ChartPeriod::ALL_PERIODS;
             }
             m_chart_period = chart_period;
+
+            if (chart_swap_interval > static_cast<uint8_t>(ChartSwapInterval::MIN_5)) {
+                chart_swap_interval = static_cast<uint8_t>(ChartSwapInterval::MIN_5);
+            }
+            m_chart_swap_interval = static_cast<ChartSwapInterval>(chart_swap_interval);
 
             if (chart_style > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
                 chart_style = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
@@ -99,7 +113,8 @@ bool Settings::read(const Gecko& gecko)
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
             m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-            m_chart_period = static_cast<ChartPeriod>(doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H));
+            m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
+            m_chart_swap_interval = static_cast<ChartSwapInterval>(doc["chart_swap_interval"] | static_cast<uint8_t>(ChartSwapInterval::SEC_5));
             m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
             m_heartbeat = doc["heartbeat"] | true;
 
@@ -114,6 +129,10 @@ bool Settings::read(const Gecko& gecko)
 
             if (m_chart_period > ChartPeriod::ALL_PERIODS) {
                 m_chart_period = ChartPeriod::ALL_PERIODS;
+            }
+
+            if (m_chart_swap_interval > ChartSwapInterval::MIN_5) {
+                m_chart_swap_interval = ChartSwapInterval::MIN_5;
             }
 
             if (m_chart_style > ChartStyle::HIGH_LOW_FIRST_LAST) {
@@ -146,6 +165,7 @@ void Settings::write()
             doc["currency"] = m_currency.c_str();
             doc["number_format"] = static_cast<uint8_t>(m_number_format);
             doc["chart_period"] = static_cast<uint8_t>(m_chart_period);
+            doc["chart_swap_interval"] = static_cast<uint8_t>(m_chart_swap_interval);
             doc["chart_style"] = static_cast<uint8_t>(m_chart_style);
             doc["heartbeat"] = m_heartbeat;
             doc["name"] = m_name.c_str();

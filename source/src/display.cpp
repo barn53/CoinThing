@@ -24,8 +24,6 @@
 #define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
 
-#define CHART_UPDATE_INTERVAL (5 * 1000)
-
 extern String HostName;
 
 Display::Display(Gecko& gecko, const Settings& settings)
@@ -55,17 +53,28 @@ void Display::loop()
 
     m_gecko.loop();
     if (m_gecko.succeeded()) {
-        if (m_settings.valid()) {
-            showCoin();
+        if (m_show_api_ok) {
+            if (m_display_start == 0) {
+                m_display_start = millis_test();
+            }
+            if (millis_test() - m_display_start < 3000) {
+                showAPIOK();
+            } else {
+                m_show_api_ok = false;
+            }
         } else {
-            showSettingsQR();
+            if (m_settings.valid()) {
+                showCoin();
+            } else {
+                showSettingsQR();
+            }
         }
     } else {
         showAPIFailed();
     }
 }
 
-void Display::showWiFiConnected()
+void Display::wifiConnect()
 {
     uint8_t yWiFi(0);
     if (m_settings.heartbeat()) {
@@ -542,16 +551,32 @@ void Display::showCoin()
         renderTitle();
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_last_seen_settings = m_settings.lastChange();
+        m_shows_wifi_not_connected = false;
         rewrite = true;
     }
     heartbeat();
-    showWiFiConnected();
+    wifiConnect();
 
     if (rewrite || m_gecko.lastPriceFetch() != m_last_price_update) {
         renderCoin();
     }
 
-    if (rewrite || doInterval(m_last_chart_update, CHART_UPDATE_INTERVAL)) {
+    uint32_t interval(5 * 1000);
+    switch (m_settings.chartSwapInterval()) {
+    case Settings::ChartSwapInterval::SEC_5:
+        break;
+    case Settings::ChartSwapInterval::SEC_30:
+        interval = (30 * 1000);
+        break;
+    case Settings::ChartSwapInterval::MIN_1:
+        interval = (60 * 1000);
+        break;
+    case Settings::ChartSwapInterval::MIN_5:
+        interval = (5 * 60 * 1000);
+        break;
+    }
+
+    if (rewrite || doInterval(m_last_chart_update, interval)) {
         Settings::ChartPeriod next(nextChartPeriod());
 #if COIN_THING_SERIAL > 0
         Serial.printf("last chartPeriod: %u -> next chartPeriod: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
@@ -689,6 +714,47 @@ void Display::showAPIFailed()
         m_tft.unloadFont();
         m_last_screen = Screen::API_FAILED;
     }
+}
+
+void Display::showUpdated()
+{
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.fillScreen(RGB(0x0, 0x80, 0x30));
+    m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x80, 0x30));
+
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular20"));
+    msg = F("Updated To Version");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
+    m_tft.print(msg);
+
+    msg = VERSION;
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 145);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+}
+
+void Display::showNotUpdated()
+{
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.fillScreen(RGB(0x80, 0x30, 0x0));
+    m_tft.setTextColor(TFT_WHITE, RGB(0x80, 0x30, 0x0));
+
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular30"));
+
+    msg = F("Not Updated");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
+    m_tft.print(msg);
+    m_tft.unloadFont();
 }
 
 uint16_t read16(File& f)
