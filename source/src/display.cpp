@@ -67,14 +67,19 @@ void Display::loop()
 
 void Display::showWiFiConnected()
 {
+    uint8_t yWiFi(0);
+    if (m_settings.heartbeat()) {
+        yWiFi = 25;
+    }
+
     if (WiFi.isConnected()) {
         if (m_shows_wifi_not_connected) {
-            m_tft.fillRect(215, 25, 25, 25, TFT_BLACK);
+            m_tft.fillRect(215, yWiFi, 25, 25, TFT_BLACK);
             m_shows_wifi_not_connected = false;
         }
     } else {
         if (!m_shows_wifi_not_connected) {
-            drawBmp(F("/nowifi.bmp"), 215, 25);
+            drawBmp(F("/nowifi.bmp"), 215, yWiFi);
             m_shows_wifi_not_connected = true;
         }
     }
