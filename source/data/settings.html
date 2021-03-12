@@ -55,13 +55,19 @@
             <div class="col-sm-7 text-left">
                 <form>
                     <div class="form-group">
-                        <label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label>
-                        <input type="email" class="form-control" id="coin" placeholder="Coin Gecko ID">
+                        <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
+                        <div class="btn-group">
+                            <input type="email" class="form-control" id="coin" placeholder="Coin Gecko ID">
+                            <span id="coinclear" class="fa fa-times-circle-o inputclear"></span>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="currency"><b>Currency (e.g. USD, EUR)</b></label>
-                        <input type="email" class="form-control" id="currency" placeholder="Currency">
+                        <div><label for="currency"><b>Currency (e.g. USD, EUR)</b></label></div>
+                        <div class="btn-group">
+                            <input type="email" class="form-control" id="currency" placeholder="Currency">
+                            <span id="currencyclear" class="fa fa-times-circle-o inputclear"></span>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -393,6 +399,9 @@
                     clickApply()
                 }
             })
+            $("#coinclear").off().click(function () {
+                $("#coin").val('');
+            });
 
             $("#currency").off().on('keyup', function (e) {
                 if (event.keyCode === 13) {
@@ -400,6 +409,9 @@
                     clickApply()
                 }
             })
+            $("#currencyclear").off().click(function () {
+                $("#currency").val('');
+            });
 
         })
 
