@@ -692,28 +692,6 @@ void Display::showSettingsQR()
     }
 }
 
-void Display::showTest()
-{
-    m_tft.loadFont(F("NotoSans-Regular50"));
-    m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
-    m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
-
-    String msg = F("j");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
-    Serial.println("-------------------");
-    m_tft.print(msg);
-    Serial.println("-------------------");
-
-    msg = F("x");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 120);
-    Serial.println("-------------------");
-    m_tft.print(msg);
-    Serial.println("-------------------");
-
-    m_tft.unloadFont();
-    m_last_screen = Screen::API_OK;
-}
-
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
@@ -798,6 +776,24 @@ void Display::showNotUpdated()
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
     m_tft.print(msg);
     m_tft.unloadFont();
+}
+
+void Display::showTest()
+{
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
+    m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
+
+    String msg = F("j");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+
+    msg = F("x");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 120);
+    m_tft.print(msg);
+
+    m_tft.unloadFont();
+    m_last_screen = Screen::API_OK;
 }
 
 uint16_t read16(File& f)

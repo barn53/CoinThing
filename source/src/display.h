@@ -19,12 +19,13 @@ public:
     void showAPQR();
     void showUpdateQR();
     void showSettingsQR();
-    void showTest();
     void showAPIOK();
     void showAPIFailed();
 
     void showUpdated();
     void showNotUpdated();
+
+    void showTest();
 
 private:
     void wifiConnect();
