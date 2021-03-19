@@ -281,15 +281,26 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     ///////////////////////////////////////////////////////////
     // draw period as background
     if (m_settings.chartStyle() != Settings::ChartStyle::HIGH_LOW_FIRST_LAST) {
-        m_tft.loadFont(F("NotoSans-Regular30"));
-        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
+        String lowNumber;
+        formatNumber(low, lowNumber, m_settings.numberFormat(), false, true);
+        m_tft.loadFont(F("NotoSans-Regular15"));
+        int16_t widthLowNumber(m_tft.textWidth(lowNumber) + 30);
+        m_tft.unloadFont();
 
+        m_tft.loadFont(F("NotoSans-Regular30"));
         auto widthPeriod(m_tft.textWidth(period));
         uint8_t periodX(DISPLAY_WIDTH - widthPeriod);
-        if (xAtLow > (DISPLAY_WIDTH / 2)) {
-            periodX = 0;
+        if (xAtLow < DISPLAY_WIDTH / 2) {
+            if (xAtLow > (DISPLAY_WIDTH - xAtLow - widthLowNumber)) {
+                periodX = 0;
+            }
+        } else {
+            if ((xAtLow - widthLowNumber) > (DISPLAY_WIDTH - xAtLow)) {
+                periodX = 0;
+            }
         }
 
+        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
         m_tft.setCursor(periodX, (DISPLAY_HEIGHT - 24));
         m_tft.print(period);
         m_tft.unloadFont();
@@ -602,7 +613,7 @@ void Display::showAPQR()
         qrText += SECRET_AP_PASSWORD;
         qrText += F(";H:;");
         ESP_QRcode tftQR(&m_tft);
-        tftQR.qrcode(qrText.c_str(), 20, 40, 200, 3);
+        tftQR.qrcode(qrText.c_str(), 20, 50, 200, 3);
 
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
@@ -636,7 +647,7 @@ void Display::showUpdateQR()
         url += WiFi.localIP().toString().c_str();
         url += F("/update");
         ESP_QRcode tftQR(&m_tft);
-        tftQR.qrcode(url.c_str(), 20, 40, 200, 3);
+        tftQR.qrcode(url.c_str(), 20, 50, 200, 3);
 
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setCursor(5, 5);
@@ -662,7 +673,7 @@ void Display::showSettingsQR()
         url += WiFi.localIP().toString().c_str();
         url += "/";
         ESP_QRcode tftQR(&m_tft);
-        tftQR.qrcode(url.c_str(), 20, 40, 200, 3);
+        tftQR.qrcode(url.c_str(), 20, 50, 200, 3);
 
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setCursor(5, 5);
