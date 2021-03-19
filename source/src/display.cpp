@@ -24,6 +24,8 @@
 #define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
 
+#define API_OK_SHOW_TIME (4 * 1000)
+
 extern String HostName;
 
 Display::Display(Gecko& gecko, const Settings& settings)
@@ -57,7 +59,7 @@ void Display::loop()
             if (m_display_start == 0) {
                 m_display_start = millis_test();
             }
-            if (millis_test() - m_display_start < 3000) {
+            if (millis_test() - m_display_start < API_OK_SHOW_TIME) {
                 showAPIOK();
             } else {
                 m_show_api_ok = false;
@@ -705,6 +707,14 @@ void Display::showAPIOK()
         m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("To The Moon!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
+        m_tft.print(msg);
+
+        m_tft.unloadFont();
+        m_tft.loadFont(F("NotoSans-Regular20"));
+        msg = F("http://");
+        msg += WiFi.localIP().toString().c_str();
+        msg += "/";
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 210);
         m_tft.print(msg);
 
         m_tft.unloadFont();
