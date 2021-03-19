@@ -191,12 +191,12 @@ void Display::renderCoin()
     m_tft.fillRect(0, 125, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
     m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 125);
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    m_tft.println(usdMsg);
+    m_tft.print(usdMsg);
 
     m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 125, 15, 25, TFT_BLACK);
     m_tft.setCursor(DISPLAY_WIDTH - changeWidth, 125);
     m_tft.setTextColor(color, TFT_BLACK);
-    m_tft.println(msg);
+    m_tft.print(msg);
 
     m_tft.unloadFont();
 
@@ -254,7 +254,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     gecko_t high = *(std::max_element(beginIt, endIt));
 
     // clear chart area
-    m_tft.fillRect(0, CHART_Y_START - textHeight, DISPLAY_WIDTH, CHART_HEIGHT + textHeight, TFT_BLACK);
+    m_tft.fillRect(0, CHART_Y_START - (textHeight / 2), DISPLAY_WIDTH, CHART_HEIGHT + (textHeight / 2), TFT_BLACK);
 
     uint8_t xPerValue(DISPLAY_WIDTH / (endIt - beginIt));
     uint8_t xAtLow(0);
@@ -690,6 +690,28 @@ void Display::showSettingsQR()
 
         m_last_screen = Screen::SETTINGS_QR;
     }
+}
+
+void Display::showTest()
+{
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
+    m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
+
+    String msg = F("j");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    Serial.println("-------------------");
+    m_tft.print(msg);
+    Serial.println("-------------------");
+
+    msg = F("x");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 120);
+    Serial.println("-------------------");
+    m_tft.print(msg);
+    Serial.println("-------------------");
+
+    m_tft.unloadFont();
+    m_last_screen = Screen::API_OK;
 }
 
 void Display::showAPIOK()

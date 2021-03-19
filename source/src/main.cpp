@@ -43,6 +43,12 @@ void setup(void)
 
     display.begin();
 
+    /*
+    display.showTest();
+    while (1)
+        yield();
+    */
+
     WiFiManager wifiManager;
     handleWifiManager(wifiManager, display);
 

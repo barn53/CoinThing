@@ -19,6 +19,7 @@ public:
     void showAPQR();
     void showUpdateQR();
     void showSettingsQR();
+    void showTest();
     void showAPIOK();
     void showAPIFailed();
 
