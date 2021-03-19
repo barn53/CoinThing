@@ -41,7 +41,7 @@ struct Currency {
 static const Currency currencies[] PROGMEM = {
     { "usd", "$" }, // US Dollar
     { "eur", "€" }, // Euro
-    { "btc", "₿" }, // Bitcoin - U+20BF - U+20BF
+    { "btc", "₿" }, // Bitcoin - U+20BF
     { "eth", "Ξ" }, // Ethereum - Greek Capital Letter Xi - U+039E
     { "ltc", "Ł" }, // Latin Capital Letter L with Stroke - U+141
     { "bch", "BCH" }, // Bitcoin Cash
