@@ -5,6 +5,10 @@
 
 
 
+### Version 1.0.3:
+
+[cointhing_v1.0.3.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.3/cointhing_v1.0.3.bin)
+
 ### Version 1.0.2:
 
 [cointhing_v1.0.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.2/cointhing_v1.0.2.bin)
