@@ -620,19 +620,13 @@ void Display::showAPQR()
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
 
-        String msg = F("WiFi Connect:");
-        m_tft.setCursor(5, 5);
-        m_tft.print(msg);
-        m_tft.unloadFont();
-
-        msg = F("Host: ");
+        String msg = F("WiFi: ");
         msg += HostName;
-        m_tft.loadFont(F("NotoSans-Regular13"));
-        m_tft.setCursor(5, 25);
+        m_tft.setCursor(5, 5);
         m_tft.print(msg);
         msg = F("Password: ");
         msg += SECRET_AP_PASSWORD;
-        m_tft.setCursor(5, 40);
+        m_tft.setCursor(5, 25);
         m_tft.print(msg);
         m_tft.unloadFont();
 
