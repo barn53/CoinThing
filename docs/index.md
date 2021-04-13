@@ -17,7 +17,7 @@
 
 #### Update firmware via python script
 If there is an update with a change in the second version number (i.e. from 1.__0__.xx to 1.__1__.xx), things are a bit more complicated :-).
-You first have to download the spiffs_v1.1.xx.bin and install it with the following procedure.
+You first have to download the spiffs_v1.1.xx.bin and install it with the following procedure:
 
 ##### You need
 - Python installed
