@@ -7,11 +7,11 @@
 #### Update firmware via browser
 - Download one of the firmware binary files below.
 - From the settings site, go to about (link in the footer).
-- Click on Update, then on Really?
+- Click on _Update_, then on _Really?_
 - CoinThing reboots in update mode
 - The site changes to http:://&lt;ip&gt;/update (corresponding to the shown QR code)
 - Select the downloaded firmware file and click on update button
-- CoinThing reboots and shows update message
+- CoinThing reboots and shows its update message
 - That's it
 
 
