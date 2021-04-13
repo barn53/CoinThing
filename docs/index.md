@@ -9,14 +9,14 @@
 - From the settings site, go to about (link in the footer).
 - Click on Update, then on Really?
 - CoinThing reboots in update mode
-- The site changes to http:://<ip>/update (corresponding to the shown QR code)
+- The site changes to http:://&lt;ip&gt;/update (corresponding to the shown QR code)
 - Select the downloaded firmware file and click on update button
 - CoinThing reboots and shows update message
 - That's it
 
 
 #### Update firmware via python script
-If there is an update with a chnage in the second version number (i.e. from 1.__0__.xx to 1.__1__.xx), things are a bit more complicated :-).
+If there is an update with a change in the second version number (i.e. from 1.__0__.xx to 1.__1__.xx), things are a bit more complicated :-).
 You first have to download the spiffs_v1.1.xx.bin and install it with the following procedure.
 
 ##### You need
