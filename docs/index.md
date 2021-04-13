@@ -3,7 +3,7 @@
 ## Table Of Contents
 
 - [Software Updates](#software-updates)
-- [Available Versions](#available-versions)
+- [Available Versions To Download](#available-versions-to-download)
 
 
 ## Software Updates
@@ -45,7 +45,7 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
        --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.1.xx.bin 
 ```
 
-## Available Versions
+## Available Versions To Download
 
 ### Version 1.0.3:
 
