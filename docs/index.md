@@ -1,10 +1,9 @@
 # CoinThing
 
-## Table Of Contents
-
 - [Software Updates](#software-updates)
 - [Available Versions To Download](#available-versions-to-download)
 
+-------
 
 ## Software Updates
 
