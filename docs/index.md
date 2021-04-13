@@ -1,6 +1,6 @@
 # CoinThing
 
-# Table Of Contents
+## Table Of Contents
 
 - [Software Updates](#software-updates)
 - [Available Versions](#available-versions)
