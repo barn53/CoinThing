@@ -20,7 +20,7 @@ If there is an update with a change in the second version number (i.e. from 1.__
 You first have to download the spiffs_v1.1.xx.bin and install it with the following procedure:
 
 ##### You need
-- Python installed
+- Python installed: [download python](https://www.python.org/downloads/)
 - This python script installed: [esptool](https://github.com/espressif/esptool)
 
 This is the command line to execute:
