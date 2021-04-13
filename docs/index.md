@@ -26,11 +26,13 @@ You first have to download the spiffs_v1.1.xx.bin and install it with the follow
 This is the command line to execute:
 ```python
 python -m esptool --before default_reset --after hard_reset --chip esp8266
-       --baud 460800 write_flash 0x0 <path_to_download>/spiffs_v1.1.xx.bin <-- needs verification!
+       --baud 460800 write_flash 0x0 <path_to_download>/spiffs_v1.1.xx.bin
+       <-- flash address is wrong!
 ```
 
 After this was successful, you have to install the matching firmware itself.
-Either via browser as described above, or you can also install it with the python script.
+
+Either via browser as described above, or now you have learned something new, you can also install it with the python script :-).
 Download the firmware e.g. cointhing_v1.1.xx.bin and execute:
 ```python
 python -m esptool --before default_reset --after hard_reset --chip esp8266
