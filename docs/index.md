@@ -1,6 +1,6 @@
 # CoinThing
 
-## Updates
+## Software Updates
 
 ### Update procedure
 
