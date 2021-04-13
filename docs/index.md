@@ -1,27 +1,33 @@
 # CoinThing
 
+# Table Of Contents
+
+- [Software Updates](#software-updates)
+- [Available Versions](#available-versions)
+
+
 ## Software Updates
 
-### Update procedure
+### Update Procedure
 
-#### Update firmware via browser
-- Download one of the firmware binary files below.
-- From the settings site, go to about (link in the footer).
-- Click on _Update_, then on _Really?_
+#### Update Firmware Via Browser (Settings Sage)
+- download one of the firmware binary files below
+- from the settings page, go to about (link in the footer)
+- click on _Update_, then on _Really?_
 - CoinThing reboots in update mode
-- The site changes to http:://&lt;ip&gt;/update (corresponding to the shown QR code)
-- Select the downloaded firmware file and click on update button
+- the page changes to http:://&lt;ip&gt;/update (corresponding to the shown QR code)
+- select the downloaded firmware file and click on update button
 - CoinThing reboots and shows its update message
-- That's it
+- that's it – enjoy :-)
 
 
-#### Update firmware via python script
+#### Update Firmware Via Python Script
 If there is an update with a change in the second version number (i.e. from 1.__0__.xx to 1.__1__.xx), things are a bit more complicated :-).
 You first have to download the __spiffs_v1.1.xx.bin__ and install it with the following procedure:
 
-##### You need
-- Python installed: [download python](https://www.python.org/downloads/)
-- This python script installed: [esptool](https://github.com/espressif/esptool)
+##### You Need
+- python installed: [download python](https://www.python.org/downloads/)
+- this python script installed: [esptool](https://github.com/espressif/esptool)
 
 This is the command line to execute:
 ```python
@@ -39,7 +45,7 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
        --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.1.xx.bin 
 ```
 
-## Available versions
+## Available Versions
 
 ### Version 1.0.3:
 
