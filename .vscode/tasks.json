@@ -6,7 +6,7 @@
         {
             "label": "CoinThing Upload All",
             "type": "shell",
-            "command": "python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 assets/cointhing_v1.0.3.bin 0x200000 assets/spiffs_v1.0.3.bin",
+            "command": "python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 921600 write_flash 0x0 assets/cointhing_v1.0.3.bin 0x200000 assets/spiffs_v1.0.3.bin",
             "problemMatcher": []
         }
     ]
