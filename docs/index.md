@@ -44,10 +44,10 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
 ```
 
 Or both together:
-'''bash
+```bash
 python -m esptool --before default_reset --after hard_reset --chip esp8266
        --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.0.3.bin 0x200000 <path_to_download>/spiffs_v1.0.3.bin
-'''
+```
 
 
 ## Available Versions To Download
