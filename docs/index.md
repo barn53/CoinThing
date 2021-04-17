@@ -31,8 +31,7 @@ You first have to download the __spiffs_v1.1.xx.bin__ and install it with the fo
 This is the command line to execute:
 ```bash
 python -m esptool --before default_reset --after hard_reset --chip esp8266
-       --baud 460800 write_flash 0x0 <path_to_download>/spiffs_v1.1.xx.bin
-       <-- flash address is wrong!
+       --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.1.xx.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.
@@ -43,6 +42,13 @@ Download the firmware e.g. __cointhing_v1.1.xx.bin__ and execute:
 python -m esptool --before default_reset --after hard_reset --chip esp8266
        --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.1.xx.bin 
 ```
+
+Or both together:
+'''bash
+python -m esptool --before default_reset --after hard_reset --chip esp8266
+       --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.0.3.bin 0x200000 <path_to_download>/spiffs_v1.0.3.bin
+'''
+
 
 ## Available Versions To Download
 
