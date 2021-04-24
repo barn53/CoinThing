@@ -150,6 +150,7 @@ bool Handler::handleSet() const
         Settings::Status status(m_settings.set(m_gecko,
             server.arg(F("coin")).c_str(),
             server.arg(F("currency")).c_str(),
+            server.arg(F("currency2")).c_str(),
             static_cast<uint8_t>(server.arg(F("number_format")).toInt()),
             static_cast<uint8_t>(server.arg(F("chart_period")).toInt()),
             static_cast<uint8_t>(server.arg(F("chart_swap_interval")).toInt()),
@@ -171,6 +172,11 @@ bool Handler::handleSet() const
         case Settings::Status::CURRENCY_INVALID:
             error = F(R"({"error":"Currency ')");
             error += server.arg(F("currency"));
+            error += F(R"(' is invalid!"})");
+            break;
+        case Settings::Status::CURRENCY2_INVALID:
+            error = F(R"({"error":"2nd currency ')");
+            error += server.arg(F("currency2"));
             error += F(R"(' is invalid!"})");
             break;
         }

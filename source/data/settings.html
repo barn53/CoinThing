@@ -56,17 +56,25 @@
                 <form>
                     <div class="form-group">
                         <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
-                        <div class="btn-group" style="width:100%;">
+                        <div class="input-group" style="width:100%;">
                             <input type="email" class="form-control" id="coin" placeholder="Coin Gecko ID" autofocus>
-                            <span id="coinclear" class="fa fa-times inputclear"></span>
+                            <div class="input-group-append">
+                                <span id="coinclear" class="input-group-text " id="">&times;</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div><label for="currency"><b>Currency (e.g. USD, EUR)</b></label></div>
-                        <div class="btn-group" style="width:100%;">
+                        <div><label for="currency"><b>Currencies (e.g. USD, EUR)</b></label></div>
+                        <div class="input-group">
                             <input type="email" class="form-control" id="currency" placeholder="Currency">
-                            <span id="currencyclear" class="fa fa-times inputclear"></span>
+                            <div class="input-group-append">
+                                <span id="currencyclear" class="input-group-text ">&times;</span>
+                            </div>
+                            <input type="email" class="form-control" id="currency2" placeholder="2nd Currency">
+                            <div class="input-group-append">
+                                <span id="currency2clear" class="input-group-text ">&times;</span>
+                            </div>
                         </div>
                     </div>
 
@@ -220,6 +228,7 @@
             applyBusy(false)
             $("#coin").val(settings['coin'] || '')
             $("#currency").val(settings['currency'] || '')
+            $("#currency2").val(settings['currency2'] || '')
             number_format = settings['number_format'] || 0
             chart_period = settings['chart_period'] || 0
             chart_swap_interval = settings['chart_swap_interval'] || 0
@@ -282,6 +291,10 @@
             }
             if (!$("#currency").val().match(/^[a-zA-Z0-9-]+$/)) {
                 showError(": Currency value '" + $("#currency").val() + "' is invalid!")
+                return
+            }
+            if (!$("#currency2").val().match(/^[a-zA-Z0-9-]*$/)) {
+                showError(": 2nd currency value '" + $("#currency2").val() + "' is invalid!")
                 return
             }
             number_format = -1
@@ -356,6 +369,7 @@
 
             $.get("/action/set?coin=" + $("#coin").val()
                 + "&currency=" + $("#currency").val()
+                + "&currency2=" + $("#currency2").val()
                 + "&number_format=" + number_format
                 + "&chart_period=" + chart_period
                 + "&chart_swap_interval=" + chart_swap_interval
@@ -399,20 +413,30 @@
                     clickApply()
                 }
             })
-            $("#coinclear").off().click(function () {
-                $("#coin").val('')
-                $("#coin").focus()
-            });
-
             $("#currency").off().on('keyup', function (e) {
                 if (event.keyCode === 13) {
                     event.preventDefault()
                     clickApply()
                 }
             })
+            $("#currency2").off().on('keyup', function (e) {
+                if (event.keyCode === 13) {
+                    event.preventDefault()
+                    clickApply()
+                }
+            })
+
+            $("#coinclear").off().click(function () {
+                $("#coin").val('')
+                $("#coin").focus()
+            });
             $("#currencyclear").off().click(function () {
                 $("#currency").val('')
                 $("#currency").focus()
+            });
+            $("#currency2clear").off().click(function () {
+                $("#currency2").val('')
+                $("#currency2").focus()
             });
 
         })

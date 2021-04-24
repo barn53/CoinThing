@@ -10,6 +10,7 @@ public:
         OK = 0,
         COIN_INVALID,
         CURRENCY_INVALID,
+        CURRENCY2_INVALID,
     };
     enum class ChartStyle : uint8_t {
         SIMPLE = 0,
@@ -40,6 +41,7 @@ public:
     void deleteFile();
     const char* coin() const { return m_coin.c_str(); }
     const char* currency() const { return m_currency.c_str(); }
+    const char* currency2() const { return m_currency2.c_str(); }
     NumberFormat numberFormat() const { return m_number_format; }
     uint8_t chartPeriod() const { return m_chart_period; }
     ChartSwapInterval chartSwapInterval() const { return m_chart_swap_interval; }
@@ -53,6 +55,7 @@ public:
     Status set(const Gecko& gecko,
         const char* coin,
         const char* currency,
+        const char* currency2,
         uint8_t number_format,
         uint8_t chart_period,
         uint8_t chart_swap_interval,
@@ -65,6 +68,7 @@ public:
 private:
     String m_coin;
     String m_currency;
+    String m_currency2;
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };
     ChartSwapInterval m_chart_swap_interval { ChartSwapInterval::SEC_5 };

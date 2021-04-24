@@ -131,7 +131,7 @@ public:
     bool isValidCurrency(const char* currency) const;
 
     gecko_t price() const { return m_price; }
-    gecko_t price_usd() const { return m_price_usd; }
+    gecko_t price2() const { return m_price2; }
     gecko_t change_pct() const { return m_change_pct; }
     const std::vector<gecko_t>& chart_48h(bool& refetched);
     const std::vector<gecko_t>& chart_60d(bool& refetched);
@@ -149,7 +149,7 @@ private:
     bool m_succeeded { false };
 
     gecko_t m_price;
-    gecko_t m_price_usd;
+    gecko_t m_price2;
     gecko_t m_change_pct;
     std::vector<gecko_t> m_chart_48h;
     std::vector<gecko_t> m_chart_60d;

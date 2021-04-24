@@ -43,6 +43,7 @@ bool Settings::setBrightness(uint8_t b)
 Settings::Status Settings::set(const Gecko& gecko,
     const char* coin,
     const char* currency,
+    const char* currency2,
     uint8_t number_format,
     uint8_t chart_period,
     uint8_t chart_swap_interval,
@@ -52,36 +53,46 @@ Settings::Status Settings::set(const Gecko& gecko,
     Status ret = Status::OK;
     String cleanCoin(cleanUp(coin));
     String cleanCurrency(cleanUp(currency));
+    String cleanCurrency2(cleanUp(currency2));
+
+    if (cleanCurrency2.isEmpty()) {
+        cleanCurrency2 = F("usd");
+    }
 
     if (gecko.coinDetails(cleanCoin.c_str(), m_coin, m_symbol, m_name)) {
         if (gecko.isValidCurrency(cleanCurrency.c_str())) {
-            m_currency = cleanCurrency;
+            if (gecko.isValidCurrency(cleanCurrency2.c_str())) {
+                m_currency = cleanCurrency;
+                m_currency2 = cleanCurrency2;
 
-            if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
-                number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
+                if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
+                    number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
+                }
+                m_number_format = static_cast<NumberFormat>(number_format);
+
+                if (chart_period > ChartPeriod::ALL_PERIODS) {
+                    chart_period = ChartPeriod::ALL_PERIODS;
+                }
+                m_chart_period = chart_period;
+
+                if (chart_swap_interval > static_cast<uint8_t>(ChartSwapInterval::MIN_5)) {
+                    chart_swap_interval = static_cast<uint8_t>(ChartSwapInterval::MIN_5);
+                }
+                m_chart_swap_interval = static_cast<ChartSwapInterval>(chart_swap_interval);
+
+                if (chart_style > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
+                    chart_style = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
+                }
+                m_chart_style = static_cast<ChartStyle>(chart_style);
+
+                m_heartbeat = heartbeat;
+
+                m_valid = true;
+                m_last_change = millis_test();
+                write();
+            } else {
+                ret = Status::CURRENCY2_INVALID;
             }
-            m_number_format = static_cast<NumberFormat>(number_format);
-
-            if (chart_period > ChartPeriod::ALL_PERIODS) {
-                chart_period = ChartPeriod::ALL_PERIODS;
-            }
-            m_chart_period = chart_period;
-
-            if (chart_swap_interval > static_cast<uint8_t>(ChartSwapInterval::MIN_5)) {
-                chart_swap_interval = static_cast<uint8_t>(ChartSwapInterval::MIN_5);
-            }
-            m_chart_swap_interval = static_cast<ChartSwapInterval>(chart_swap_interval);
-
-            if (chart_style > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
-                chart_style = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
-            }
-            m_chart_style = static_cast<ChartStyle>(chart_style);
-
-            m_heartbeat = heartbeat;
-
-            m_valid = true;
-            m_last_change = millis_test();
-            write();
         } else {
             ret = Status::CURRENCY_INVALID;
         }
@@ -112,6 +123,7 @@ bool Settings::read(const Gecko& gecko)
 
             m_coin = doc["coin"] | "";
             m_currency = doc["currency"] | "";
+            m_currency2 = doc["currency2"] | "usd";
             m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
             m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
             m_chart_swap_interval = static_cast<ChartSwapInterval>(doc["chart_swap_interval"] | static_cast<uint8_t>(ChartSwapInterval::SEC_5));
@@ -144,7 +156,9 @@ bool Settings::read(const Gecko& gecko)
 
             if (gecko.isValidCoin(m_coin.c_str())) {
                 if (gecko.isValidCurrency(m_currency.c_str())) {
-                    m_valid = true;
+                    if (gecko.isValidCurrency(m_currency2.c_str())) {
+                        m_valid = true;
+                    }
                 }
             }
         }
@@ -163,6 +177,7 @@ void Settings::write()
             DynamicJsonDocument doc(DYNAMIC_JSON_CONFIG_SIZE);
             doc["coin"] = m_coin.c_str();
             doc["currency"] = m_currency.c_str();
+            doc["currency2"] = m_currency2.c_str();
             doc["number_format"] = static_cast<uint8_t>(m_number_format);
             doc["chart_period"] = static_cast<uint8_t>(m_chart_period);
             doc["chart_swap_interval"] = static_cast<uint8_t>(m_chart_swap_interval);

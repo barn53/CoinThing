@@ -129,7 +129,7 @@ void Display::renderTitle()
         x_name = 60;
     }
     m_tft.loadFont(F("NotoSans-Regular30"));
-    m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
     m_tft.print(m_settings.name());
     m_tft.unloadFont();
@@ -172,26 +172,26 @@ void Display::renderCoin()
     m_tft.print(msg);
     m_tft.unloadFont();
 
-    String usdMsg;
-    formatNumber(m_gecko.price_usd(), usdMsg, m_settings.numberFormat(), false, true);
+    String msg2;
+    formatNumber(m_gecko.price2(), msg2, m_settings.numberFormat(), false, true);
     formatNumber(m_gecko.change_pct(), msg, m_settings.numberFormat(), true, false, 2);
-    usdMsg += "$";
+    msg2 += getCurrencySymbol(m_settings.currency2());
     msg += "%";
     m_tft.loadFont(F("NotoSans-Regular25"));
-    auto usdWidth(m_tft.textWidth(usdMsg));
+    auto usdWidth(m_tft.textWidth(msg2));
     auto changeWidth(m_tft.textWidth(msg));
 
     if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
         m_tft.unloadFont();
         m_tft.loadFont(F("NotoSans-Condensed25"));
-        usdWidth = m_tft.textWidth(usdMsg);
+        usdWidth = m_tft.textWidth(msg2);
         changeWidth = m_tft.textWidth(msg);
     }
 
     m_tft.fillRect(0, 125, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
     m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 125);
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    m_tft.print(usdMsg);
+    m_tft.print(msg2);
 
     m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 125, 15, 25, TFT_BLACK);
     m_tft.setCursor(DISPLAY_WIDTH - changeWidth, 125);

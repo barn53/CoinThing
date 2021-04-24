@@ -95,20 +95,23 @@ bool Gecko::fetchCoinPriceChange()
 
     const char* coin(m_settings.coin());
     const char* currency(m_settings.currency());
+    const char* currency2(m_settings.currency2());
     String change24h(currency);
     change24h += F("_24h_change");
 
     String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
     url += coin;
-    url += F("&vs_currencies=usd,");
+    url += F("&vs_currencies=");
     url += currency;
+    url += ",";
+    url += currency2;
     url += F("&include_24hr_change=true");
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
     if (m_http.read(url.c_str(), doc)) {
         m_price = doc[coin][currency] | std::numeric_limits<gecko_t>::infinity();
-        m_price_usd = doc[coin]["usd"] | std::numeric_limits<gecko_t>::infinity();
+        m_price2 = doc[coin][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct = doc[coin][change24h] | std::numeric_limits<gecko_t>::infinity();
         m_last_price_fetch = millis_test();
         return m_price != std::numeric_limits<gecko_t>::infinity()
