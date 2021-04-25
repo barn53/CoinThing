@@ -60,6 +60,7 @@ For an update from Version 1.0, please also upload the spiffs_v1.1.0.bin as desc
 [cointhing_v1.1.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.1.0/cointhing_v1.1.0.bin)
 
 [spiffs_v1.1.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.1.0/spiffs_v1.1.0.bin)
+
 ______
 
 ### Version 1.0.3:
