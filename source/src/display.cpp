@@ -129,7 +129,7 @@ void Display::renderTitle()
         x_name = 60;
     }
     m_tft.loadFont(F("NotoSans-Regular30"));
-    m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+    m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
     m_tft.print(m_settings.name());
     m_tft.unloadFont();
