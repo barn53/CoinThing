@@ -9,7 +9,7 @@
 
 ### Update Procedure
 
-#### Update Firmware Via Browser (Settings Sage)
+#### Update Firmware Via Browser (Settings Page)
 - download one of the firmware binary files below
 - from the settings page, go to about (link in the footer)
 - click on _Update_, then on _Really?_
