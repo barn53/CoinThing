@@ -53,9 +53,9 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
 ## Available Versions To Download
 
 ### Version 1.1.0:
-The second currency was always USD, it is now configurable in the settings.
+The second currency was always USD, it is now also configurable in the settings.
 
-For an update from Version 1.0, please also upload the spiffs_v1.1.0.bin as described above to the CoinThing.
+For an update from Version 1.0, please also upload the spiffs_v1.1.0.bin file as described above to the CoinThing.
 
 [cointhing_v1.1.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.1.0/cointhing_v1.1.0.bin)
 
