@@ -200,8 +200,6 @@ void Display::renderCoin()
 
     m_tft.unloadFont();
 
-    delay(1000);
-
     m_last_price_update = m_gecko.lastPriceFetch();
 }
 
