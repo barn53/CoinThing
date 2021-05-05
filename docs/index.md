@@ -8,7 +8,7 @@
 
 ## Manual
 ### Setup WiFi
-First, the CoinThing have to know the access data for your WLAN router.
+First, the CoinThing has to know the access data for your WLAN router.
 To get the data, CoinThing first starts itself as a WLAN access point. You can connect to this via smartphone or PC.
 
 When the CoinThing is powered for the first time, a QR code appears that represents the connection data to the access point.
