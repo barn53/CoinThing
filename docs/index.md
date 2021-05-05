@@ -1,14 +1,33 @@
 # CoinThing
 
-- [Software Updates](#software-updates)
+- [Manual](#manual)
+- [Update The Software](#update-the-software)
 - [Available Versions To Download](#available-versions-to-download)
 
 -------
 
-## Software Updates
+## Manual
+### Setup WiFi
+First, the CoinThing have to know the access data for your WLAN router.
+To get the data, CoinThing first starts itself as a WLAN access point. You can connect to this via smartphone or PC.
 
+When the CoinThing is powered for the first time, a QR code appears that represents the connection data to the access point.
+
+The easiest way to connect is to scan this code via a smartphone camera. Once you are connected to the access point, a configuration portal (WiFiManager) opens. Enter the access data for your WLAN router there. These are the SSID (available SSIDs are listed) and the corresponding password.
+
+After saving, the CoinThing starts again and tries to connect to the WLAN with the given credentials. If successful, again a QR code appears, this time for the settings.
+
+### Settings
+If you open the address of this QR code (the assigned IP address of the CoinThing), the settings page will open in the browser. 
+You can bookmark this page to easily access the settings again later.
+This QR code is only displayed if no settings have been made yet. However, the settings can always be accessed via this IP address.
+
+In the settings, you enter all desired data. After clicking Apply, the settings are checked and taken over and displayed by the CoinThing.
+
+-------
+
+## Update The Software
 ### Update Procedure
-
 #### Update Firmware Via Browser (Settings Page)
 - download one of the firmware binary files below
 - from the settings page, go to about (link in the footer)
@@ -18,7 +37,6 @@
 - select the downloaded firmware file and click on update button
 - CoinThing reboots and shows its update message
 - that's it – enjoy :-)
-
 
 #### Update Firmware Via Python Script
 If there is an update with a change in the second version number (i.e. from 1.__0__.xx to 1.__1__.xx), things are a bit more complicated :-).
@@ -49,6 +67,7 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
        --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.1.xx.bin 0x200000 <path_to_download>/spiffs_v1.1.xx.bin
 ```
 
+-------
 
 ## Available Versions To Download
 
