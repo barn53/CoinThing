@@ -6,9 +6,9 @@ class Settings;
 
 class Handler {
 public:
-    Handler(const Gecko& gecko, Settings& settings);
+    Handler(Gecko& gecko, Settings& settings);
 
-    bool handleAction() const;
+    bool handleAction();
     static bool handleFileRead();
 
 private:
@@ -22,10 +22,10 @@ private:
 
     bool handleGetVersion() const;
     bool handleGetName() const;
-    bool handleGetPrice() const;
+    bool handleGetPrice();
 
     bool handleForUpdate() const;
 
-    const Gecko& m_gecko;
+    Gecko& m_gecko;
     Settings& m_settings;
 };

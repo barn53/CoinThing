@@ -28,13 +28,15 @@ String getContentType(const String& filename)
         return F("image/x-icon");
     } else if (filename.endsWith(".jpg")) {
         return F("image/jpeg");
+    } else if (filename.endsWith(".bmp")) {
+        return F("image/bmp");
     }
     return F("text/plain");
 }
 
 } // anonymous namespace
 
-Handler::Handler(const Gecko& gecko, Settings& settings)
+Handler::Handler(Gecko& gecko, Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
 {
@@ -94,14 +96,19 @@ bool Handler::handleGetName() const
     return true;
 }
 
-bool Handler::handleGetPrice() const
+bool Handler::handleGetPrice()
 {
-    String price;
-    formatNumber(m_gecko.price(), price, m_settings.numberFormat(), false, true);
+    gecko_t price;
+    gecko_t price2;
+    gecko_t change_pct;
+    m_gecko.price(price, price2, change_pct);
+
+    String result;
+    formatNumber(price, result, m_settings.numberFormat(), false, true);
     String ret;
     ret = m_settings.symbol();
     ret += F(": ");
-    ret += price;
+    ret += result;
     ret += getCurrencySymbol(m_settings.currency());
     server.send(200, F("text/plain"), ret);
     return true;
@@ -189,7 +196,7 @@ bool Handler::handleSet() const
     return true;
 }
 
-bool Handler::handleAction() const
+bool Handler::handleAction()
 {
     String path(server.uri());
 #if COIN_THING_SERIAL > 0

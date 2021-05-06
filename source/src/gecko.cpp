@@ -12,7 +12,7 @@
 
 #define PRICE_FETCH_INTERVAL (10 * 1000)
 #define CHART_48_H_FETCH_INTERVAL (15 * 60 * 1000)
-#define CHART_30_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
+#define CHART_60_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
 #define PING_INTERVAL (2 * 1000)
 
 Gecko::Gecko(HttpJson& http, Settings& settings)
@@ -38,14 +38,6 @@ void Gecko::loop()
                 m_last_chart_48h_fetch = 0;
                 m_last_chart_60d_fetch = 0;
             }
-
-            if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
-                if (fetchCoinPriceChange()) {
-                    m_last_price_fetch = millis_test();
-                } else {
-                    m_last_price_fetch = 0;
-                }
-            }
         } else {
             m_last_price_fetch = 0;
             m_last_seen_settings = 0;
@@ -54,6 +46,22 @@ void Gecko::loop()
         ping();
         m_last_price_fetch = 0;
         m_last_seen_settings = 0;
+    }
+}
+
+void Gecko::price(gecko_t& price, gecko_t& price2, gecko_t& change_pct)
+{
+    LOG_FUNC
+
+    if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
+        if (fetchCoinPriceChange()) {
+            m_last_price_fetch = millis_test();
+            price = m_price;
+            price2 = m_price2;
+            change_pct = m_change_pct;
+        } else {
+            m_last_price_fetch = 0;
+        }
     }
 }
 
@@ -78,8 +86,8 @@ const std::vector<gecko_t>& Gecko::chart_60d(bool& refetched)
     LOG_FUNC
 
     refetched = false;
-    if (doInterval(m_last_chart_60d_fetch, CHART_30_D_FETCH_INTERVAL)) {
-        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_30_D)) {
+    if (doInterval(m_last_chart_60d_fetch, CHART_60_D_FETCH_INTERVAL)) {
+        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_60_D)) {
             m_last_chart_60d_fetch = millis_test();
             refetched = true;
         } else {

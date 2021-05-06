@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"
         integrity="sha512-f0VlzJbcEB6KiW8ZVtL+5HWPDyW1+nJEjguZ5IVnSQkvZbwBt2RfCBY0CBO1PsMAqxxrG4Di6TfsCPP3ZRwKpA=="
         crossorigin="anonymous"></script>
@@ -53,27 +59,287 @@
             <div class="col-sm-2 sidenav">
             </div>
             <div class="col-sm-7 text-left">
-                <form>
-                    <div class="form-group">
-                        <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
-                        <div class="input-group" style="width:100%;">
-                            <input type="email" class="form-control" id="coin" placeholder="Coin Gecko ID" autofocus>
-                            <div class="input-group-append">
-                                <span id="coinclear" class="input-group-text " id="">&times;</span>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-link active" id="nav-1-tab" data-toggle="tab" href="#nav-1" role="tab"
+                            aria-controls="nav-1" aria-selected="true">One Coin</a>
+                        <a class="nav-link" id="nav-2-tab" data-toggle="tab" href="#nav-2" role="tab"
+                            aria-controls="nav-2" aria-selected="true">Two Coins</a>
+                        <a class="nav-link" id="nav-n-tab" data-toggle="tab" href="#nav-n" role="tab"
+                            aria-controls="nav-n" aria-selected="false">Multiple Coins</a>
+                    </div>
+                </nav>
+                <form class="tab-content" id="nav-tabContent">
+                    <p> </p>
+                    <div class="tab-pane fade show active" id="nav-1" role="tabpanel" aria-labelledby="nav-1-tab">
+                        <div class="form-group">
+                            <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
+                            <div class="input-group" style="width:100%;">
+                                <input type="email" class="form-control enterapply" id="coin"
+                                    placeholder="Coin Gecko ID" autofocus>
+                                <div class="input-group-append">
+                                    <span id="coinclear" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div><label for="currency"><b>Currencies (e.g. USD, EUR)</b></label></div>
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="currency"
+                                    placeholder="Currency">
+                                <div class="input-group-append">
+                                    <span id="currencyclear" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="currency2"
+                                    placeholder="2nd Currency">
+                                <div class="input-group-append">
+                                    <span id="currency2clear" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Chart Period</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="cp" id="cp_1" value="1">
+                                    <label class="form-check-label" for="cp_1">24 h</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="cp" id="cp_2" value="2">
+                                    <label class="form-check-label" for="cp_2">48 h</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="cp" id="cp_4" value="4">
+                                    <label class="form-check-label" for="cp_4">30 d</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="cp" id="cp_8" value="8">
+                                    <label class="form-check-label" for="cp_8">60 d</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Chart Swap Interval</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi" id="csi_0" value="0">
+                                    <label class="form-check-label" for="csi_0">5 sec</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi" id="csi_1" value="1">
+                                    <label class="form-check-label" for="csi_1">30 sec</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi" id="csi_2" value="2">
+                                    <label class="form-check-label" for="csi_2">1 min</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi" id="csi_3" value="3">
+                                    <label class="form-check-label" for="csi_3">5 min</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Chart Style</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs" id="cs_0" value="0">
+                                    <label class="form-check-label" for="cs_0">Simple</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs" id="cs_1" value="1">
+                                    <label class="form-check-label" for="cs_1">High Low</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs" id="cs_2" value="2">
+                                    <label class="form-check-label" for="cs_2">High Low First Last</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div><label for="currency"><b>Currencies (e.g. USD, EUR)</b></label></div>
-                        <div class="input-group">
-                            <input type="email" class="form-control" id="currency" placeholder="Currency">
-                            <div class="input-group-append">
-                                <span id="currencyclear" class="input-group-text ">&times;</span>
+                    <div class="tab-pane fade" id="nav-2" role="tabpanel" aria-labelledby="nav-2-tab">
+                        <div class="form-group">
+                            <div><label for="coin-2"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin-2"
+                                    placeholder="Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coinclear-2" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin2-2"
+                                    placeholder="2nd Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin2clear-2" class="input-group-text clearbutton">&times;</span>
+                                </div>
                             </div>
-                            <input type="email" class="form-control" id="currency2" placeholder="2nd Currency">
-                            <div class="input-group-append">
-                                <span id="currency2clear" class="input-group-text ">&times;</span>
+                        </div>
+
+                        <div class="form-group">
+                            <div><label for="currency-2"><b>Currencies (e.g. USD, EUR)</b></label></div>
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="currency-2"
+                                    placeholder="Currency">
+                                <div class="input-group-append">
+                                    <span id="currencyclear-2" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="currency2-2"
+                                    placeholder="2nd Currency">
+                                <div class="input-group-append">
+                                    <span id="currency2clear-2" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="nav-n" role="tabpanel" aria-labelledby="nav-n-tab">
+                        <div class="form-group">
+                            <div><label for="coin-n"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin-n"
+                                    placeholder="1st Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coinclear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin2-n"
+                                    placeholder="2nd Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin2clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin3-n"
+                                    placeholder="3rdCoin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin3clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin4-n"
+                                    placeholder="4th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin4clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin5-n"
+                                    placeholder="5th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin5clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin6-n"
+                                    placeholder="6th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin6clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin7-n"
+                                    placeholder="7th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin7clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin8-n"
+                                    placeholder="8th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin8clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="coin9-n"
+                                    placeholder="9th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin9clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="coin10-n"
+                                    placeholder="10th Coin Gecko ID">
+                                <div class="input-group-append">
+                                    <span id="coin10clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div><label for="currency-3"><b>Currencies (e.g. USD, EUR)</b></label></div>
+                            <div class="input-group">
+                                <input type="email" class="form-control enterapply" id="currency-3"
+                                    placeholder="Currency">
+                                <div class="input-group-append">
+                                    <span id="currencyclear-3" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                                <input type="email" class="form-control enterapply" id="currency2-3"
+                                    placeholder="2nd Currency">
+                                <div class="input-group-append">
+                                    <span id="currency2clear-3" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Coin Swap Interval</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi-n" id="csi_0-n" value="0">
+                                    <label class="form-check-label" for="csi_0-n">5 sec</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi-n" id="csi_1-n" value="1">
+                                    <label class="form-check-label" for="csi_1-n">30 sec</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi-n" id="csi_2-n" value="2">
+                                    <label class="form-check-label" for="csi_2-n">1 min</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="csi-n" id="csi_3-n" value="3">
+                                    <label class="form-check-label" for="csi_3-n">5 min</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Chart Period</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cp-n" id="cp_1-n" value="1">
+                                    <label class="form-check-label" for="cp_1-n">24 h</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cp-n" id="cp_2-n" value="2">
+                                    <label class="form-check-label" for="cp_2-n">48 h</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cp-n" id="cp_4-n" value="4">
+                                    <label class="form-check-label" for="cp_4-n">30 d</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cp-n" id="cp_8-n" value="8">
+                                    <label class="form-check-label" for="cp_8-n">60 d</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Chart Style</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs-n" id="cs_0-n" value="0">
+                                    <label class="form-check-label" for="cs_0-n">Simple</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs-n" id="cs_1-n" value="1">
+                                    <label class="form-check-label" for="cs_1-n">High Low</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="cs-n" id="cs_2-n" value="2">
+                                    <label class="form-check-label" for="cs_2-n">High Low First Last</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -106,68 +372,6 @@
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="radio" name="nf" id="nf_5" value="5">
                                 <label class="form-check-label" for="nf_5">1000.00</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><b>Chart Period</b></label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="cp" id="cp_1" value="1">
-                                <label class="form-check-label" for="cp_1">24 h</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="cp" id="cp_2" value="2">
-                                <label class="form-check-label" for="cp_2">48 h</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="cp" id="cp_4" value="4">
-                                <label class="form-check-label" for="cp_4">30 d</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="cp" id="cp_8" value="8">
-                                <label class="form-check-label" for="cp_8">60 d</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><b>Chart Swap Interval</b></label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="csi" id="csi_0" value="0">
-                                <label class="form-check-label" for="csi_0">5 sec</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="csi" id="csi_1" value="1">
-                                <label class="form-check-label" for="csi_1">30 sec</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="csi" id="csi_2" value="2">
-                                <label class="form-check-label" for="csi_2">1 min</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="csi" id="csi_3" value="3">
-                                <label class="form-check-label" for="csi_3">5 min</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><b>Chart Style</b></label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="cs" id="cs_0" value="0">
-                                <label class="form-check-label" for="cs_0">Simple</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="cs" id="cs_1" value="1">
-                                <label class="form-check-label" for="cs_1">High Low</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="cs" id="cs_2" value="2">
-                                <label class="form-check-label" for="cs_2">High Low First Last</label>
                             </div>
                         </div>
                     </div>
@@ -289,11 +493,11 @@
                 showError(": Coin ID '" + $("#coin").val() + "' is invalid!")
                 return
             }
-            if (!$("#currency").val().match(/^[a-zA-Z0-9-]+$/)) {
+            if (!$("#currency").val().match(/^[a-zA-Z0-9]+$/)) {
                 showError(": Currency value '" + $("#currency").val() + "' is invalid!")
                 return
             }
-            if (!$("#currency2").val().match(/^[a-zA-Z0-9-]*$/)) {
+            if (!$("#currency2").val().match(/^[a-zA-Z0-9]*$/)) {
                 showError(": 2nd currency value '" + $("#currency2").val() + "' is invalid!")
                 return
             }
@@ -395,7 +599,7 @@
 
             brightnessSlider = $("#brightness").slider({
                 min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
-            });
+            })
 
             getSettings()
 
@@ -407,37 +611,19 @@
             })
 
             $('#apply').off().click(clickApply)
-            $("#coin").off().on('keyup', function (e) {
-                if (event.keyCode === 13) {
-                    event.preventDefault()
-                    clickApply()
-                }
-            })
-            $("#currency").off().on('keyup', function (e) {
-                if (event.keyCode === 13) {
-                    event.preventDefault()
-                    clickApply()
-                }
-            })
-            $("#currency2").off().on('keyup', function (e) {
+
+            $(".enterapply").off().on('keyup', function (e) {
                 if (event.keyCode === 13) {
                     event.preventDefault()
                     clickApply()
                 }
             })
 
-            $("#coinclear").off().click(function () {
-                $("#coin").val('')
-                $("#coin").focus()
-            });
-            $("#currencyclear").off().click(function () {
-                $("#currency").val('')
-                $("#currency").focus()
-            });
-            $("#currency2clear").off().click(function () {
-                $("#currency2").val('')
-                $("#currency2").focus()
-            });
+            $(".clearbutton").off().click(function (e) {
+                clearId = '#' + e.target.id.replace('clear', '')
+                $(clearId).val('')
+                $(clearId).focus()
+            })
 
         })
 

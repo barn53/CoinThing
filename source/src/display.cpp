@@ -104,7 +104,13 @@ void Display::heartbeat()
         return;
     }
 
-    if (m_last_screen == Screen::COIN && (((millis_test() - m_last_heartbeat) > 300 && (m_heart_beat_count == 0 || m_heart_beat_count == 1 || m_heart_beat_count == 2)) || ((millis_test() - m_last_heartbeat) > 1500 && (m_heart_beat_count == 3)))) {
+    if (m_last_screen == Screen::COIN
+        && (((millis_test() - m_last_heartbeat) > 300
+                && (m_heart_beat_count == 0
+                    || m_heart_beat_count == 1
+                    || m_heart_beat_count == 2))
+            || ((millis_test() - m_last_heartbeat) > 1500
+                && (m_heart_beat_count == 3)))) {
         if (m_heart_beat_count % 2 == 0) {
             drawBmp(F("/heart2.bmp"), 220, 0);
         } else {
@@ -148,12 +154,23 @@ void Display::renderCoin()
 {
     LOG_FUNC
 
-    uint16_t color(m_gecko.change_pct() >= 0.0 ? GREEN565 : RED565);
+    gecko_t price;
+    gecko_t price2;
+    gecko_t change_pct;
+    m_gecko.price(price, price2, change_pct);
+
+    if (m_last_price_update >= m_gecko.lastPriceFetch()) {
+        SERIAL_PRINTLN("Prices unchanged - skip");
+        m_last_price_update = millis_test();
+        return; // omit overwriting price with same values
+    }
+
+    uint16_t color(change_pct >= 0.0 ? GREEN565 : RED565);
 
     String msg;
     m_tft.setTextColor(color, TFT_BLACK);
     m_tft.loadFont(F("NotoSans-Regular50"));
-    formatNumber(m_gecko.price(), msg, m_settings.numberFormat(), false, true);
+    formatNumber(price, msg, m_settings.numberFormat(), false, true);
     msg += getCurrencySymbol(m_settings.currency());
 
     auto priceWidth(m_tft.textWidth(msg));
@@ -173,8 +190,8 @@ void Display::renderCoin()
     m_tft.unloadFont();
 
     String msg2;
-    formatNumber(m_gecko.price2(), msg2, m_settings.numberFormat(), false, true);
-    formatNumber(m_gecko.change_pct(), msg, m_settings.numberFormat(), true, false, 2);
+    formatNumber(price2, msg2, m_settings.numberFormat(), false, true);
+    formatNumber(change_pct, msg, m_settings.numberFormat(), true, false, 2);
     msg2 += getCurrencySymbol(m_settings.currency2());
     msg += "%";
     m_tft.loadFont(F("NotoSans-Regular25"));
@@ -200,7 +217,7 @@ void Display::renderCoin()
 
     m_tft.unloadFont();
 
-    m_last_price_update = m_gecko.lastPriceFetch();
+    m_last_price_update = millis_test();
 }
 
 bool Display::renderChart(Settings::ChartPeriod chartPeriod)
@@ -568,9 +585,7 @@ void Display::showCoin()
     heartbeat();
     wifiConnect();
 
-    if (rewrite || m_gecko.lastPriceFetch() != m_last_price_update) {
-        renderCoin();
-    }
+    renderCoin();
 
     uint32_t interval(5 * 1000);
     switch (m_settings.chartSwapInterval()) {

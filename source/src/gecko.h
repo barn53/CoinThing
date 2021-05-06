@@ -130,9 +130,7 @@ public:
     bool isValidCoin(const char* coinOrSymbol) const;
     bool isValidCurrency(const char* currency) const;
 
-    gecko_t price() const { return m_price; }
-    gecko_t price2() const { return m_price2; }
-    gecko_t change_pct() const { return m_change_pct; }
+    void price(gecko_t& price, gecko_t& price2, gecko_t& change_pct);
     const std::vector<gecko_t>& chart_48h(bool& refetched);
     const std::vector<gecko_t>& chart_60d(bool& refetched);
 
