@@ -1,6 +1,20 @@
 {
-    "coin": "bitcoin",
-    "currency": "eur",
-    "symbol": "BTC",
-    "name": "Bitcoin"
+    "mode": 3,
+    "coins": [
+        "c1",
+        "c4",
+        "c6",
+        "c7",
+        "c9",
+        "c10"
+    ],
+    "currencies": [
+        "qwe",
+        "asd"
+    ],
+    "coin_swap_interval": 1,
+    "chart_period": 4,
+    "chart_style": 2,
+    "number_format": 1,
+    "heartbeat": true
 }

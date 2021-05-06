@@ -15,5 +15,19 @@ app.get('/action/set', function (req, res) {
         console.log(`${key}: ${value}`);
     }
 
-    res.send('1')
+    if (req.query.json) {
+        res.type("application/json")
+        res.send(req.query.json)
+    }
+    else {
+        res.send('1')
+    }
+})
+
+app.get('/action/get/name', function (req, res) {
+    res.send('CoinThing Server')
+})
+
+app.get('/action/get/version', function (req, res) {
+    res.send('v0.0.0')
 })
