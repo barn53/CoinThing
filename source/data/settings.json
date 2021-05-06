@@ -12,7 +12,7 @@
         "qwe",
         "asd"
     ],
-    "coin_swap_interval": 1,
+    "swap_interval": 1,
     "chart_period": 4,
     "chart_style": 2,
     "number_format": 1,
