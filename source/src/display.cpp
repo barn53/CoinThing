@@ -576,15 +576,18 @@ void Display::showCoin()
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
-        renderTitle();
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_last_seen_settings = m_settings.lastChange();
         m_shows_wifi_not_connected = false;
         rewrite = true;
     }
+
+    if (rewrite) {
+        renderTitle();
+    }
+
     heartbeat();
     wifiConnect();
-
     renderCoin();
 
     uint32_t interval(5 * 1000);
