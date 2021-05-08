@@ -471,16 +471,16 @@
             } else if (settings.mode == 3) {
                 $('#nav-tab a[href="#nav-n"]').tab('show')
 
-                $("#coin-n").val(settings.coins[0] || '')
-                $("#coin2-n").val(settings.coins[1] || '')
-                $("#coin3-n").val(settings.coins[2] || '')
-                $("#coin4-n").val(settings.coins[3] || '')
-                $("#coin5-n").val(settings.coins[4] || '')
-                $("#coin6-n").val(settings.coins[5] || '')
-                $("#coin7-n").val(settings.coins[6] || '')
-                $("#coin8-n").val(settings.coins[7] || '')
-                $("#coin9-n").val(settings.coins[8] || '')
-                $("#coin10-n").val(settings.coins[9] || '')
+                $("#coin-n").val(settings.coins[0].id || '')
+                $("#coin2-n").val(settings.coins[1].id || '')
+                $("#coin3-n").val(settings.coins[2].id || '')
+                $("#coin4-n").val(settings.coins[3].id || '')
+                $("#coin5-n").val(settings.coins[4].id || '')
+                $("#coin6-n").val(settings.coins[5].id || '')
+                $("#coin7-n").val(settings.coins[6].id || '')
+                $("#coin8-n").val(settings.coins[7].id || '')
+                $("#coin9-n").val(settings.coins[8].id || '')
+                $("#coin10-n").val(settings.coins[9].id || '')
                 $("#currency-n").val(settings.currencies[0] || '')
                 $("#currency2-n").val(settings.currencies[1] || '')
                 swap_interval = settings.swap_interval || 0
@@ -565,7 +565,7 @@
                     return
                 }
 
-                settings.coin = $("#coin").val()
+                settings.coins = [{ "id": $("#coin").val() }]
                 settings.currencies = [
                     $("#currency").val(),
                     $("#currency2").val()
@@ -628,8 +628,8 @@
                 }
 
                 settings.coins = [
-                    $("#coin-2").val(),
-                    $("#coin2-2").val()
+                    { "id": $("#coin-2").val() },
+                    { "id": $("#coin2-2").val() }
                 ]
                 settings.currencies = [
                     $("#currency-2").val(),
@@ -656,16 +656,16 @@
                 }
 
                 settings.coins = []
-                if ($("#coin-n").val().length > 0) settings.coins.push($("#coin-n").val())
-                if ($("#coin2-n").val().length > 0) settings.coins.push($("#coin2-n").val())
-                if ($("#coin3-n").val().length > 0) settings.coins.push($("#coin3-n").val())
-                if ($("#coin4-n").val().length > 0) settings.coins.push($("#coin4-n").val())
-                if ($("#coin5-n").val().length > 0) settings.coins.push($("#coin5-n").val())
-                if ($("#coin6-n").val().length > 0) settings.coins.push($("#coin6-n").val())
-                if ($("#coin7-n").val().length > 0) settings.coins.push($("#coin7-n").val())
-                if ($("#coin8-n").val().length > 0) settings.coins.push($("#coin8-n").val())
-                if ($("#coin9-n").val().length > 0) settings.coins.push($("#coin9-n").val())
-                if ($("#coin10-n").val().length > 0) settings.coins.push($("#coin10-n").val())
+                if ($("#coin-n").val().length > 0) settings.coins.push({ "id": $("#coin-n").val() })
+                if ($("#coin2-n").val().length > 0) settings.coins.push({ "id": $("#coin2-n").val() })
+                if ($("#coin3-n").val().length > 0) settings.coins.push({ "id": $("#coin3-n").val() })
+                if ($("#coin4-n").val().length > 0) settings.coins.push({ "id": $("#coin4-n").val() })
+                if ($("#coin5-n").val().length > 0) settings.coins.push({ "id": $("#coin5-n").val() })
+                if ($("#coin6-n").val().length > 0) settings.coins.push({ "id": $("#coin6-n").val() })
+                if ($("#coin7-n").val().length > 0) settings.coins.push({ "id": $("#coin7-n").val() })
+                if ($("#coin8-n").val().length > 0) settings.coins.push({ "id": $("#coin8-n").val() })
+                if ($("#coin9-n").val().length > 0) settings.coins.push({ "id": $("#coin9-n").val() })
+                if ($("#coin10-n").val().length > 0) settings.coins.push({ "id": $("#coin10-n").val() })
 
                 settings.currencies = [
                     $("#currency-n").val(),
@@ -740,7 +740,7 @@
                 settings.heartbeat = true
             }
 
-            $.get("/action/set?json=" + JSON.stringify(settings), function (data) {
+            $.get("/action/setv12?json=" + JSON.stringify(settings), function (data) {
                 if (data["error"]) {
                     showError(": " + data["error"])
                 } else {

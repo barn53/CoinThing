@@ -4,6 +4,7 @@
 #include "handler.h"
 #include "pre.h"
 #include "settings.h"
+#include "settings_v12.h"
 #include "utils.h"
 
 #include <ESP8266WebServer.h>
@@ -36,9 +37,10 @@ String getContentType(const String& filename)
 
 } // anonymous namespace
 
-Handler::Handler(Gecko& gecko, Settings& settings)
+Handler::Handler(Gecko& gecko, Settings& settings, SettingsV12& settingsv12)
     : m_gecko(gecko)
     , m_settings(settings)
+    , m_settingsv12(settingsv12)
 {
 }
 
@@ -139,6 +141,25 @@ bool Handler::streamFile(const char* filename)
     return false;
 }
 
+bool Handler::handleSetV12() const
+{
+#if COIN_THING_SERIAL > 0
+    Serial.printf("handleAction: set - parsed Query:\n");
+    for (int ii = 0; ii < server.args(); ++ii) {
+        Serial.print(server.argName(ii));
+        Serial.print(" -> ");
+        Serial.println(server.arg(ii));
+    }
+#endif
+
+    if (server.hasArg(F("brightness"))) {
+        server.send(200, F("text/plain"), server.arg(F("brightness")).c_str());
+        m_settingsv12.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
+    } else {
+        m_settingsv12.set(m_gecko, server.arg(F("json")).c_str());
+    }
+}
+
 bool Handler::handleSet() const
 {
 #if COIN_THING_SERIAL > 0
@@ -205,6 +226,8 @@ bool Handler::handleAction()
 
     if (path == F("/action/set")) {
         return handleSet();
+    } else if (path == F("/action/setv12")) {
+        return handleSetV12();
     } else if (path == F("/action/reset/esp")) {
         return handleResetESP();
     } else if (path == F("/action/reset/settings")) {

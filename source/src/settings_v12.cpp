@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "settings_v12.h"
 #include "common.h"
 #include "gecko.h"
 #include "utils.h"
@@ -7,42 +7,67 @@
 
 #define MIN_BRIGHTNESS 10
 #define USER_CONFIG "/settings.json"
-#define DYNAMIC_JSON_CONFIG_SIZE 384
+#define STATIC_JSON_CONFIG_SIZE 1024
 
-Settings::Settings()
+/*
+
+// https://arduinojson.org/v6/assistant/
+
+// char* input;
+// size_t inputLength; (optional)
+
+StaticJsonDocument<1024> doc;
+
+DeserializationError error = deserializeJson(doc, input, inputLength);
+
+if (error) {
+  Serial.print(F("deserializeJson() failed: "));
+  Serial.println(error.f_str());
+  return;
+}
+
+int mode = doc["mode"]; // 3
+
+for (JsonObject elem : doc["coins"].as<JsonArray>()) {
+
+  const char* id = elem["id"]; // "bitcoin", "ethereum", "0x", "dogecoin", "ripple", "tether", "cardano", ...
+  const char* symbol = elem["symbol"]; // "btc", "eth", "zrx", "doge", "xrp", "usdt", "ada", "dot", ...
+  const char* name = elem["name"]; // "Bitcoin", "Ethereum", "0x", "Dogecoin", "XRP", "Tether", "Cardano", ...
+
+}
+
+const char* currencies_0 = doc["currencies"][0]; // "eur"
+const char* currencies_1 = doc["currencies"][1]; // "usd"
+
+int swap_interval = doc["swap_interval"]; // 2
+int chart_period = doc["chart_period"]; // 4
+int chart_style = doc["chart_style"]; // 2
+int number_format = doc["number_format"]; // 1
+bool heartbeat = doc["heartbeat"]; // true
+
+*/
+
+SettingsV12::SettingsV12()
 {
 }
 
-bool Settings::begin(const Gecko& gecko)
+bool SettingsV12::begin(const Gecko& gecko)
 {
     read(gecko);
     write();
     m_last_change = millis_test();
 
-#if COIN_THING_SERIAL > 0
-    Serial.printf("Settings coin:                >%s<\n", coin());
-    Serial.printf("Settings currency:            >%s<\n", currency());
-    Serial.printf("Settings number format:       >%u<\n", numberFormat());
-    Serial.printf("Settings chart period:        >%u<\n", chartPeriod());
-    Serial.printf("Settings chart swap interval: >%u<\n", chartSwapInterval());
-    Serial.printf("Settings chart style:         >%u<\n", chartStyle());
-    Serial.printf("Settings heart beat:          >%s<\n", (heartbeat() ? "true" : "false"));
-    Serial.printf("Settings brightness:          >%u<\n", brightness());
-    Serial.printf("Settings name:                >%s<\n", name());
-    Serial.printf("Settings symbol:              >%s<\n", symbol());
-#endif
-
     return m_valid;
 }
 
-uint8_t Settings::brightness() const
+uint8_t SettingsV12::brightness() const
 {
     return m_valid
         ? m_brightness
         : std::numeric_limits<uint8_t>::max();
 }
 
-bool Settings::setBrightness(uint8_t b)
+bool SettingsV12::setBrightness(uint8_t b)
 {
     if (b != m_brightness
         && b >= MIN_BRIGHTNESS
@@ -53,70 +78,15 @@ bool Settings::setBrightness(uint8_t b)
     return true;
 }
 
-Settings::Status Settings::set(const Gecko& gecko,
-    const char* coin,
-    const char* currency,
-    const char* currency2,
-    uint8_t number_format,
-    uint8_t chart_period,
-    uint8_t chart_swap_interval,
-    uint8_t chart_style,
-    bool heartbeat)
+void SettingsV12::set(const Gecko& gecko, const char* json)
 {
-    Status ret = Status::OK;
-    String cleanCoin(cleanUp(coin));
-    String cleanCurrency(cleanUp(currency));
-    String cleanCurrency2(cleanUp(currency2));
 
-    if (cleanCurrency2.isEmpty()) {
-        cleanCurrency2 = F("usd");
-    }
-
-    if (gecko.coinDetails(cleanCoin.c_str(), m_coin, m_symbol, m_name)) {
-        if (gecko.isValidCurrency(cleanCurrency.c_str())) {
-            if (gecko.isValidCurrency(cleanCurrency2.c_str())) {
-                m_currency = cleanCurrency;
-                m_currency2 = cleanCurrency2;
-
-                if (number_format > static_cast<uint8_t>(NumberFormat::DECIMAL_DOT)) {
-                    number_format = static_cast<uint8_t>(NumberFormat::DECIMAL_DOT);
-                }
-                m_number_format = static_cast<NumberFormat>(number_format);
-
-                if (chart_period > ChartPeriod::ALL_PERIODS) {
-                    chart_period = ChartPeriod::ALL_PERIODS;
-                }
-                m_chart_period = chart_period;
-
-                if (chart_swap_interval > static_cast<uint8_t>(ChartSwapInterval::MIN_5)) {
-                    chart_swap_interval = static_cast<uint8_t>(ChartSwapInterval::MIN_5);
-                }
-                m_chart_swap_interval = static_cast<ChartSwapInterval>(chart_swap_interval);
-
-                if (chart_style > static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST)) {
-                    chart_style = static_cast<uint8_t>(ChartStyle::HIGH_LOW_FIRST_LAST);
-                }
-                m_chart_style = static_cast<ChartStyle>(chart_style);
-
-                m_heartbeat = heartbeat;
-
-                m_valid = true;
-                m_last_change = millis_test();
-                write();
-            } else {
-                ret = Status::CURRENCY2_INVALID;
-            }
-        } else {
-            ret = Status::CURRENCY_INVALID;
-        }
-    } else {
-        ret = Status::COIN_INVALID;
-    }
-
-    return ret;
+    m_valid = true;
+    m_last_change = millis_test();
+    write();
 }
 
-bool Settings::read(const Gecko& gecko)
+bool SettingsV12::read(const Gecko& gecko)
 {
     m_valid = false;
     if (SPIFFS.exists(USER_CONFIG)) {
@@ -179,7 +149,7 @@ bool Settings::read(const Gecko& gecko)
     return m_valid;
 }
 
-void Settings::write()
+void SettingsV12::write()
 {
     deleteFile();
 
@@ -206,7 +176,7 @@ void Settings::write()
     }
 }
 
-void Settings::deleteFile()
+void SettingsV12::deleteFile()
 {
     SPIFFS.remove(USER_CONFIG);
 }

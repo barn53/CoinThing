@@ -1,18 +1,62 @@
 {
     "mode": 3,
     "coins": [
-        "c1",
-        "c4",
-        "c6",
-        "c7",
-        "c9",
-        "c10"
+        {
+            "id": "bitcoin",
+            "symbol": "btc",
+            "name": "Bitcoin"
+        },
+        {
+            "id": "ethereum",
+            "symbol": "eth",
+            "name": "Ethereum"
+        },
+        {
+            "id": "0x",
+            "symbol": "zrx",
+            "name": "0x"
+        },
+        {
+            "id": "dogecoin",
+            "symbol": "doge",
+            "name": "Dogecoin"
+        },
+        {
+            "id": "ripple",
+            "symbol": "xrp",
+            "name": "XRP"
+        },
+        {
+            "id": "tether",
+            "symbol": "usdt",
+            "name": "Tether"
+        },
+        {
+            "id": "cardano",
+            "symbol": "ada",
+            "name": "Cardano"
+        },
+        {
+            "id": "polkadot",
+            "symbol": "dot",
+            "name": "Polkadot"
+        },
+        {
+            "id": "terra-luna",
+            "symbol": "luna",
+            "name": "Terra"
+        },
+        {
+            "id": "pancakeswap-token",
+            "symbol": "cake",
+            "name": "PancakeSwap"
+        }
     ],
     "currencies": [
-        "qwe",
-        "asd"
+        "eur",
+        "usd"
     ],
-    "swap_interval": 1,
+    "swap_interval": 2,
     "chart_period": 4,
     "chart_style": 2,
     "number_format": 1,

@@ -25,8 +25,6 @@ public:
     void showUpdated();
     void showNotUpdated();
 
-    void showTest();
-
 private:
     void wifiConnect();
     void renderTitle();

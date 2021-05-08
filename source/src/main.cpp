@@ -6,6 +6,7 @@
 #include "http_json.h"
 #include "pre.h"
 #include "settings.h"
+#include "settings_v12.h"
 #include "utils.h"
 #include "wifi_utils.h"
 #include <ESP8266WebServer.h>
@@ -19,9 +20,10 @@ ESP8266WebServer server(80);
 
 HttpJson httpJson;
 Settings settings;
+SettingsV12 settingsv12;
 Gecko gecko(httpJson, settings);
 Display display(gecko, settings);
-Handler handler(gecko, settings);
+Handler handler(gecko, settings, settingsv12);
 
 String HostName;
 
@@ -43,12 +45,6 @@ void setup(void)
 
     display.begin();
 
-    /*
-    display.showTest();
-    while (1)
-        yield();
-    */
-
     WiFiManager wifiManager;
     handleWifiManager(wifiManager, display);
 
@@ -58,19 +54,6 @@ void setup(void)
 
     gecko.begin();
     settings.begin(gecko);
-
-#if COIN_THING_SERIAL > 0
-    Serial.printf("Settings coin:                >%s<\n", settings.coin());
-    Serial.printf("Settings currency:            >%s<\n", settings.currency());
-    Serial.printf("Settings number format:       >%u<\n", settings.numberFormat());
-    Serial.printf("Settings chart period:        >%u<\n", settings.chartPeriod());
-    Serial.printf("Settings chart swap interval: >%u<\n", settings.chartSwapInterval());
-    Serial.printf("Settings chart style:         >%u<\n", settings.chartStyle());
-    Serial.printf("Settings heart beat:          >%s<\n", (settings.heartbeat() ? "true" : "false"));
-    Serial.printf("Settings brightness:          >%u<\n", settings.brightness());
-    Serial.printf("Settings name:                >%s<\n", settings.name());
-    Serial.printf("Settings symbol:              >%s<\n", settings.symbol());
-#endif
 
     server.onNotFound([]() { // If the client requests any URI
         if (!handler.handleAction()
