@@ -6,7 +6,6 @@
 #include "http_json.h"
 #include "pre.h"
 #include "settings.h"
-#include "settings_v12.h"
 #include "utils.h"
 #include "wifi_utils.h"
 #include <ESP8266WebServer.h>
@@ -20,10 +19,9 @@ ESP8266WebServer server(80);
 
 HttpJson httpJson;
 Settings settings;
-SettingsV12 settingsv12;
 Gecko gecko(httpJson, settings);
 Display display(gecko, settings);
-Handler handler(gecko, settings, settingsv12);
+Handler handler(gecko, settings);
 
 String HostName;
 
@@ -68,6 +66,9 @@ void setup(void)
 
 void loop()
 {
+    /*
     display.loop();
+    */
+
     server.handleClient();
 }

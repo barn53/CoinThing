@@ -4,7 +4,6 @@
 #include "handler.h"
 #include "pre.h"
 #include "settings.h"
-#include "settings_v12.h"
 #include "utils.h"
 
 #include <ESP8266WebServer.h>
@@ -37,10 +36,9 @@ String getContentType(const String& filename)
 
 } // anonymous namespace
 
-Handler::Handler(Gecko& gecko, Settings& settings, SettingsV12& settingsv12)
+Handler::Handler(Gecko& gecko, Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
-    , m_settingsv12(settingsv12)
 {
 }
 
@@ -141,7 +139,7 @@ bool Handler::streamFile(const char* filename)
     return false;
 }
 
-bool Handler::handleSetV12() const
+bool Handler::handleSet() const
 {
 #if COIN_THING_SERIAL > 0
     Serial.printf("handleAction: set - parsed Query:\n");
@@ -154,12 +152,20 @@ bool Handler::handleSetV12() const
 
     if (server.hasArg(F("brightness"))) {
         server.send(200, F("text/plain"), server.arg(F("brightness")).c_str());
-        m_settingsv12.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
+        m_settings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
+    } else if (server.hasArg(F("json"))) {
+        // m_settings.set(m_gecko, server.arg(F("json")).c_str());
+        SettingsV12 settings;
+        String error;
+        settings.set(m_gecko, server.arg(F("json")).c_str(), error);
     } else {
-        m_settingsv12.set(m_gecko, server.arg(F("json")).c_str());
     }
+
+    streamFile(SETTINGS_FILE);
+    return true;
 }
 
+#if 0
 bool Handler::handleSet() const
 {
 #if COIN_THING_SERIAL > 0
@@ -188,7 +194,7 @@ bool Handler::handleSet() const
         String error;
         switch (status) {
         case Settings::Status::OK:
-            if (!streamFile("/settings.json")) {
+            if (!streamFile(SETTINGS_FILE)) {
                 error = F(R"({"error":"file 'settings.json' not found!"})");
             }
             break;
@@ -216,6 +222,7 @@ bool Handler::handleSet() const
 
     return true;
 }
+#endif
 
 bool Handler::handleAction()
 {
@@ -226,8 +233,6 @@ bool Handler::handleAction()
 
     if (path == F("/action/set")) {
         return handleSet();
-    } else if (path == F("/action/setv12")) {
-        return handleSetV12();
     } else if (path == F("/action/reset/esp")) {
         return handleResetESP();
     } else if (path == F("/action/reset/settings")) {

@@ -66,12 +66,12 @@
                     &nbsp;<span id="forResetWiFi" class="text-warning"></span>
                 </p>
                 <p>
-                    <button id="resetAll" class="btn btn-warning btn-sm">Reset All</button>
-                    &nbsp;<span id="forResetAll" class="text-warning"></span>
-                </p>
-                <p>
                     <button id="resetUpdate" class="btn btn-warning btn-sm">Reset For Update</button>
                     &nbsp;<span id="forResetUpdate" class="text-warning"></span>
+                </p>
+                <p>
+                    <button id="resetDelivery" class="btn btn-danger btn-sm">Reset For Delivery</button>
+                    &nbsp;<span id="forResetDelivery" class="text-danger"></span>
                 </p>
                 <p style="height:50px;"></p>
             </div>
@@ -142,11 +142,11 @@
                 }).fail(function () { $("#forResetWiFi").append("failure") })
             })
 
-            $('#resetAll').off().click(function (e) {
-                $("#forResetAll").empty()
+            $('#resetDelivery').off().click(function (e) {
+                $("#forResetDelivery").empty()
                 $.get("/action/reset/all", function (data) {
-                    $("#forResetAll").append(data)
-                }).fail(function () { $("#forResetAll").append("failure") })
+                    $("#forResetDelivery").append(data)
+                }).fail(function () { $("#forResetDelivery").append("failure") })
             })
 
             $('#resetUpdate').off().click(function (e) {

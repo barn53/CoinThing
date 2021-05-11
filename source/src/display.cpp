@@ -591,16 +591,16 @@ void Display::showCoin()
     renderCoin();
 
     uint32_t interval(5 * 1000);
-    switch (m_settings.chartSwapInterval()) {
-    case Settings::ChartSwapInterval::SEC_5:
+    switch (m_settings.swapInterval()) {
+    case Settings::SwapInterval::SEC_5:
         break;
-    case Settings::ChartSwapInterval::SEC_30:
+    case Settings::SwapInterval::SEC_30:
         interval = (30 * 1000);
         break;
-    case Settings::ChartSwapInterval::MIN_1:
+    case Settings::SwapInterval::MIN_1:
         interval = (60 * 1000);
         break;
-    case Settings::ChartSwapInterval::MIN_5:
+    case Settings::SwapInterval::MIN_5:
         interval = (5 * 60 * 1000);
         break;
     }

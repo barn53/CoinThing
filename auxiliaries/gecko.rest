@@ -2,7 +2,8 @@ GET https://api.coingecko.com/api/v3/ping HTTP/1.0
 
 ###
 
-GET https://api.coingecko.com/api/v3/coins/list HTTP/1.0
+GET https://api.coingecko.com/api/v3/coins/list?include_platform=false HTTP/1.0
+
 
 ###
 

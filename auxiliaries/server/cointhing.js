@@ -9,7 +9,7 @@ server.listen(port, function () {
 })
 
 app.use(express.static(__dirname + '/../../source/data'))
-app.get('/action/setv12', function (req, res) {
+app.get('/action/set', function (req, res) {
 
     for (const [key, value] of Object.entries(req.query)) {
         console.log(`${key}: ${value}`);
@@ -30,4 +30,8 @@ app.get('/action/get/name', function (req, res) {
 
 app.get('/action/get/version', function (req, res) {
     res.send('v0.0.0')
+})
+
+app.get('/action/reset/all', function (req, res) {
+    res.send('1')
 })

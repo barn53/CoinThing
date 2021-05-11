@@ -75,7 +75,7 @@
                         <div class="form-group">
                             <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group" style="width:100%;">
-                                <input type="email" class="form-control enterapply" id="coin" placeholder="Coin ID"
+                                <input type="email" class="form-control enterapply" id="coin" placeholder="Coin"
                                     autofocus>
                                 <div class="input-group-append">
                                     <span id="coinclear" class="input-group-text clearbutton">&times;</span>
@@ -166,12 +166,11 @@
                         <div class="form-group">
                             <div><label for="coin-2"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin-2" placeholder="Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin-2" placeholder="1st Coin">
                                 <div class="input-group-append">
                                     <span id="coinclear-2" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="email" class="form-control enterapply" id="coin2-2"
-                                    placeholder="2nd Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin2-2" placeholder="2nd Coin">
                                 <div class="input-group-append">
                                     <span id="coin2clear-2" class="input-group-text clearbutton">&times;</span>
                                 </div>
@@ -199,65 +198,56 @@
                         <div class="form-group">
                             <div><label for="coin-n"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin-n"
-                                    placeholder="1st Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin-n" placeholder="1st Coin">
                                 <div class="input-group-append">
                                     <span id="coinclear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="email" class="form-control enterapply" id="coin2-n"
-                                    placeholder="2nd Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin2-n" placeholder="2nd Coin">
                                 <div class="input-group-append">
                                     <span id="coin2clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
                             </div>
 
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin3-n"
-                                    placeholder="3rdCoin ID">
+                                <input type="email" class="form-control enterapply" id="coin3-n" placeholder="3rdCoin">
                                 <div class="input-group-append">
                                     <span id="coin3clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="email" class="form-control enterapply" id="coin4-n"
-                                    placeholder="4th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin4-n" placeholder="4th Coin">
                                 <div class="input-group-append">
                                     <span id="coin4clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
                             </div>
 
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin5-n"
-                                    placeholder="5th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin5-n" placeholder="5th Coin">
                                 <div class="input-group-append">
                                     <span id="coin5clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="email" class="form-control enterapply" id="coin6-n"
-                                    placeholder="6th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin6-n" placeholder="6th Coin">
                                 <div class="input-group-append">
                                     <span id="coin6clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
                             </div>
 
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin7-n"
-                                    placeholder="7th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin7-n" placeholder="7th Coin">
                                 <div class="input-group-append">
                                     <span id="coin7clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="email" class="form-control enterapply" id="coin8-n"
-                                    placeholder="8th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin8-n" placeholder="8th Coin">
                                 <div class="input-group-append">
                                     <span id="coin8clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
                             </div>
 
                             <div class="input-group">
-                                <input type="email" class="form-control enterapply" id="coin9-n"
-                                    placeholder="9th Coin ID">
+                                <input type="email" class="form-control enterapply" id="coin9-n" placeholder="9th Coin">
                                 <div class="input-group-append">
                                     <span id="coin9clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
                                 <input type="email" class="form-control enterapply" id="coin10-n"
-                                    placeholder="10th Coin ID">
+                                    placeholder="10th Coin">
                                 <div class="input-group-append">
                                     <span id="coin10clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
@@ -530,26 +520,59 @@
         }
 
         function checkCoin(coin, allowEmpty) {
-            if (allowEmpty) {
-                if (!coin.match(/^[a-zA-Z0-9-]*$/)) {
-                    showError(": Coin ID '" + coin + "' is invalid!")
-                    return false
-                }
-            } else {
-                if (!coin.match(/^[a-zA-Z0-9-]+$/)) {
-                    showError(": Coin ID '" + coin + "' is invalid!")
-                    return false
-                }
+            if (allowEmpty && coin === '') {
+                return true
             }
-            return true
+
+            var re = new RegExp('^' + coin + '$', "i")
+            myCoin = allCoins.find(function (c) {
+                if (c.id.match(re)
+                    || c.symbol.match(re)
+                    || c.name.match(re)) {
+                    return true
+                }
+                return false
+            })
+            if (myCoin) {
+                return true
+            }
+            showError(": Coin '" + coin + "' is invalid!")
+            return false
         }
 
-        function checkCurrency(currency) {
-            if (!currency.match(/^[a-zA-Z]+$/)) {
-                showError(": Currency value '" + currency + "' is invalid!")
-                return false
+        function checkCurrency(currency, allowEmpty) {
+            if (allowEmpty && currency === '') {
+                return true
             }
-            return true
+
+            var re = new RegExp('^' + currency + '$', "i")
+            myCurrency = allCurrencies.find(function (c) {
+                if (c.match(re)) {
+                    return true
+                }
+                return false
+            })
+            if (myCurrency) {
+                return true
+            }
+            showError(": Currency value '" + currency + "' is invalid!")
+            return false
+        }
+
+        function getCoinInfo(coin) {
+            var re = new RegExp('^' + coin + '$', "i")
+            myCoin = allCoins.find(function (c) {
+                if (c.id.match(re)
+                    || c.symbol.match(re)
+                    || c.name.match(re)) {
+                    return true
+                }
+                return false
+            })
+            if (myCoin) {
+                myCoin.symbol = myCoin.symbol.toUpperCase()
+            }
+            return myCoin
         }
 
         function clickApply() {
@@ -567,8 +590,8 @@
 
                 settings.coins = [{ "id": $("#coin").val() }]
                 settings.currencies = [
-                    $("#currency").val(),
-                    $("#currency2").val()
+                    $("#currency").val().toUpperCase(),
+                    $("#currency2").val().toUpperCase()
                 ]
 
                 settings.chart_period = 0
@@ -632,8 +655,8 @@
                     { "id": $("#coin2-2").val() }
                 ]
                 settings.currencies = [
-                    $("#currency-2").val(),
-                    $("#currency2-2").val()
+                    $("#currency-2").val().toUpperCase(),
+                    $("#currency2-2").val().toUpperCase()
                 ]
             }
 
@@ -656,20 +679,20 @@
                 }
 
                 settings.coins = []
-                if ($("#coin-n").val().length > 0) settings.coins.push({ "id": $("#coin-n").val() })
-                if ($("#coin2-n").val().length > 0) settings.coins.push({ "id": $("#coin2-n").val() })
-                if ($("#coin3-n").val().length > 0) settings.coins.push({ "id": $("#coin3-n").val() })
-                if ($("#coin4-n").val().length > 0) settings.coins.push({ "id": $("#coin4-n").val() })
-                if ($("#coin5-n").val().length > 0) settings.coins.push({ "id": $("#coin5-n").val() })
-                if ($("#coin6-n").val().length > 0) settings.coins.push({ "id": $("#coin6-n").val() })
-                if ($("#coin7-n").val().length > 0) settings.coins.push({ "id": $("#coin7-n").val() })
-                if ($("#coin8-n").val().length > 0) settings.coins.push({ "id": $("#coin8-n").val() })
-                if ($("#coin9-n").val().length > 0) settings.coins.push({ "id": $("#coin9-n").val() })
-                if ($("#coin10-n").val().length > 0) settings.coins.push({ "id": $("#coin10-n").val() })
+                if ($("#coin-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin-n").val()))
+                if ($("#coin2-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin2-n").val()))
+                if ($("#coin3-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin3-n").val()))
+                if ($("#coin4-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin4-n").val()))
+                if ($("#coin5-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin5-n").val()))
+                if ($("#coin6-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin6-n").val()))
+                if ($("#coin7-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin7-n").val()))
+                if ($("#coin8-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin8-n").val()))
+                if ($("#coin9-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin9-n").val()))
+                if ($("#coin10-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin10-n").val()))
 
                 settings.currencies = [
-                    $("#currency-n").val(),
-                    $("#currency2-n").val()
+                    $("#currency-n").val().toUpperCase(),
+                    $("#currency2-n").val().toUpperCase()
                 ]
 
                 settings.swap_interval = -1
@@ -740,7 +763,7 @@
                 settings.heartbeat = true
             }
 
-            $.get("/action/setv12?json=" + JSON.stringify(settings), function (data) {
+            $.get("/action/set?json=" + JSON.stringify(settings), function (data) {
                 if (data["error"]) {
                     showError(": " + data["error"])
                 } else {
@@ -753,6 +776,16 @@
                     }, 10000)
                 })
         }
+
+        var allCoins
+        $.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false", function (data) {
+            allCoins = data
+        })
+
+        var allCurrencies
+        $.get("https://api.coingecko.com/api/v3/simple/supported_vs_currencies", function (data) {
+            allCurrencies = data
+        })
 
         $(document).ready(function () {
 
