@@ -32,7 +32,9 @@ P 1850 6600
 F 0 "J1" H 1907 7067 50  0000 C CNN
 F 1 "USB_B_Micro" H 1907 6976 50  0000 C CNN
 F 2 "barn53-kicad:MicroUSB_through_hole_fixing" H 2000 6550 50  0001 C CNN
-F 3 "~" H 2000 6550 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/szlcsc/1811131820_Jing-Extension-of-the-Electronic-Co-C10418_C10418.pdf" H 2000 6550 50  0001 C CNN
+F 4 "C10418" H 1850 6600 50  0001 C CNN "LCSC3"
+F 5 "C404969" H 1850 6600 50  0001 C CNN "LCSC"
 	1    1850 6600
 	1    0    0    -1  
 $EndComp

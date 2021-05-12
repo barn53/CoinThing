@@ -3,7 +3,7 @@ Comment,Designator,Footprint,LCSC
 "100n","C1,C3,C4,C5,C7,C8","Capacitor_SMD:C_0805_2012Metric","C49678"
 "4.7u","C2,C9","Capacitor_SMD:C_0805_2012Metric","C1779"
 "IPSDisplay_240x240","D1","barn53-kicad:IPSDisplay_240x240_FPC_80deg",""
-"USB_B_Micro","J1","barn53-kicad:MicroUSB_through_hole_fixing",""
+"USB_B_Micro","J1","barn53-kicad:MicroUSB_through_hole_fixing","C404969"
 "S8050_J3Y","Q1","Package_TO_SOT_SMD:SOT-23","C2146"
 "PMBT2222AYS","Q2","Package_TO_SOT_SMD:SOT-363_SC-70-6","C99140"
 "10k","R1,R2","Resistor_SMD:R_Array_Convex_4x0603","C29718"
