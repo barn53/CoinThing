@@ -127,24 +127,34 @@ void Display::renderTitle()
     LOG_FUNC
 
     m_tft.fillScreen(TFT_BLACK);
-    String symbol(F("/"));
-    symbol += m_settings.symbol();
-    symbol += F(".bmp");
+    String icon(F("/"));
+    icon += m_settings.symbol();
+    icon += F(".bmp");
     int16_t x_name(0);
-    if (drawBmp(symbol, 0, 0)) {
+    if (drawBmp(icon, 0, 0)) {
         x_name = 60;
     }
+
+    String name(m_settings.name());
     m_tft.loadFont(F("NotoSans-Regular30"));
+    if (m_tft.textWidth(name) > DISPLAY_WIDTH + x_name) {
+        m_tft.unloadFont();
+        m_tft.loadFont(F("NotoSans-Condensed30"));
+    }
+
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
-    m_tft.print(m_settings.name());
+    m_tft.print(name);
     m_tft.unloadFont();
+
+    String symbol(m_settings.symbol());
+    String currency(m_settings.currency());
     m_tft.loadFont(F("NotoSans-Regular25"));
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
     m_tft.setCursor(x_name, 35);
-    m_tft.print(m_settings.symbol());
+    m_tft.print(symbol);
     m_tft.print(" - ");
-    m_tft.print(m_settings.currency());
+    m_tft.print(currency);
     m_tft.unloadFont();
 }
 
