@@ -176,11 +176,7 @@ void Display::renderTitle()
     if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
         uint32_t count(0);
         for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-            if (count == m_current_coin_index) {
-                m_tft.fillCircle(xx, 58, 2, TFT_GOLD);
-            } else {
-                m_tft.drawCircle(xx, 58, 2, RGB(30, 20, 30));
-            }
+            m_tft.fillCircle(xx, 58, 2, count == m_current_coin_index ? TFT_GOLD : RGB(30, 20, 30));
         }
     }
 }
