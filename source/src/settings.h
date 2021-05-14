@@ -122,9 +122,9 @@ public:
 
     SettingsV12();
 
-    bool begin(const Gecko& gecko);
-    void set(const Gecko& gecko, const char* json, String& error);
-    bool read(const Gecko& gecko);
+    void begin();
+    void set(const char* json);
+    void read();
     void write() const;
     void deleteFile() const;
 
@@ -147,7 +147,7 @@ public:
 
     bool heartbeat() const { return m_heartbeat; }
 
-    bool valid() const { return m_valid; }
+    bool valid() const;
 
     uint32_t lastChange() const { return m_last_change; }
 
@@ -170,8 +170,6 @@ private:
     ChartStyle m_chart_style { ChartStyle::SIMPLE };
 
     bool m_heartbeat { true };
-
-    bool m_valid { false };
 
     uint32_t m_last_change { 0 };
 };

@@ -1,5 +1,8 @@
 var express = require('express')
+var cors = require('cors')
 var app = express()
+app.use(cors())
+
 var server = require('http').createServer(app)
 var port = 3000
 

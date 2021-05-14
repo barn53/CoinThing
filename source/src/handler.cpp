@@ -132,6 +132,7 @@ bool Handler::streamFile(const char* filename)
     String contentType = getContentType(filename);
     if (SPIFFS.exists(filename)) {
         File file = SPIFFS.open(filename, "r");
+        server.sendHeader(F("Access-Control-Allow-Origin"), "*");
         server.streamFile(file, contentType);
         file.close();
         return true;
@@ -156,8 +157,7 @@ bool Handler::handleSet() const
     } else if (server.hasArg(F("json"))) {
         // m_settings.set(m_gecko, server.arg(F("json")).c_str());
         SettingsV12 settings;
-        String error;
-        settings.set(m_gecko, server.arg(F("json")).c_str(), error);
+        settings.set(server.arg(F("json")).c_str());
     } else {
     }
 

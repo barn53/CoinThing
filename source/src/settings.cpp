@@ -6,151 +6,150 @@
 
 #define MIN_BRIGHTNESS 10
 
-#define DYNAMIC_JSON_CONFIG_SIZE 1024 // todo: remove
-#define STATIC_JSON_CONFIG_SIZE 1024
-
-/*
-
-// https://arduinojson.org/v6/assistant/
-
-// char* input;
-// size_t inputLength; (optional)
-
-StaticJsonDocument<384> doc;
-
-DeserializationError error = deserializeJson(doc, input, inputLength);
-
-if (error) {
-  Serial.print(F("deserializeJson() failed: "));
-  Serial.println(error.f_str());
-  return;
-}
-
-int mode = doc["mode"]; // 3
-
-JsonArray coins = doc["coins"];
-const char* coins_0 = coins[0]; // "bitcoin"
-const char* coins_1 = coins[1]; // "ethereum"
-const char* coins_2 = coins[2]; // "0x"
-const char* coins_3 = coins[3]; // "dogecoin"
-const char* coins_4 = coins[4]; // "ripple"
-const char* coins_5 = coins[5]; // "tether"
-const char* coins_6 = coins[6]; // "cardano"
-const char* coins_7 = coins[7]; // "polkadot"
-const char* coins_8 = coins[8]; // "terra-luna"
-const char* coins_9 = coins[9]; // "pancakeswap-token"
-
-const char* currencies_0 = doc["currencies"][0]; // "eur"
-const char* currencies_1 = doc["currencies"][1]; // "usd"
-
-int swap_interval = doc["swap_interval"]; // 2
-int chart_period = doc["chart_period"]; // 4
-int chart_style = doc["chart_style"]; // 2
-int number_format = doc["number_format"]; // 1
-bool heartbeat = doc["heartbeat"]; // true
-
-*/
+#define DYNAMIC_JSON_CONFIG_SIZE 1536
+#define STATIC_JSON_CONFIG_SIZE 1536
 
 SettingsV12::SettingsV12()
 {
 }
 
-bool SettingsV12::begin(const Gecko& gecko)
+void SettingsV12::begin()
 {
-    return true;
+    read();
 }
 
-void SettingsV12::set(const Gecko& gecko, const char* json, String& error)
+void SettingsV12::set(const char* json)
+{
+    LOG_FUNC
+    {
+        StaticJsonDocument<STATIC_JSON_CONFIG_SIZE> doc;
+        deserializeJson(doc, json);
+
+        m_mode = static_cast<Mode>(doc["mode"] | static_cast<uint8_t>(Mode::ONE_COIN));
+
+        m_coins.clear();
+        for (JsonObject elem : doc["coins"].as<JsonArray>()) {
+            Coin c;
+            c.id = elem["id"] | "";
+            c.symbol = elem["symbol"] | "";
+            c.name = elem["name"] | "";
+            m_coins.emplace_back(c);
+        }
+
+        m_currency = doc["currencies"][0] | "";
+        m_currency2 = doc["currencies"][1] | "";
+
+        m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
+        m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
+        m_swap_interval = static_cast<SwapInterval>(doc["swap_interval"] | static_cast<uint8_t>(SwapInterval::SEC_5));
+        m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
+        m_heartbeat = doc["heartbeat"] | true;
+    }
+
+    trace();
+    write();
+}
+
+void SettingsV12::read()
 {
     LOG_FUNC
 
-    Coin coin;
+    if (SPIFFS.exists(SETTINGS_FILE)) {
+        File file;
+        file = SPIFFS.open(SETTINGS_FILE, "r");
+        if (file) {
+            SERIAL_PRINTLN("Read settings: " SETTINGS_FILE);
+            DynamicJsonDocument doc(DYNAMIC_JSON_CONFIG_SIZE);
 
-    Serial.printf("open /coinsa\n");
-    File f = SPIFFS.open("/coinsa", "r");
+#if COIN_THING_SERIAL > 0
+            ReadLoggingStream loggingStream(file, Serial);
+            deserializeJson(doc, loggingStream);
+            Serial.println();
+#else
+            deserializeJson(doc, file);
+#endif
 
-    size_t lines(0);
-    char line[200];
-    while (f.available()) {
-        f.readBytesUntil('\n', line, sizeof(line));
-        if (strstr(line, "SingularityNET") != nullptr) {
-            break;
+            m_mode = static_cast<Mode>(doc["mode"] | static_cast<uint8_t>(Mode::ONE_COIN));
+
+            m_coins.clear();
+            for (JsonObject elem : doc["coins"].as<JsonArray>()) {
+                Coin c;
+                c.id = elem["id"] | "";
+                c.symbol = elem["symbol"] | "";
+                c.name = elem["name"] | "";
+                m_coins.emplace_back(c);
+            }
+
+            m_currency = doc["currencies"][0] | "";
+            m_currency2 = doc["currencies"][1] | "";
+
+            m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
+            m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
+            m_swap_interval = static_cast<SwapInterval>(doc["swap_interval"] | static_cast<uint8_t>(SwapInterval::SEC_5));
+            m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
+            m_heartbeat = doc["heartbeat"] | true;
+
+            // Close the file (Curiously, File's destructor doesn't close the file)
+            file.close();
         }
-        ++lines;
-    }
-    Serial.printf("/coinsa #lines: %u\n", lines);
-    f.close();
-
-    return;
-
-    m_valid = true;
-    error.clear();
-
-    StaticJsonDocument<STATIC_JSON_CONFIG_SIZE> doc;
-    DeserializationError jsonError = deserializeJson(doc, json);
-    if (jsonError) {
-        error = jsonError.f_str();
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error);
-        return;
-    }
-
-    m_mode = static_cast<Mode>(doc["mode"] | static_cast<uint8_t>(Mode::ONE_COIN));
-
-    m_coins.clear();
-    JsonArray coins = doc["coins"];
-    for (const char* c : coins) {
-        Coin coin;
-        if (gecko.coinDetails(c, coin.id, coin.symbol, coin.name)) {
-            m_coins.emplace_back(coin);
-        } else {
-            m_valid = false;
-            error += c;
-        }
-    }
-
-    m_currency = doc["currencies"][0] | "";
-    m_currency2 = doc["currencies"][1] | "usd";
-
-    m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-    m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
-    m_swap_interval = static_cast<SwapInterval>(doc["swap_interval"] | static_cast<uint8_t>(SwapInterval::SEC_5));
-    m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
-    m_heartbeat = doc["heartbeat"] | true;
-
-    trace();
-    SERIAL_PRINTLN(error)
-
-    if (!m_valid) {
-        read(gecko);
     }
 }
 
-bool SettingsV12::read(const Gecko& gecko)
-{
-    return true;
-}
 void SettingsV12::write() const
 {
+    LOG_FUNC
+
+    File file = SPIFFS.open(SETTINGS_FILE, "w");
+    if (file) {
+        file.printf(R"({"mode":%u,)", static_cast<uint8_t>(m_mode));
+        file.print(R"("coins":[)");
+        bool first(true);
+        for (const auto& c : m_coins) {
+            if (first) {
+                first = false;
+            } else {
+                file.print(R"(,)");
+            }
+            file.printf(R"({"id":"%s","symbol":"%s","name":"%s"})", c.id.c_str(), c.symbol.c_str(), c.name.c_str());
+        }
+        file.print(R"(],)");
+        file.printf(R"("currencies":["%s","%s"],)", m_currency.c_str(), m_currency2.c_str());
+        file.printf(R"("swap_interval":%u,)", static_cast<uint8_t>(m_swap_interval));
+        file.printf(R"("chart_period":%u,)", static_cast<uint8_t>(m_chart_period));
+        file.printf(R"("chart_style":%u,)", static_cast<uint8_t>(m_chart_style));
+        file.printf(R"("number_format":%u,)", static_cast<uint8_t>(m_number_format));
+        file.printf(R"("heartbeat":%s)", m_heartbeat ? "true" : "false");
+        file.print(R"(})");
+        file.close();
+    }
 }
+
 void SettingsV12::deleteFile() const
 {
+    SPIFFS.remove(SETTINGS_FILE);
+    SPIFFS.remove(BRIGHTNESS_FILE);
+}
+
+bool SettingsV12::valid() const
+{
+    return SPIFFS.exists(SETTINGS_FILE);
 }
 
 void SettingsV12::trace() const
 {
 #if COIN_THING_SERIAL > 0
+    Serial.printf("Mode: >%u<\n", m_mode);
     Serial.printf("Coins:\n");
     for (const auto& c : m_coins) {
         Serial.printf("id: >%s<, name: >%s<, symbol: >%s<, \n", c.id.c_str(), c.name.c_str(), c.symbol.c_str());
     }
-    Serial.printf("Currency:                >%s<\n", m_currency.c_str());
-    Serial.printf("Currency 2:              >%s<\n", m_currency2.c_str());
-    Serial.printf("Settings number format:  >%u<\n", m_number_format);
-    Serial.printf("Settings chart period:   >%u<\n", m_chart_period);
-    Serial.printf("Settings swap interval:  >%u<\n", m_swap_interval);
-    Serial.printf("Settings chart style:    >%u<\n", m_chart_style);
-    Serial.printf("Settings heart beat:     >%s<\n", (m_heartbeat ? "true" : "false"));
+    Serial.printf("Currency:       >%s<\n", m_currency.c_str());
+    Serial.printf("Currency 2:     >%s<\n", m_currency2.c_str());
+    Serial.printf("Number format:  >%u<\n", m_number_format);
+    Serial.printf("Chart period:   >%u<\n", m_chart_period);
+    Serial.printf("Swap interval:  >%u<\n", m_swap_interval);
+    Serial.printf("Chart style:    >%u<\n", m_chart_style);
+    Serial.printf("Heart beat:     >%s<\n", (m_heartbeat ? "true" : "false"));
 #endif
 }
 
