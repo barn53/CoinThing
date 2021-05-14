@@ -33,12 +33,13 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
         Serial.printf("[HTTP] GET... code: %d\n", httpCode);
 #endif
         if (httpCode == HTTP_CODE_OK) {
+            ReadBufferingClient bufferedClient { m_client, 64 };
 #if COIN_THING_SERIAL > 1
-            ReadLoggingStream loggingStream(m_client, Serial);
+            ReadLoggingStream loggingStream(bufferedClient, Serial);
             deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
             Serial.println();
 #else
-            deserializeJson(jsonDoc, m_client, DeserializationOption::Filter(jsonFilter));
+            deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
             return true;
         }

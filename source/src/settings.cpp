@@ -61,12 +61,13 @@ void SettingsV12::read()
             SERIAL_PRINTLN("Read settings: " SETTINGS_FILE);
             DynamicJsonDocument doc(DYNAMIC_JSON_CONFIG_SIZE);
 
+            ReadBufferingStream bufferedFile { file, 64 };
 #if COIN_THING_SERIAL > 0
-            ReadLoggingStream loggingStream(file, Serial);
+            ReadLoggingStream loggingStream(bufferedFile, Serial);
             deserializeJson(doc, loggingStream);
             Serial.println();
 #else
-            deserializeJson(doc, file);
+            deserializeJson(doc, bufferedFile);
 #endif
 
             m_mode = static_cast<Mode>(doc["mode"] | static_cast<uint8_t>(Mode::ONE_COIN));
