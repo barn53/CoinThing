@@ -47,12 +47,31 @@ void Gecko::loop()
     }
 }
 
-void Gecko::price(gecko_t& price, gecko_t& price2, gecko_t& change_pct)
+void Gecko::prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod)
+{
+    gecko_t p;
+    gecko_t p2;
+    gecko_t pct;
+    bool refetched;
+
+    m_last_price_fetch = 0;
+    price(coinIndex, p, p2, pct);
+    if (chartPeriod == Settings::ChartPeriod::PERIOD_24_H
+        || chartPeriod == Settings::ChartPeriod::PERIOD_48_H) {
+        m_last_chart_48h_fetch = 0;
+        chart_48h(coinIndex, refetched);
+    } else {
+        m_last_chart_60d_fetch = 0;
+        chart_60d(coinIndex, refetched);
+    }
+}
+
+void Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct)
 {
     LOG_FUNC
 
     if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
-        if (fetchCoinPriceChange()) {
+        if (fetchCoinPriceChange(coinIndex)) {
             m_last_price_fetch = millis_test();
             price = m_price;
             price2 = m_price2;
@@ -60,16 +79,20 @@ void Gecko::price(gecko_t& price, gecko_t& price2, gecko_t& change_pct)
         } else {
             m_last_price_fetch = 0;
         }
+    } else {
+        price = m_price;
+        price2 = m_price2;
+        change_pct = m_change_pct;
     }
 }
 
-const std::vector<gecko_t>& Gecko::chart_48h(bool& refetched)
+const std::vector<gecko_t>& Gecko::chart_48h(uint32_t coinIndex, bool& refetched)
 {
     LOG_FUNC
 
     refetched = false;
     if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
-        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_48_H)) {
+        if (fetchCoinChart(coinIndex, Settings::ChartPeriod::PERIOD_48_H)) {
             m_last_chart_48h_fetch = millis_test();
             refetched = true;
         } else {
@@ -79,13 +102,13 @@ const std::vector<gecko_t>& Gecko::chart_48h(bool& refetched)
     return m_chart_48h;
 }
 
-const std::vector<gecko_t>& Gecko::chart_60d(bool& refetched)
+const std::vector<gecko_t>& Gecko::chart_60d(uint32_t coinIndex, bool& refetched)
 {
     LOG_FUNC
 
     refetched = false;
     if (doInterval(m_last_chart_60d_fetch, CHART_60_D_FETCH_INTERVAL)) {
-        if (fetchCoinChart(Settings::ChartPeriod::PERIOD_60_D)) {
+        if (fetchCoinChart(coinIndex, Settings::ChartPeriod::PERIOD_60_D)) {
             m_last_chart_60d_fetch = millis_test();
             refetched = true;
         } else {
@@ -95,11 +118,11 @@ const std::vector<gecko_t>& Gecko::chart_60d(bool& refetched)
     return m_chart_60d;
 }
 
-bool Gecko::fetchCoinPriceChange()
+bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 {
     LOG_FUNC
 
-    String coinId(m_settings.coin());
+    String coinId(m_settings.coin(coinIndex));
     String currency(m_settings.currency());
     String currency2(m_settings.currency2());
 
@@ -131,7 +154,7 @@ bool Gecko::fetchCoinPriceChange()
     return false;
 }
 
-bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
+bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
 {
     LOG_FUNC
 
@@ -139,7 +162,7 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
     Serial.printf("type: %u\n", type);
 #endif
 
-    String coinId(m_settings.coin());
+    String coinId(m_settings.coin(coinIndex));
     String currency(m_settings.currency());
 
     coinId.toLowerCase();

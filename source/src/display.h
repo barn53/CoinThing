@@ -15,7 +15,6 @@ public:
     void begin();
     void loop();
 
-    void showCoin();
     void showAPQR();
     void showUpdateQR();
     void showSettingsQR();
@@ -29,10 +28,15 @@ private:
     void wifiConnect();
     void renderTitle();
     void heartbeat();
+    void showCoin();
+    void showTwoCoins();
+    void showMultipleCoins();
     void renderCoin();
-    Settings::ChartPeriod nextChartPeriod() const;
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
+
+    Settings::ChartPeriod nextChartPeriod() const;
+    void nextCoinID();
 
     bool drawBmp(const String& filename, int16_t x, int16_t y);
 
@@ -60,6 +64,9 @@ private:
     uint32_t m_last_chart_update { 0 };
     uint32_t m_display_start { 0 };
     bool m_show_api_ok { true };
+
+    uint32_t m_current_coin_index { std::numeric_limits<uint32_t>::max() };
+    uint32_t m_last_coin_swap { 0 };
 
     bool m_shows_wifi_not_connected { false };
 };

@@ -93,7 +93,7 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
 
     m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
     m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
-    m_swap_interval = static_cast<SwapInterval>(doc["swap_interval"] | static_cast<uint8_t>(SwapInterval::SEC_5));
+    m_swap_interval = static_cast<Swap>(doc["swap_interval"] | static_cast<uint8_t>(Swap::INTERVAL_1));
     m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
     m_heartbeat = doc["heartbeat"] | true;
 
@@ -172,17 +172,30 @@ void Settings::trace() const
 #endif
 }
 
-const String& Settings::coin() const
+uint32_t Settings::numberCoins() const
 {
-    return m_coins[0].id;
+    return m_coins.size();
 }
-const String& Settings::name() const
+
+uint32_t Settings::validCoinIndex(uint32_t index) const
 {
-    return m_coins[0].name;
+    if (index >= m_coins.size()) {
+        index = 0;
+    }
+    return index;
 }
-const String& Settings::symbol() const
+
+const String& Settings::coin(uint32_t index) const
 {
-    return m_coins[0].symbol;
+    return m_coins[validCoinIndex(index)].id;
+}
+const String& Settings::name(uint32_t index) const
+{
+    return m_coins[validCoinIndex(index)].name;
+}
+const String& Settings::symbol(uint32_t index) const
+{
+    return m_coins[validCoinIndex(index)].symbol;
 }
 
 const String& Settings::currency() const

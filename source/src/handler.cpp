@@ -103,12 +103,12 @@ bool Handler::handleGetPrice()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
-    m_gecko.price(price, price2, change_pct);
+    m_gecko.price(0, price, price2, change_pct);
 
     String result;
     formatNumber(price, result, m_settings.numberFormat(), false, true);
     String ret;
-    ret = m_settings.symbol();
+    ret = m_settings.symbol(0);
     ret += F(": ");
     ret += result;
     ret += m_settings.currencySymbol();

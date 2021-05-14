@@ -18,16 +18,17 @@ public:
     bool ping();
     bool succeeded() const { return m_succeeded; }
 
-
-    void price(gecko_t& price, gecko_t& price2, gecko_t& change_pct);
-    const std::vector<gecko_t>& chart_48h(bool& refetched);
-    const std::vector<gecko_t>& chart_60d(bool& refetched);
+    void price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
+    const std::vector<gecko_t>& chart_48h(uint32_t coinIndex, bool& refetched);
+    const std::vector<gecko_t>& chart_60d(uint32_t coinIndex, bool& refetched);
 
     uint32_t lastPriceFetch() const { return m_last_price_fetch; }
 
+    void prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod);
+
 private:
-    bool fetchCoinPriceChange();
-    bool fetchCoinChart(Settings::ChartPeriod type);
+    bool fetchCoinPriceChange(uint32_t coinIndex);
+    bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
 
     bool m_succeeded { false };
 

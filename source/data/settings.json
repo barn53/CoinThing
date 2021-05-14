@@ -3,52 +3,52 @@
     "coins": [
         {
             "id": "bitcoin",
-            "symbol": "btc",
+            "symbol": "BTC",
             "name": "Bitcoin"
         },
         {
             "id": "ethereum",
-            "symbol": "eth",
+            "symbol": "ETH",
             "name": "Ethereum"
         },
         {
             "id": "0x",
-            "symbol": "zrx",
+            "symbol": "ZRX",
             "name": "0x"
         },
         {
             "id": "dogecoin",
-            "symbol": "doge",
+            "symbol": "DOGE",
             "name": "Dogecoin"
         },
         {
             "id": "ripple",
-            "symbol": "xrp",
+            "symbol": "XRP",
             "name": "XRP"
         },
         {
             "id": "tether",
-            "symbol": "usdt",
+            "symbol": "USDT",
             "name": "Tether"
         },
         {
             "id": "cardano",
-            "symbol": "ada",
+            "symbol": "ADA",
             "name": "Cardano"
         },
         {
             "id": "polkadot",
-            "symbol": "dot",
+            "symbol": "DOT",
             "name": "Polkadot"
         },
         {
             "id": "terra-luna",
-            "symbol": "luna",
+            "symbol": "LUNA",
             "name": "Terra"
         },
         {
             "id": "pancakeswap-token",
-            "symbol": "cake",
+            "symbol": "CAKE",
             "name": "PancakeSwap"
         }
     ],

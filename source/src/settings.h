@@ -13,11 +13,11 @@ public:
         HIGH_LOW,
         HIGH_LOW_FIRST_LAST
     };
-    enum class SwapInterval : uint8_t {
-        SEC_5 = 0,
-        SEC_30,
-        MIN_1,
-        MIN_5
+    enum class Swap : uint8_t {
+        INTERVAL_1 = 0, // 5s (chart), 10s (coin)
+        INTERVAL_2, // 30s
+        INTERVAL_3, // 1min
+        INTERVAL_4 // 5min
     };
 
     enum ChartPeriod : uint8_t {
@@ -30,7 +30,7 @@ public:
     };
 
     enum Mode : uint8_t {
-        ONE_COIN = 0,
+        ONE_COIN = 1,
         TWO_COINS,
         MULTIPLE_COINS
     };
@@ -54,18 +54,20 @@ public:
     void write() const;
     void deleteFile() const;
 
-    const String& coin() const;
-    const String& name() const;
-    const String& symbol() const;
+    const String& coin(uint32_t index) const;
+    const String& name(uint32_t index) const;
+    const String& symbol(uint32_t index) const;
 
     const String& currency() const;
     const String& currencySymbol() const;
     const String& currency2() const;
     const String& currency2Symbol() const;
 
+    Mode mode() const { return m_mode; }
+    uint32_t numberCoins() const;
     NumberFormat numberFormat() const { return m_number_format; }
     uint8_t chartPeriod() const { return m_chart_period; }
-    SwapInterval swapInterval() const { return m_swap_interval; }
+    Swap swapInterval() const { return m_swap_interval; }
     ChartStyle chartStyle() const { return m_chart_style; }
     bool heartbeat() const { return m_heartbeat; }
     bool valid() const;
@@ -80,6 +82,8 @@ private:
     void set(DynamicJsonDocument& doc, bool toFile);
     void trace() const;
 
+    uint32_t validCoinIndex(uint32_t index) const;
+
     Mode m_mode { Mode::ONE_COIN };
 
     std::vector<Coin> m_coins;
@@ -87,7 +91,7 @@ private:
 
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };
-    SwapInterval m_swap_interval { SwapInterval::SEC_5 };
+    Swap m_swap_interval { Swap::INTERVAL_1 };
     ChartStyle m_chart_style { ChartStyle::SIMPLE };
     bool m_heartbeat { true };
 

@@ -51,6 +51,8 @@ void Display::begin()
 
 void Display::loop()
 {
+    LOG_FUNC
+
     analogWrite(TFT_BL, m_settings.brightness());
 
     m_gecko.loop();
@@ -66,7 +68,13 @@ void Display::loop()
             }
         } else {
             if (m_settings.valid()) {
-                showCoin();
+                if (m_settings.mode() == Settings::Mode::ONE_COIN) {
+                    showCoin();
+                } else if (m_settings.mode() == Settings::Mode::TWO_COINS) {
+                    showTwoCoins();
+                } else if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+                    showMultipleCoins();
+                }
             } else {
                 showSettingsQR();
             }
@@ -126,36 +134,55 @@ void Display::renderTitle()
 {
     LOG_FUNC
 
+    String name(m_settings.name(m_current_coin_index));
+    String symbol(m_settings.symbol(m_current_coin_index));
+    String currency(m_settings.currency());
+
     m_tft.fillScreen(TFT_BLACK);
     String icon(F("/"));
-    icon += m_settings.symbol();
+    icon += symbol;
     icon += F(".bmp");
     int16_t x_name(0);
     if (drawBmp(icon, 0, 0)) {
         x_name = 60;
     }
 
-    String name(m_settings.name());
+    uint8_t y_symbol_curr(35);
+    if (m_settings.mode() == Settings::Mode::ONE_COIN) {
+        m_tft.loadFont(F("NotoSans-Regular25"));
+    } else {
+        m_tft.loadFont(F("NotoSans-Regular20"));
+        y_symbol_curr = 32;
+    }
+    m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+    m_tft.setCursor(x_name, y_symbol_curr);
+    m_tft.print(symbol);
+    m_tft.print(" - ");
+    m_tft.print(currency);
+    m_tft.unloadFont();
+
+    // Write the name at last, so it appears on top of the symbol and currenciy
+    //  when there is a collision
     m_tft.loadFont(F("NotoSans-Regular30"));
-    if (m_tft.textWidth(name) > DISPLAY_WIDTH + x_name) {
+    if (m_tft.textWidth(name) > DISPLAY_WIDTH - x_name) {
         m_tft.unloadFont();
         m_tft.loadFont(F("NotoSans-Condensed30"));
     }
-
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
     m_tft.setCursor(x_name, 0);
     m_tft.print(name);
     m_tft.unloadFont();
 
-    String symbol(m_settings.symbol());
-    String currency(m_settings.currency());
-    m_tft.loadFont(F("NotoSans-Regular25"));
-    m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    m_tft.setCursor(x_name, 35);
-    m_tft.print(symbol);
-    m_tft.print(" - ");
-    m_tft.print(currency);
-    m_tft.unloadFont();
+    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+        uint32_t count(0);
+        for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
+            if (count == m_current_coin_index) {
+                m_tft.fillCircle(xx, 58, 2, TFT_GOLD);
+            } else {
+                m_tft.drawCircle(xx, 58, 2, RGB(30, 20, 30));
+            }
+        }
+    }
 }
 
 void Display::renderCoin()
@@ -165,7 +192,7 @@ void Display::renderCoin()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
-    m_gecko.price(price, price2, change_pct);
+    m_gecko.price(m_current_coin_index, price, price2, change_pct);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         SERIAL_PRINTLN("Prices unchanged - skip");
@@ -230,8 +257,6 @@ void Display::renderCoin()
 
 bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 {
-    LOG_FUNC
-
     const std::vector<gecko_t>* prices(nullptr);
     bool refetched(false);
 
@@ -240,19 +265,19 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     std::vector<gecko_t>::const_iterator endIt;
     std::vector<gecko_t>::const_iterator it;
     if (chartPeriod == Settings::ChartPeriod::PERIOD_24_H) {
-        prices = &m_gecko.chart_48h(refetched);
+        prices = &m_gecko.chart_48h(m_current_coin_index, refetched);
         beginIt = prices->end() - 24;
         period = F("24h");
     } else if (chartPeriod == Settings::ChartPeriod::PERIOD_48_H) {
-        prices = &m_gecko.chart_48h(refetched);
+        prices = &m_gecko.chart_48h(m_current_coin_index, refetched);
         beginIt = prices->begin();
         period = F("48h");
     } else if (chartPeriod == Settings::ChartPeriod::PERIOD_30_D) {
-        prices = &m_gecko.chart_60d(refetched);
+        prices = &m_gecko.chart_60d(m_current_coin_index, refetched);
         beginIt = prices->end() - 30;
         period = F("30d");
     } else if (chartPeriod == Settings::ChartPeriod::PERIOD_60_D) {
-        prices = &m_gecko.chart_60d(refetched);
+        prices = &m_gecko.chart_60d(m_current_coin_index, refetched);
         beginIt = prices->begin();
         period = F("60d");
     } else {
@@ -579,12 +604,23 @@ Settings::ChartPeriod Display::nextChartPeriod() const
     return next;
 }
 
+void Display::nextCoinID()
+{
+    m_current_coin_index = m_current_coin_index + 1;
+    if (m_current_coin_index == m_settings.numberCoins()) {
+        m_current_coin_index = 0;
+    }
+}
+
 void Display::showCoin()
 {
+    LOG_FUNC
+
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
+        m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
         m_shows_wifi_not_connected = false;
         rewrite = true;
@@ -600,15 +636,15 @@ void Display::showCoin()
 
     uint32_t interval(5 * 1000);
     switch (m_settings.swapInterval()) {
-    case Settings::SwapInterval::SEC_5:
+    case Settings::Swap::INTERVAL_1:
         break;
-    case Settings::SwapInterval::SEC_30:
+    case Settings::Swap::INTERVAL_2:
         interval = (30 * 1000);
         break;
-    case Settings::SwapInterval::MIN_1:
+    case Settings::Swap::INTERVAL_3:
         interval = (60 * 1000);
         break;
-    case Settings::SwapInterval::MIN_5:
+    case Settings::Swap::INTERVAL_4:
         interval = (5 * 60 * 1000);
         break;
     }
@@ -624,6 +660,79 @@ void Display::showCoin()
         }
         m_last_chart_period = next;
     }
+
+    m_last_screen = Screen::COIN;
+}
+
+void Display::showTwoCoins()
+{
+    LOG_FUNC
+
+    bool rewrite(false);
+
+    if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
+        m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
+        m_current_coin_index = 0;
+        m_last_seen_settings = m_settings.lastChange();
+        m_shows_wifi_not_connected = false;
+        rewrite = true;
+    }
+
+    m_last_screen = Screen::COIN;
+}
+
+void Display::showMultipleCoins()
+{
+    LOG_FUNC
+
+    uint32_t interval(10 * 1000);
+    switch (m_settings.swapInterval()) {
+    case Settings::Swap::INTERVAL_1:
+        break;
+    case Settings::Swap::INTERVAL_2:
+        interval = (30 * 1000);
+        break;
+    case Settings::Swap::INTERVAL_3:
+        interval = (60 * 1000);
+        break;
+    case Settings::Swap::INTERVAL_4:
+        interval = (5 * 60 * 1000);
+        break;
+    }
+
+    bool rewrite(false);
+    if (m_last_screen != Screen::COIN
+        || m_settings.lastChange() != m_last_seen_settings) {
+        m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
+        m_current_coin_index = std::numeric_limits<uint32_t>::max();
+        m_last_seen_settings = m_settings.lastChange();
+        m_shows_wifi_not_connected = false;
+        rewrite = true;
+    }
+
+    if (rewrite || doInterval(m_last_coin_swap, interval)) {
+
+#if COIN_THING_SERIAL > 0
+        Serial.printf("last coin index: %u -> ", m_current_coin_index);
+#endif
+        nextCoinID();
+#if COIN_THING_SERIAL > 0
+        Serial.printf("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
+#endif
+
+        m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
+
+        renderTitle();
+        renderCoin();
+        if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
+            chartFailed();
+            m_last_chart_update = 0;
+        }
+        m_last_coin_swap = millis_test();
+    }
+
+    heartbeat();
+    wifiConnect();
 
     m_last_screen = Screen::COIN;
 }
