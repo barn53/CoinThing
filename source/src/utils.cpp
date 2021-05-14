@@ -1,12 +1,5 @@
 #include "utils.h"
 
-String cleanUp(const String& s)
-{
-    String ret(s.substring(0, std::string(s.c_str()).find_first_not_of("abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")));
-    ret.toLowerCase();
-    return ret;
-}
-
 void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
 {
     char buf[21];
@@ -119,26 +112,6 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             s.replace(dotZero, repl);
         }
     }
-}
-
-const char* getCurrencySymbol(const char* currency)
-{
-    for (const auto& c : currencies) {
-        if (strcmp(c.currency, currency) == 0) {
-            return c.symbol;
-        }
-    }
-    return currency;
-}
-
-bool isCurrency(const char* currency)
-{
-    for (const auto& c : currencies) {
-        if (strcmp(c.currency, currency) == 0) {
-            return true;
-        }
-    }
-    return false;
 }
 
 uint32_t millis_test()

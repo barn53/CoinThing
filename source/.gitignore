@@ -3,3 +3,4 @@ secrets.h
 pre.h
 
 data/version.spiffs
+data/*.gz

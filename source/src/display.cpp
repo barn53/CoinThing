@@ -144,9 +144,7 @@ void Display::renderTitle()
     m_tft.setCursor(x_name, 35);
     m_tft.print(m_settings.symbol());
     m_tft.print(" - ");
-    String upperCurrency(m_settings.currency());
-    upperCurrency.toUpperCase();
-    m_tft.print(upperCurrency);
+    m_tft.print(m_settings.currency());
     m_tft.unloadFont();
 }
 
@@ -171,7 +169,7 @@ void Display::renderCoin()
     m_tft.setTextColor(color, TFT_BLACK);
     m_tft.loadFont(F("NotoSans-Regular50"));
     formatNumber(price, msg, m_settings.numberFormat(), false, true);
-    msg += getCurrencySymbol(m_settings.currency());
+    msg += m_settings.currencySymbol();
 
     auto priceWidth(m_tft.textWidth(msg));
     if (priceWidth > DISPLAY_WIDTH) {
@@ -192,7 +190,7 @@ void Display::renderCoin()
     String msg2;
     formatNumber(price2, msg2, m_settings.numberFormat(), false, true);
     formatNumber(change_pct, msg, m_settings.numberFormat(), true, false, 2);
-    msg2 += getCurrencySymbol(m_settings.currency2());
+    msg2 += m_settings.currency2Symbol();
     msg += "%";
     m_tft.loadFont(F("NotoSans-Regular25"));
     auto usdWidth(m_tft.textWidth(msg2));
@@ -368,7 +366,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
                 formatNumber(low, number, m_settings.numberFormat(), false, true);
                 m_tft.setTextColor(TFT_RED, TFT_BLACK);
             }
-            number += getCurrencySymbol(m_settings.currency());
+            number += m_settings.currencySymbol();
             int16_t widthNumber(m_tft.textWidth(number));
 
             if (xAt < DISPLAY_WIDTH / 2) {
@@ -432,10 +430,10 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         formatNumber(prices->back(), numberLast, m_settings.numberFormat(), false, true);
         formatNumber(low, numberLow, m_settings.numberFormat(), false, true);
         formatNumber(high, numberHigh, m_settings.numberFormat(), false, true);
-        numberHigh += getCurrencySymbol(m_settings.currency());
-        numberLow += getCurrencySymbol(m_settings.currency());
-        numberFirst += getCurrencySymbol(m_settings.currency());
-        numberLast += getCurrencySymbol(m_settings.currency());
+        numberHigh += m_settings.currencySymbol();
+        numberLow += m_settings.currencySymbol();
+        numberFirst += m_settings.currencySymbol();
+        numberLast += m_settings.currencySymbol();
         int16_t widthHigh(m_tft.textWidth(numberHigh));
         int16_t widthLow(m_tft.textWidth(numberLow));
         int16_t widthFirst(m_tft.textWidth(numberFirst));

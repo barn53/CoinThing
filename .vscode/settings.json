@@ -41,5 +41,5 @@
         "set": "cpp",
         "random": "cpp"
     },
-    "python.pythonPath": "/Library/Developer/CommandLineTools/usr/bin/python3"
+    "python.pythonPath": "C:\\Users\\gerdm\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
 }

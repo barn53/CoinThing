@@ -51,7 +51,7 @@ void setup(void)
     Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
 
     gecko.begin();
-    settings.begin(gecko);
+    settings.begin();
 
     server.onNotFound([]() { // If the client requests any URI
         if (!handler.handleAction()
@@ -66,9 +66,6 @@ void setup(void)
 
 void loop()
 {
-    /*
     display.loop();
-    */
-
     server.handleClient();
 }

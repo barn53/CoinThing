@@ -36,8 +36,10 @@ f.close()
 
 
 f = open(env["PROJECTDATA_DIR"] + "/version.spiffs", "w")
-
 f.write('%s' % (version))
-
 f.close()
 
+## Add ./source/build to PATH for windows to execute gzip
+subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/settings.html"])
+subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/about.html"])
+subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/admin.html"])

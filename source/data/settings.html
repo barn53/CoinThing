@@ -415,8 +415,13 @@
                 setTimeout(() => {
                     // to avoid too fast clicks
                     $("#apply").prop("disabled", false)
-                }, 1000);
+                }, 500);
             }
+        }
+
+        function displayBrightness(brightness) {
+            brightnessSlider.slider("setValue", brightness['b'])
+            console.log(JSON.stringify(brightness))
         }
 
         function displaySettings(settings) {
@@ -426,8 +431,8 @@
                 $('#nav-tab a[href="#nav-1"]').tab('show')
 
                 $("#coin").val(settings.coins[0].name || '')
-                $("#currency0").val(settings.currencies[0] || '')
-                $("#currency1").val(settings.currencies[1] || '')
+                $("#currency0").val(settings.currencies[0].currency || '')
+                $("#currency1").val(settings.currencies[1].currency || '')
                 chart_period = settings.chart_period || 0
                 swap_interval = settings.swap_interval || 0
                 chart_style = settings.chart_style || 0
@@ -458,8 +463,8 @@
 
                 $("#coin0-2").val(settings.coins[0].name || '')
                 $("#coin1-2").val(settings.coins[1].name || '')
-                $("#currency0-2").val(settings.currencies[0] || '')
-                $("#currency1-2").val(settings.currencies[1] || '')
+                $("#currency0-2").val(settings.currencies[0].currency || '')
+                $("#currency1-2").val(settings.currencies[1].currency || '')
             } else if (settings.mode == 3) {
                 $('#nav-tab a[href="#nav-n"]').tab('show')
 
@@ -472,8 +477,8 @@
                     }
                 }
 
-                $("#currency0-n").val(settings.currencies[0] || '')
-                $("#currency1-n").val(settings.currencies[1] || '')
+                $("#currency0-n").val(settings.currencies[0].currency || '')
+                $("#currency1-n").val(settings.currencies[1].currency || '')
                 swap_interval = settings.swap_interval || 0
                 chart_period = settings.chart_period || 0
                 chart_style = settings.chart_style || 0
@@ -500,13 +505,20 @@
 
             $("#heartbeat")[0].checked = (heartbeat !== 0)
 
-            brightnessSlider.slider("setValue", settings['brightness'])
             console.log(JSON.stringify(settings))
         }
 
         function getSettings() {
             $.get("/settings.json", function (data) {
                 displaySettings(data)
+            })
+        }
+
+        function getBrightness() {
+            $.get("/brightness.json", function (data) {
+                displayBrightness(data)
+            }).fail(() => {
+                displayBrightness({ "b": 255 })
             })
         }
 
@@ -546,27 +558,8 @@
             return false
         }
 
-        function checkCurrency(currency, allowEmpty) {
-            if (allowEmpty && currency === '') {
-                return true
-            }
-
-            var re = new RegExp('^' + escapeRegExp(currency) + '$', "i")
-            myCurrency = allCurrencies.find(function (c) {
-                if (c.match(re)) {
-                    return true
-                }
-                return false
-            })
-            if (myCurrency) {
-                return true
-            }
-            showError(": Currency value '" + currency + "' is invalid!")
-            return false
-        }
-
         function getCoinInfo(coin) {
-            var re = new RegExp('^' + coin + '$', "i")
+            var re = new RegExp('^' + escapeRegExp(coin) + '$', "i")
             myCoin = allCoins.find(function (c) {
                 if (c.id.match(re)
                     || c.symbol.match(re)
@@ -579,6 +572,40 @@
                 myCoin.symbol = myCoin.symbol.toUpperCase()
             }
             return myCoin
+        }
+
+        function checkCurrency(currency, allowEmpty) {
+            if (allowEmpty && currency === '') {
+                return true
+            }
+
+            var re = new RegExp('^' + escapeRegExp(currency) + '$', "i")
+            myCurrency = allCurrencies.find(function (c) {
+                if (c.currency.match(re)) {
+                    return true
+                }
+                return false
+            })
+            if (myCurrency) {
+                return true
+            }
+            showError(": Currency value '" + currency + "' is invalid!")
+            return false
+        }
+
+        function getCurrencyInfo(currency, allowEmpty) {
+            if (allowEmpty && currency === '') {
+                return { "currency": "USD", "symbol": "$" }
+            }
+
+            var re = new RegExp('^' + escapeRegExp(currency) + '$', "i")
+            myCurrency = allCurrencies.find(function (c) {
+                if (c.currency.match(re)) {
+                    return true
+                }
+                return false
+            })
+            return myCurrency
         }
 
         function trimAll() {
@@ -616,20 +643,17 @@
             if ($("#nav-1").hasClass('active')) {
                 settings.mode = 1
 
-                if ($("#currency1").val().length == 0) {
-                    $("#currency1").val("USD")
-                }
                 if (!checkCoin($("#coin").val())
-                    || !checkCurrency($("#currency0").val())
-                    || !checkCurrency($("#currency1").val())) {
+                    || !checkCurrency($("#currency0").val(), false)
+                    || !checkCurrency($("#currency1").val(), true)) {
                     return
                 }
 
                 settings.coins = [getCoinInfo($("#coin").val())]
 
                 settings.currencies = [
-                    $("#currency0").val().toUpperCase(),
-                    $("#currency1").val().toUpperCase()
+                    getCurrencyInfo($("#currency0").val(), false),
+                    getCurrencyInfo($("#currency1").val(), true)
                 ]
 
                 settings.chart_period = 0
@@ -681,13 +705,10 @@
             if ($("#nav-2").hasClass('active')) {
                 settings.mode = 2
 
-                if ($("#currency1-2").val().length == 0) {
-                    $("#currency1-2").val("USD")
-                }
                 if (!checkCoin($("#coin0-2").val())
                     || !checkCoin($("#coin1-2").val())
-                    || !checkCurrency($("#currency0-2").val())
-                    || !checkCurrency($("#currency1-2").val())) {
+                    || !checkCurrency($("#currency0-2").val(), false)
+                    || !checkCurrency($("#currency1-2").val(), true)) {
                     return
                 }
 
@@ -696,17 +717,14 @@
                     getCoinInfo($("#coin1-2").val())
                 ]
                 settings.currencies = [
-                    $("#currency0-2").val().toUpperCase(),
-                    $("#currency1-2").val().toUpperCase()
+                    getCurrencyInfo($("#currency0-2").val(), false),
+                    getCurrencyInfo($("#currency1-2").val(), true)
                 ]
             }
 
             if ($("#nav-n").hasClass('active')) {
                 settings.mode = 3
 
-                if ($("#currency1-n").val().length == 0) {
-                    $("#currency1-n").val("USD")
-                }
                 if (!checkCoin($("#coin0-n").val())
                     || !checkCoin($("#coin1-n").val(), true)
                     || !checkCoin($("#coin2-n").val(), true)
@@ -717,8 +735,8 @@
                     || !checkCoin($("#coin7-n").val(), true)
                     || !checkCoin($("#coin8-n").val(), true)
                     || !checkCoin($("#coin9-n").val(), true)
-                    || !checkCurrency($("#currency0-n").val())
-                    || !checkCurrency($("#currency1-n").val())) {
+                    || !checkCurrency($("#currency0-n").val(), false)
+                    || !checkCurrency($("#currency1-n").val(), true)) {
                     return
                 }
 
@@ -735,8 +753,8 @@
                 if ($("#coin9-n").val().length > 0) settings.coins.push(getCoinInfo($("#coin9-n").val()))
 
                 settings.currencies = [
-                    $("#currency0-n").val().toUpperCase(),
-                    $("#currency1-n").val().toUpperCase()
+                    getCurrencyInfo($("#currency0-n").val(), false),
+                    getCurrencyInfo($("#currency1-n").val(), true)
                 ]
 
                 settings.swap_interval = -1
@@ -827,19 +845,76 @@
             allCoins.sort(function (a, b) { return a.name.length - b.name.length })
         })
 
-        let allCurrencies
-        $.get("https://api.coingecko.com/api/v3/simple/supported_vs_currencies", function (data) {
-            allCurrencies = data
-        })
+        let allCurrencies = [
+            { "currency": "USD", "symbol": "$" }, // US Dollar
+            { "currency": "EUR", "symbol": "€" }, // Euro
+            { "currency": "BTC", "symbol": "₿" }, // Bitcoin - U+20BF
+            { "currency": "ETH", "symbol": "Ξ" }, // Ethereum - Greek Capital Letter Xi - U+039E
+            { "currency": "LTC", "symbol": "Ł" }, // Latin Capital Letter L with Stroke - U+141
+            { "currency": "BCH", "symbol": "BCH" }, // Bitcoin Cash
+            { "currency": "BNB", "symbol": "BNB" }, // Binance Coin
+            { "currency": "EOS", "symbol": "EOS" }, // EOS
+            { "currency": "XRP", "symbol": "XRP" }, // Ripple
+            { "currency": "XLM", "symbol": "XLM" }, // Stellar
+            { "currency": "LINK", "symbol": "LINK" }, // Chainlink
+            { "currency": "DOT", "symbol": "DOT" }, // Polkadot
+            { "currency": "YFI", "symbol": "YFI" }, // Yearn.finance
+            { "currency": "AED", "symbol": "AED" }, // Emirati dirham - د.إ
+            { "currency": "ARS", "symbol": "$" }, // Argentina Peso
+            { "currency": "AUD", "symbol": "$" }, // Australia Dollar
+            { "currency": "BDT", "symbol": "৳" }, // Bangladeshi taka - U+09F3 not in NotoSans
+            { "currency": "BHD", "symbol": "BD" }, // Bahraini dinar - .د.ب
+            { "currency": "BMD", "symbol": "$" }, // Bermuda Dollar
+            { "currency": "BRL", "symbol": "R$" }, // Brazil Real
+            { "currency": "CAD", "symbol": "$" }, // Canadian dollars
+            { "currency": "CHF", "symbol": "CHF" }, // Swiss franc
+            { "currency": "CLP", "symbol": "$" }, // Chilean peso
+            { "currency": "CNY", "symbol": "¥" }, // Chinese yuan
+            { "currency": "CZK", "symbol": "Kč" }, // Czech koruna
+            { "currency": "DKK", "symbol": "kr" }, // Danish krone
+            { "currency": "GBP", "symbol": "£" }, // Pounds Sterling
+            { "currency": "HKD", "symbol": "$" }, // Hong Kong dollar
+            { "currency": "HUF", "symbol": "ft" }, // Hungarian forint
+            { "currency": "IDR", "symbol": "Rp" }, // Indonesian rupiah
+            { "currency": "ILS", "symbol": "₪" }, // Israeli shekel - U+20aa
+            { "currency": "INR", "symbol": "₹" }, // Indian rupee
+            { "currency": "JPY", "symbol": "¥" }, // Japanese yen
+            { "currency": "KRW", "symbol": "₩" }, // South Korean won
+            { "currency": "KWD", "symbol": "KD" }, // Kuwaiti dinar -	د.ك
+            { "currency": "LKR", "symbol": "Rs" }, // Sri Lankan rupee
+            { "currency": "MMK", "symbol": "Ks" }, // Burmese kyat
+            { "currency": "MXN", "symbol": "$" }, // Mexican peso
+            { "currency": "MYR", "symbol": "RM" }, // Malaysian ringgit
+            { "currency": "NGN", "symbol": "₦" }, // Nigerian naira
+            { "currency": "NOK", "symbol": "kr" }, // Norwegian krone
+            { "currency": "NZD", "symbol": "$" }, // New Zealand dollar
+            { "currency": "PHP", "symbol": "₱" }, // Philippine peso
+            { "currency": "PKR", "symbol": "Rs" }, // Pakistani rupee
+            { "currency": "PLN", "symbol": "zł" }, // Polish zloty
+            { "currency": "RUB", "symbol": "₽" }, // Russian ruble - U+20BD
+            { "currency": "SAR", "symbol": "SAR" }, // Saudi Arabia Riyal - ر.س
+            { "currency": "SEK", "symbol": "krx" }, // Sweden Krona
+            { "currency": "SGD", "symbol": "$" }, // Singapore Dollar
+            { "currency": "THB", "symbol": "฿" }, // Thailand Baht - U+0E3F not in NotoSans
+            { "currency": "TRY", "symbol": "₺" }, // Turkey Lira
+            { "currency": "TWD", "symbol": "$" }, // Taiwan New Dollar
+            { "currency": "UAH", "symbol": "₴" }, // Ukraine Hryvnia
+            { "currency": "VEF", "symbol": "Bs" }, // Venezuela Bolívar
+            { "currency": "VND", "symbol": "₫" }, // Viet Nam Dong
+            { "currency": "ZAR", "symbol": "R" }, // South Africa Rand
+            { "currency": "XDR", "symbol": "XDR" }, // Special Drawing Right
+            { "currency": "XAG", "symbol": "XAG" }, // ?
+            { "currency": "XAU", "symbol": "XAU" } // Philadelphia Gold and Silver Index
+        ]
 
         $(document).ready(function () {
-
 
             brightnessSlider = $("#brightness").slider({
                 min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
             })
 
             getSettings()
+            getBrightness()
 
             brightnessSlider.on('change', function (e) {
                 console.log(e.value.newValue)

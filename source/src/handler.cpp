@@ -18,6 +18,8 @@ String getContentType(const String& filename)
 {
     if (filename.endsWith(".html")) {
         return F("text/html");
+        //    } else if (filename.endsWith(".gz")) {
+        //        return F("application/x-gzip");
     } else if (filename.endsWith(".css")) {
         return F("text/css");
     } else if (filename.endsWith(".json")) {
@@ -109,7 +111,7 @@ bool Handler::handleGetPrice()
     ret = m_settings.symbol();
     ret += F(": ");
     ret += result;
-    ret += getCurrencySymbol(m_settings.currency());
+    ret += m_settings.currencySymbol();
     server.send(200, F("text/plain"), ret);
     return true;
 }
@@ -129,14 +131,34 @@ bool Handler::handleForUpdate() const
 
 bool Handler::streamFile(const char* filename)
 {
+    LOG_FUNC
+
+    SERIAL_PRINT("  File: ")
+    SERIAL_PRINT(filename)
+
     String contentType = getContentType(filename);
-    if (SPIFFS.exists(filename)) {
-        File file = SPIFFS.open(filename, "r");
-        server.sendHeader(F("Access-Control-Allow-Origin"), "*");
-        server.streamFile(file, contentType);
-        file.close();
-        return true;
+    String filename_found;
+    String filename_gz(filename);
+    filename_gz += ".gz";
+
+    if (SPIFFS.exists(filename_gz)) {
+        SERIAL_PRINT(" found .gz: ")
+        SERIAL_PRINT(filename_gz)
+        filename_found = filename_gz;
+    } else if (SPIFFS.exists(filename)) {
+        filename_found = filename;
+    } else {
+        return false;
     }
+
+    File file = SPIFFS.open(filename_found, "r");
+    server.sendHeader(F("Access-Control-Allow-Origin"), "*");
+    server.streamFile(file, contentType);
+    file.close();
+    SERIAL_PRINTLN(" - ok");
+    return true;
+
+    SERIAL_PRINTLN(" - does not exist!")
     return false;
 }
 
@@ -152,77 +174,17 @@ bool Handler::handleSet() const
 #endif
 
     if (server.hasArg(F("brightness"))) {
-        server.send(200, F("text/plain"), server.arg(F("brightness")).c_str());
         m_settings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
+        streamFile(BRIGHTNESS_FILE);
     } else if (server.hasArg(F("json"))) {
-        // m_settings.set(m_gecko, server.arg(F("json")).c_str());
-        SettingsV12 settings;
-        settings.set(server.arg(F("json")).c_str());
+        m_settings.set(server.arg(F("json")).c_str());
+        streamFile(SETTINGS_FILE);
     } else {
-    }
-
-    streamFile(SETTINGS_FILE);
-    return true;
-}
-
-#if 0
-bool Handler::handleSet() const
-{
-#if COIN_THING_SERIAL > 0
-    Serial.printf("handleAction: set - parsed Query:\n");
-    for (int ii = 0; ii < server.args(); ++ii) {
-        Serial.print(server.argName(ii));
-        Serial.print(" -> ");
-        Serial.println(server.arg(ii));
-    }
-#endif
-
-    if (server.hasArg(F("brightness"))) {
-        server.send(200, F("text/plain"), server.arg(F("brightness")).c_str());
-        m_settings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
-    } else {
-        Settings::Status status(m_settings.set(m_gecko,
-            server.arg(F("coin")).c_str(),
-            server.arg(F("currency")).c_str(),
-            server.arg(F("currency2")).c_str(),
-            static_cast<uint8_t>(server.arg(F("number_format")).toInt()),
-            static_cast<uint8_t>(server.arg(F("chart_period")).toInt()),
-            static_cast<uint8_t>(server.arg(F("chart_swap_interval")).toInt()),
-            static_cast<uint8_t>(server.arg(F("chart_style")).toInt()),
-            server.arg(F("heartbeat")).toInt() != 0));
-
-        String error;
-        switch (status) {
-        case Settings::Status::OK:
-            if (!streamFile(SETTINGS_FILE)) {
-                error = F(R"({"error":"file 'settings.json' not found!"})");
-            }
-            break;
-        case Settings::Status::COIN_INVALID:
-            error = F(R"({"error":"Coin ID ')");
-            error += server.arg(F("coin"));
-            error += F(R"(' is invalid!"})");
-            break;
-        case Settings::Status::CURRENCY_INVALID:
-            error = F(R"({"error":"Currency ')");
-            error += server.arg(F("currency"));
-            error += F(R"(' is invalid!"})");
-            break;
-        case Settings::Status::CURRENCY2_INVALID:
-            error = F(R"({"error":"2nd currency ')");
-            error += server.arg(F("currency2"));
-            error += F(R"(' is invalid!"})");
-            break;
-        }
-
-        if (!error.isEmpty()) {
-            server.send(200, F("application/json"), error.c_str());
-        }
+        server.send(200, F("application/json"), F(R"({"error":"Nothing to set!"})"));
     }
 
     return true;
 }
-#endif
 
 bool Handler::handleAction()
 {

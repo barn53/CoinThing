@@ -53,8 +53,14 @@
         }
     ],
     "currencies": [
-        "eur",
-        "usd"
+        {
+            "currency": "EUR",
+            "symbol": "€"
+        },
+        {
+            "currency": "USD",
+            "symbol": "$"
+        }
     ],
     "swap_interval": 2,
     "chart_period": 4,

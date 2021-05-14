@@ -5,9 +5,7 @@
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
-#define DYNAMIC_JSON_VALID_SIZE 256
 #define DYNAMIC_JSON_PRICE_CHANGE_SIZE 256
-#define DYNAMIC_JSON_COIN_DETAILS_SIZE 3072
 #define DYNAMIC_JSON_CHART_SIZE 3072
 
 #define PRICE_FETCH_INTERVAL (10 * 1000)
@@ -101,14 +99,19 @@ bool Gecko::fetchCoinPriceChange()
 {
     LOG_FUNC
 
-    const char* coin(m_settings.coin());
-    const char* currency(m_settings.currency());
-    const char* currency2(m_settings.currency2());
+    String coinId(m_settings.coin());
+    String currency(m_settings.currency());
+    String currency2(m_settings.currency2());
+
+    coinId.toLowerCase();
+    currency.toLowerCase();
+    currency2.toLowerCase();
+
     String change24h(currency);
     change24h += F("_24h_change");
 
     String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
-    url += coin;
+    url += coinId;
     url += F("&vs_currencies=");
     url += currency;
     url += ",";
@@ -118,9 +121,9 @@ bool Gecko::fetchCoinPriceChange()
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
     if (m_http.read(url.c_str(), doc)) {
-        m_price = doc[coin][currency] | std::numeric_limits<gecko_t>::infinity();
-        m_price2 = doc[coin][currency2] | std::numeric_limits<gecko_t>::infinity();
-        m_change_pct = doc[coin][change24h] | std::numeric_limits<gecko_t>::infinity();
+        m_price = doc[coinId][currency] | std::numeric_limits<gecko_t>::infinity();
+        m_price2 = doc[coinId][currency2] | std::numeric_limits<gecko_t>::infinity();
+        m_change_pct = doc[coinId][change24h] | std::numeric_limits<gecko_t>::infinity();
         m_last_price_fetch = millis_test();
         return m_price != std::numeric_limits<gecko_t>::infinity()
             && m_change_pct != std::numeric_limits<gecko_t>::infinity();
@@ -136,10 +139,16 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
     Serial.printf("type: %u\n", type);
 #endif
 
+    String coinId(m_settings.coin());
+    String currency(m_settings.currency());
+
+    coinId.toLowerCase();
+    currency.toLowerCase();
+
     String url(F("https://api.coingecko.com/api/v3/coins/"));
-    url += m_settings.coin();
+    url += coinId;
     url += F("/market_chart?vs_currency=");
-    url += m_settings.currency();
+    url += currency;
     std::vector<gecko_t>* targetChart;
 
     uint8_t expectValues;
@@ -181,48 +190,6 @@ bool Gecko::fetchCoinChart(Settings::ChartPeriod type)
     return false;
 }
 
-bool Gecko::fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const
-{
-    LOG_FUNC
-
-    String url(F("https://api.coingecko.com/api/v3/coins/"));
-    url += coin;
-    url += F("?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false");
-
-    DynamicJsonDocument filter(32);
-    filter["symbol"] = true;
-    filter["name"] = true;
-
-    // "sentiment_votes_up_percentage" - todo sentiment lamp
-
-    DynamicJsonDocument doc(DYNAMIC_JSON_COIN_DETAILS_SIZE);
-
-    if (m_http.read(url.c_str(), doc, filter)) {
-        symbolInto = doc["symbol"] | "";
-        nameInto = doc["name"] | "";
-        symbolInto.toUpperCase();
-        return true;
-    }
-    return false;
-}
-
-bool Gecko::fetchIsValidCoin(const char* coin) const
-{
-    LOG_FUNC
-
-    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
-    url += coin;
-    url += F("&vs_currencies=usd");
-
-    DynamicJsonDocument doc(DYNAMIC_JSON_VALID_SIZE);
-
-    if (m_http.read(url.c_str(), doc)) {
-        auto gecko_says = doc[coin]["usd"] | std::numeric_limits<gecko_t>::max();
-        return gecko_says != std::numeric_limits<gecko_t>::max();
-    }
-    return false;
-}
-
 bool Gecko::ping()
 {
     if (doInterval(m_last_ping, PING_INTERVAL)) {
@@ -235,49 +202,4 @@ bool Gecko::ping()
         m_last_ping = millis_test();
     }
     return m_succeeded;
-}
-
-bool Gecko::coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const
-{
-    LOG_FUNC
-
-    String upperCoinOrSymbol(coinOrSymbol);
-    upperCoinOrSymbol.toUpperCase();
-
-    for (const auto& c : coins) {
-        if (strcmp(c.id, coinOrSymbol) == 0
-            || strcmp(c.symbol, upperCoinOrSymbol.c_str()) == 0) {
-            coinInto = c.id;
-            nameInto = c.name;
-            symbolInto = c.symbol;
-            return true;
-        }
-    }
-    if (fetchCoinDetails(coinOrSymbol, symbolInto, nameInto)) {
-        coinInto = coinOrSymbol;
-        return true;
-    }
-    return false;
-}
-
-bool Gecko::isValidCoin(const char* coinOrSymbol) const
-{
-    LOG_FUNC
-
-    String upperCoinOrSymbol(coinOrSymbol);
-    upperCoinOrSymbol.toUpperCase();
-
-    for (const auto& c : coins) {
-        if (strcmp(c.id, coinOrSymbol) == 0
-            || strcmp(c.symbol, upperCoinOrSymbol.c_str()) == 0) {
-            return true;
-        }
-    }
-    return fetchIsValidCoin(coinOrSymbol);
-}
-
-bool Gecko::isValidCurrency(const char* currency) const
-{
-    return isCurrency(currency);
-    // no API fallback for currencies
 }

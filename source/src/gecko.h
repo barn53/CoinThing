@@ -5,16 +5,6 @@
 
 class HttpJson;
 
-struct Coin {
-    const char* id;
-    const char* symbol;
-    const char* name;
-};
-
-static const Coin coins[] PROGMEM = {
-    { "01coin", "ZOC", "01coin" },
-};
-
 bool isCoin(const char* coin);
 
 class Gecko {
@@ -28,9 +18,6 @@ public:
     bool ping();
     bool succeeded() const { return m_succeeded; }
 
-    bool coinDetails(const char* coinOrSymbol, String& coinInto, String& symbolInto, String& nameInto) const;
-    bool isValidCoin(const char* coinOrSymbol) const;
-    bool isValidCurrency(const char* currency) const;
 
     void price(gecko_t& price, gecko_t& price2, gecko_t& change_pct);
     const std::vector<gecko_t>& chart_48h(bool& refetched);
@@ -41,10 +28,6 @@ public:
 private:
     bool fetchCoinPriceChange();
     bool fetchCoinChart(Settings::ChartPeriod type);
-
-    // fallbacks use (slow) API calls
-    bool fetchCoinDetails(const char* coin, String& symbolInto, String& nameInto) const;
-    bool fetchIsValidCoin(const char* coin) const;
 
     bool m_succeeded { false };
 
