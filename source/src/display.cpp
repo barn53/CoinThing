@@ -134,34 +134,56 @@ void Display::renderTitle()
 {
     LOG_FUNC
 
-    String name(m_settings.name(m_current_coin_index));
-    String symbol(m_settings.symbol(m_current_coin_index));
-    String currency(m_settings.currency());
+    String name;
+    String name2;
+    String symbol;
+    String symbol2;
+    String currency;
+
+    if (m_settings.mode() != Settings::Mode::TWO_COINS) {
+        name = m_settings.name(m_current_coin_index);
+        symbol = m_settings.symbol(m_current_coin_index);
+        currency = m_settings.currency();
+    } else {
+        name = m_settings.name(0);
+        name += F(" - ");
+        name += m_settings.symbol(0);
+        name2 = m_settings.name(1);
+        name2 += F(" - ");
+        name2 += m_settings.symbol(1);
+        symbol = m_settings.symbol(0);
+        symbol2 = m_settings.symbol(1);
+    }
 
     m_tft.fillScreen(TFT_BLACK);
-    String icon(F("/"));
-    icon += symbol;
-    icon += F(".bmp");
+
     int16_t x_name(0);
-    if (drawBmp(icon, 0, 0)) {
-        x_name = 60;
+    if (m_settings.mode() != Settings::Mode::TWO_COINS) {
+        String icon(F("/"));
+        icon += symbol;
+        icon += F(".bmp");
+        if (drawBmp(icon, 0, 0)) {
+            x_name = 60;
+        }
     }
 
-    uint8_t y_symbol_curr(35);
-    if (m_settings.mode() == Settings::Mode::ONE_COIN) {
-        m_tft.loadFont(F("NotoSans-Regular25"));
-    } else {
-        m_tft.loadFont(F("NotoSans-Regular20"));
-        y_symbol_curr = 32;
+    if (m_settings.mode() != Settings::Mode::TWO_COINS) {
+        uint8_t y_symbol_curr(35);
+        if (m_settings.mode() == Settings::Mode::ONE_COIN) {
+            m_tft.loadFont(F("NotoSans-Regular25"));
+        } else {
+            m_tft.loadFont(F("NotoSans-Regular20"));
+            y_symbol_curr = 32;
+        }
+        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        m_tft.setCursor(x_name, y_symbol_curr);
+        m_tft.print(symbol);
+        m_tft.print(" - ");
+        m_tft.print(currency);
+        m_tft.unloadFont();
     }
-    m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    m_tft.setCursor(x_name, y_symbol_curr);
-    m_tft.print(symbol);
-    m_tft.print(" - ");
-    m_tft.print(currency);
-    m_tft.unloadFont();
 
-    // Write the name at last, so it appears on top of the symbol and currenciy
+    // Write the name at last, so it appears on top of the symbol and currency
     //  when there is a collision
     m_tft.loadFont(F("NotoSans-Regular30"));
     if (m_tft.textWidth(name) > DISPLAY_WIDTH - x_name) {
@@ -178,6 +200,18 @@ void Display::renderTitle()
         for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
             m_tft.fillCircle(xx, 58, 2, count == m_current_coin_index ? TFT_GOLD : RGB(30, 20, 30));
         }
+    }
+
+    if (m_settings.mode() == Settings::Mode::TWO_COINS) {
+        m_tft.loadFont(F("NotoSans-Regular30"));
+        if (m_tft.textWidth(name2) > DISPLAY_WIDTH) {
+            m_tft.unloadFont();
+            m_tft.loadFont(F("NotoSans-Condensed30"));
+        }
+        m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
+        m_tft.setCursor(0, (DISPLAY_HEIGHT / 2) + 7);
+        m_tft.print(name2);
+        m_tft.unloadFont();
     }
 }
 
@@ -248,6 +282,77 @@ void Display::renderCoin()
 
     m_tft.unloadFont();
 
+    m_last_price_update = millis_test();
+}
+
+void Display::renderTwoCoins()
+{
+    LOG_FUNC
+
+    gecko_t price[2];
+    gecko_t price2[2];
+    gecko_t change_pct[2];
+    m_gecko.twoPrices(price[0], price2[0], change_pct[0], price[1], price2[1], change_pct[1]);
+
+    if (m_last_price_update >= m_gecko.lastPriceFetch()) {
+        SERIAL_PRINTLN("Prices unchanged - skip");
+        m_last_price_update = millis_test();
+        return; // omit overwriting price with same values
+    }
+
+    for (auto coinIndex : { 0, 1 }) {
+        uint16_t color(change_pct[coinIndex] >= 0.0 ? GREEN565 : RED565);
+
+        String msg;
+        m_tft.setTextColor(color, TFT_BLACK);
+        m_tft.loadFont(F("NotoSans-Regular50"));
+        formatNumber(price[coinIndex], msg, m_settings.numberFormat(), false, true);
+        msg += m_settings.currencySymbol();
+
+        auto priceWidth(m_tft.textWidth(msg));
+        if (priceWidth > DISPLAY_WIDTH) {
+            m_tft.unloadFont();
+            m_tft.loadFont(F("NotoSans-Condensed50"));
+            priceWidth = m_tft.textWidth(msg);
+            if (priceWidth > DISPLAY_WIDTH) {
+                m_tft.unloadFont();
+                m_tft.loadFont(F("NotoSans-ExtraCondensed50"));
+                priceWidth = m_tft.textWidth(msg);
+            }
+        }
+        m_tft.fillRect(0, 35 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - priceWidth, 50, TFT_BLACK);
+        m_tft.setCursor(DISPLAY_WIDTH - priceWidth, 35 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
+        m_tft.print(msg);
+        m_tft.unloadFont();
+
+        String msg2;
+        formatNumber(price2[coinIndex], msg2, m_settings.numberFormat(), false, true);
+        formatNumber(change_pct[coinIndex], msg, m_settings.numberFormat(), true, false, 2);
+        msg2 += m_settings.currency2Symbol();
+        msg += "%";
+        m_tft.loadFont(F("NotoSans-Regular30"));
+        auto usdWidth(m_tft.textWidth(msg2));
+        auto changeWidth(m_tft.textWidth(msg));
+
+        if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+            m_tft.unloadFont();
+            m_tft.loadFont(F("NotoSans-Condensed30"));
+            usdWidth = m_tft.textWidth(msg2);
+            changeWidth = m_tft.textWidth(msg);
+        }
+
+        m_tft.fillRect(0, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
+        m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
+        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        m_tft.print(msg2);
+
+        m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), 15, 25, TFT_BLACK);
+        m_tft.setCursor(DISPLAY_WIDTH - changeWidth, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
+        m_tft.setTextColor(color, TFT_BLACK);
+        m_tft.print(msg);
+
+        m_tft.unloadFont();
+    }
     m_last_price_update = millis_test();
 }
 
@@ -673,6 +778,14 @@ void Display::showTwoCoins()
         m_shows_wifi_not_connected = false;
         rewrite = true;
     }
+
+    if (rewrite) {
+        renderTitle();
+    }
+
+    heartbeat();
+    wifiConnect();
+    renderTwoCoins();
 
     m_last_screen = Screen::COIN;
 }

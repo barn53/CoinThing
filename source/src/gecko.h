@@ -19,6 +19,8 @@ public:
     bool succeeded() const { return m_succeeded; }
 
     void price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
+    void twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
+        gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2);
     const std::vector<gecko_t>& chart_48h(uint32_t coinIndex, bool& refetched);
     const std::vector<gecko_t>& chart_60d(uint32_t coinIndex, bool& refetched);
 
@@ -28,13 +30,18 @@ public:
 
 private:
     bool fetchCoinPriceChange(uint32_t coinIndex);
+    bool fetchTwoCoinsPriceChange();
     bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
 
     bool m_succeeded { false };
 
-    gecko_t m_price;
-    gecko_t m_price2;
-    gecko_t m_change_pct;
+    gecko_t m_price { 0. };
+    gecko_t m_price2 { 0. };
+    gecko_t m_change_pct { 0. };
+    // for two coins:
+    gecko_t m_price_2 { 0. };
+    gecko_t m_price2_2 { 0. };
+    gecko_t m_change_pct_2 { 0. };
     std::vector<gecko_t> m_chart_48h;
     std::vector<gecko_t> m_chart_60d;
 

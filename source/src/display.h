@@ -32,6 +32,7 @@ private:
     void showTwoCoins();
     void showMultipleCoins();
     void renderCoin();
+    void renderTwoCoins();
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
 

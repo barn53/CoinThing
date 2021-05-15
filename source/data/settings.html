@@ -377,6 +377,8 @@
                     <div class="form-group">
                         <button type="button" class="btn btn-success mb-2" id="apply">Apply&nbsp;&nbsp;
                             <i class="fa fa-spinner fa-spin" id="applyspinner" style="visibility:hidden;"></i></button>
+                        <span id="coingeckoready" style="font-size:0.7em;"><br>Contacting CoinGecko&nbsp;<span
+                                class="fa fa-spinner fa-spin"></span></span>
                     </div>
 
                     <hr>
@@ -840,10 +842,17 @@
         }
 
         let allCoins
-        $.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false", function (data) {
-            allCoins = data
-            allCoins.sort(function (a, b) { return a.name.length - b.name.length })
-        })
+        function getAllCoins() {
+            $.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false", function (data) {
+                allCoins = data
+                allCoins.sort(function (a, b) { return a.name.length - b.name.length })
+                $("#coingeckoready").css("display", "none")
+            }).fail((jqXHR) => {
+                setTimeout(() => {
+                    getAllCoins()
+                }, 10000)
+            })
+        }
 
         let allCurrencies = [
             { "currency": "USD", "symbol": "$" }, // US Dollar
@@ -913,6 +922,7 @@
                 min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
             })
 
+            getAllCoins()
             getSettings()
             getBrightness()
 

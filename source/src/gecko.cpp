@@ -5,7 +5,7 @@
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
-#define DYNAMIC_JSON_PRICE_CHANGE_SIZE 256
+#define DYNAMIC_JSON_PRICE_CHANGE_SIZE 384
 #define DYNAMIC_JSON_CHART_SIZE 3072
 
 #define PRICE_FETCH_INTERVAL (10 * 1000)
@@ -73,17 +73,34 @@ void Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& 
     if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
         if (fetchCoinPriceChange(coinIndex)) {
             m_last_price_fetch = millis_test();
-            price = m_price;
-            price2 = m_price2;
-            change_pct = m_change_pct;
         } else {
             m_last_price_fetch = 0;
         }
-    } else {
-        price = m_price;
-        price2 = m_price2;
-        change_pct = m_change_pct;
     }
+    price = m_price;
+    price2 = m_price2;
+    change_pct = m_change_pct;
+}
+
+void Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
+    gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2)
+{
+    LOG_FUNC
+
+    if (doInterval(m_last_price_fetch, PRICE_FETCH_INTERVAL)) {
+        if (fetchTwoCoinsPriceChange()) {
+            m_last_price_fetch = millis_test();
+        } else {
+            m_last_price_fetch = 0;
+        }
+    }
+    price_1 = m_price;
+    price2_1 = m_price2;
+    change_pct_1 = m_change_pct;
+
+    price_2 = m_price_2;
+    price2_2 = m_price2_2;
+    change_pct_2 = m_change_pct_2;
 }
 
 const std::vector<gecko_t>& Gecko::chart_48h(uint32_t coinIndex, bool& refetched)
@@ -150,6 +167,53 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
         m_last_price_fetch = millis_test();
         return m_price != std::numeric_limits<gecko_t>::infinity()
             && m_change_pct != std::numeric_limits<gecko_t>::infinity();
+    }
+    return false;
+}
+
+bool Gecko::fetchTwoCoinsPriceChange()
+{
+    LOG_FUNC
+
+    String coinId1(m_settings.coin(0));
+    String coinId2(m_settings.coin(1));
+    String currency(m_settings.currency());
+    String currency2(m_settings.currency2());
+
+    coinId1.toLowerCase();
+    coinId2.toLowerCase();
+    currency.toLowerCase();
+    currency2.toLowerCase();
+
+    String change24h(currency);
+    change24h += F("_24h_change");
+
+    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
+    url += coinId1;
+    url += F(",");
+    url += coinId2;
+    url += F("&vs_currencies=");
+    url += currency;
+    url += F(",");
+    url += currency2;
+    url += F("&include_24hr_change=true");
+
+    DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
+
+    if (m_http.read(url.c_str(), doc)) {
+        m_price = doc[coinId1][currency] | std::numeric_limits<gecko_t>::infinity();
+        m_price2 = doc[coinId1][currency2] | std::numeric_limits<gecko_t>::infinity();
+        m_change_pct = doc[coinId1][change24h] | std::numeric_limits<gecko_t>::infinity();
+
+        m_price_2 = doc[coinId2][currency] | std::numeric_limits<gecko_t>::infinity();
+        m_price2_2 = doc[coinId2][currency2] | std::numeric_limits<gecko_t>::infinity();
+        m_change_pct_2 = doc[coinId2][change24h] | std::numeric_limits<gecko_t>::infinity();
+
+        m_last_price_fetch = millis_test();
+        return m_price != std::numeric_limits<gecko_t>::infinity()
+            && m_price_2 != std::numeric_limits<gecko_t>::infinity()
+            && m_change_pct != std::numeric_limits<gecko_t>::infinity()
+            && m_change_pct_2 != std::numeric_limits<gecko_t>::infinity();
     }
     return false;
 }
