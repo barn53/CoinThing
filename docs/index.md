@@ -1,8 +1,19 @@
 # CoinThing
 
+- [What's New](#whats-new)
 - [Manual](#manual)
 - [Update The Software](#update-the-software)
 - [Available Versions To Download](#available-versions-to-download)
+
+-------
+
+## What's New
+
+### Version 1.2 is coming!
+
+#### First beta version available!
+
+#### Features Muliple Coins and new icons
 
 -------
 
@@ -70,6 +81,20 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266
 -------
 
 ## Available Versions To Download
+
+### Version 1.2-beta.1:
+#### New functionality with version 1.2:
+- Show 2 coins simultaneously on the screen (no chart)
+- Cycle through up to 10 coins (with chart)
+- New cypto coin icons
+
+For an update to Version 1.2 you need to also upload the spiffs_v1.2-beta.1.bin file
+
+[cointhing_v1.2-beta.1.bin]https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/cointhing_v1.2-beta.1.bin
+
+[spiffs_v1.2-beta.1.bin]https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/spiffs_v1.2-beta.1.bin
+
+-------
 
 ### Version 1.1.0:
 The second currency was always USD, it is now also configurable in the settings.
