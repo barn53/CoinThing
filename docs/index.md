@@ -11,7 +11,7 @@
 
 ### Version 1.2 is coming!
 
-#### First beta version available!
+#### First beta version available &ndash; see below!
 
 #### Features Muliple Coins and new icons
 
