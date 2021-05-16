@@ -172,7 +172,7 @@ void Display::renderTitle()
         if (m_settings.mode() == Settings::Mode::ONE_COIN) {
             m_tft.loadFont(F("NotoSans-Regular25"));
         } else {
-            m_tft.loadFont(F("NotoSans-Regular20"));
+            m_tft.loadFont(F("NotoSans-Regular25"));
             y_symbol_curr = 32;
         }
         m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
@@ -198,7 +198,7 @@ void Display::renderTitle()
     if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
         uint32_t count(0);
         for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-            m_tft.fillCircle(xx, 58, 2, count == m_current_coin_index ? TFT_GOLD : RGB(30, 20, 30));
+            m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : RGB(30, 20, 30));
         }
     }
 
@@ -249,8 +249,15 @@ void Display::renderCoin()
             priceWidth = m_tft.textWidth(msg);
         }
     }
-    m_tft.fillRect(0, 70, DISPLAY_WIDTH - priceWidth, 50, TFT_BLACK);
-    m_tft.setCursor(DISPLAY_WIDTH - priceWidth, 70);
+
+    int32_t y_price(70);
+    int32_t y_change(125);
+    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+        y_price += 2;
+        y_change += 2;
+    }
+    m_tft.fillRect(0, y_price, DISPLAY_WIDTH - priceWidth, 50, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - priceWidth, y_price);
     m_tft.print(msg);
     m_tft.unloadFont();
 
@@ -270,13 +277,13 @@ void Display::renderCoin()
         changeWidth = m_tft.textWidth(msg);
     }
 
-    m_tft.fillRect(0, 125, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
-    m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 125);
+    m_tft.fillRect(0, y_change, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, y_change);
     m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
     m_tft.print(msg2);
 
-    m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 125, 15, 25, TFT_BLACK);
-    m_tft.setCursor(DISPLAY_WIDTH - changeWidth, 125);
+    m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, y_change, 15, 25, TFT_BLACK);
+    m_tft.setCursor(DISPLAY_WIDTH - changeWidth, y_change);
     m_tft.setTextColor(color, TFT_BLACK);
     m_tft.print(msg);
 
@@ -936,17 +943,21 @@ void Display::showAPIOK()
         m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
 
         String msg = F("CoinThing");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
         m_tft.print(msg);
 
         m_tft.unloadFont();
         m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("To The Moon!");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 110);
         m_tft.print(msg);
 
         m_tft.unloadFont();
         m_tft.loadFont(F("NotoSans-Regular20"));
+        msg = VERSION;
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
+        m_tft.print(msg);
+
         msg = F("http://");
         msg += WiFi.localIP().toString().c_str();
         msg += "/";
