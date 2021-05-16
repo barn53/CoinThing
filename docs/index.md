@@ -93,9 +93,9 @@ $ python -m esptool --before default_reset --after hard_reset --chip esp8266
 
 For an update to Version 1.2 you need to also upload the spiffs_v1.2-beta.1.bin file
 
-[cointhing_v1.2-beta.1.bin]https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/cointhing_v1.2-beta.1.bin
+[cointhing_v1.2-beta.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/cointhing_v1.2-beta.1.bin)
 
-[spiffs_v1.2-beta.1.bin]https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/spiffs_v1.2-beta.1.bin
+[spiffs_v1.2-beta.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/spiffs_v1.2-beta.1.bin)
 
 -------
 
