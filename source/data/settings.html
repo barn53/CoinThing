@@ -984,26 +984,24 @@
                 })
             })
 
-            $('#apply').off().click(clickApply)
+            $('#apply').click(clickApply)
 
-            $("#top10").off().click(function (e) {
-                loadTop10()
-            })
+            $("#top10").click(loadTop10)
 
-            $(".enterapply").off().on('keyup', function (e) {
+            $(".enterapply").on('keyup', function (e) {
                 if (event.keyCode === 13) {
                     event.preventDefault()
                     clickApply()
                 }
             })
 
-            $(".clearbutton").off().click(function (e) {
+            $(".clearbutton").click(function (e) {
                 clearId = '#' + e.target.id.replace('clear', '')
                 $(clearId).valEvent('')
                 $(clearId).focus()
             })
 
-            $('.sync').off().on('input', (e) => {
+            $('.sync').on('input', (e) => {
                 toChange = ''
                 id = e.target.id
                 if (e.target.id.match(/^coin0/)) {
