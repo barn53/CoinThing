@@ -49,6 +49,8 @@ void Gecko::loop()
 
 void Gecko::prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod)
 {
+    LOG_FUNC
+
     gecko_t p;
     gecko_t p2;
     gecko_t pct;

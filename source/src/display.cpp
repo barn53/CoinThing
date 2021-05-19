@@ -135,83 +135,82 @@ void Display::renderTitle()
     LOG_FUNC
 
     String name;
-    String name2;
     String symbol;
-    String symbol2;
     String currency;
+
+    m_tft.fillScreen(TFT_BLACK);
 
     if (m_settings.mode() != Settings::Mode::TWO_COINS) {
         name = m_settings.name(m_current_coin_index);
         symbol = m_settings.symbol(m_current_coin_index);
         currency = m_settings.currency();
-    } else {
-        name = m_settings.name(0);
-        name += F(" - ");
-        name += m_settings.symbol(0);
-        name2 = m_settings.name(1);
-        name2 += F(" - ");
-        name2 += m_settings.symbol(1);
-        symbol = m_settings.symbol(0);
-        symbol2 = m_settings.symbol(1);
-    }
 
-    m_tft.fillScreen(TFT_BLACK);
-
-    int16_t x_name(0);
-    if (m_settings.mode() != Settings::Mode::TWO_COINS) {
+        int16_t x_name(0);
         String icon(F("/"));
         icon += symbol;
         icon += F(".bmp");
         if (drawBmp(icon, 0, 0)) {
             x_name = 60;
         }
-    }
-
-    if (m_settings.mode() != Settings::Mode::TWO_COINS) {
         uint8_t y_symbol_curr(35);
-        if (m_settings.mode() == Settings::Mode::ONE_COIN) {
-            m_tft.loadFont(F("NotoSans-Regular25"));
-        } else {
+        if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
             m_tft.loadFont(F("NotoSans-Regular25"));
             y_symbol_curr = 32;
+        } else {
+            m_tft.loadFont(F("NotoSans-Regular25"));
         }
-        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        m_tft.setTextColor(RGB(0x40, 0x40, 0x40), TFT_BLACK);
         m_tft.setCursor(x_name, y_symbol_curr);
         m_tft.print(symbol);
         m_tft.print(" - ");
         m_tft.print(currency);
         m_tft.unloadFont();
-    }
 
-    // Write the name at last, so it appears on top of the symbol and currency
-    //  when there is a collision
-    m_tft.loadFont(F("NotoSans-Regular30"));
-    if (m_tft.textWidth(name) > DISPLAY_WIDTH - x_name) {
-        m_tft.unloadFont();
-        m_tft.loadFont(F("NotoSans-Condensed30"));
-    }
-    m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    m_tft.setCursor(x_name, 0);
-    m_tft.print(name);
-    m_tft.unloadFont();
-
-    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
-        uint32_t count(0);
-        for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-            m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : RGB(30, 20, 30));
-        }
-    }
-
-    if (m_settings.mode() == Settings::Mode::TWO_COINS) {
+        // Write the name at last, so it appears on top of the symbol and currency
+        //  when there is a collision
         m_tft.loadFont(F("NotoSans-Regular30"));
-        if (m_tft.textWidth(name2) > DISPLAY_WIDTH) {
+        if (m_tft.textWidth(name) > DISPLAY_WIDTH - x_name) {
             m_tft.unloadFont();
             m_tft.loadFont(F("NotoSans-Condensed30"));
         }
         m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        m_tft.setCursor(0, (DISPLAY_HEIGHT / 2) + 7);
-        m_tft.print(name2);
+        m_tft.setCursor(x_name, 0);
+        m_tft.print(name);
         m_tft.unloadFont();
+
+        if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+            uint32_t count(0);
+            for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
+                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : RGB(0x40, 0x40, 0x40));
+            }
+        }
+    } else { // Settings::Mode::TWO_COINS
+        for (auto ii : { 0, 1 }) {
+            int16_t y_cursor(ii * 127);
+            name = m_settings.name(ii);
+            symbol = m_settings.symbol(ii);
+
+            bool condensed(false);
+            m_tft.loadFont(F("NotoSans-Regular30"));
+            if ((m_tft.textWidth(name) + m_tft.textWidth(symbol) + 5) > DISPLAY_WIDTH) {
+                m_tft.unloadFont();
+                m_tft.loadFont(F("NotoSans-Condensed30"));
+                condensed = true;
+            }
+            m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
+            m_tft.setCursor(0, y_cursor);
+            m_tft.print(name);
+            m_tft.unloadFont();
+            if (condensed) {
+                m_tft.loadFont(F("NotoSans-Condensed25"));
+            } else {
+                m_tft.loadFont(F("NotoSans-Regular25"));
+            }
+            m_tft.setCursor(m_tft.getCursorX() + 10, y_cursor + 4);
+            m_tft.setTextColor(RGB(0x40, 0x40, 0x40), TFT_BLACK);
+            m_tft.print(symbol);
+            m_tft.unloadFont();
+        }
     }
 }
 
@@ -365,6 +364,8 @@ void Display::renderTwoCoins()
 
 bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 {
+    LOG_FUNC
+
     const std::vector<gecko_t>* prices(nullptr);
     bool refetched(false);
 
@@ -727,6 +728,7 @@ void Display::showCoin()
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
+        SERIAL_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
@@ -779,6 +781,7 @@ void Display::showTwoCoins()
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
+        SERIAL_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
@@ -819,6 +822,7 @@ void Display::showMultipleCoins()
     bool rewrite(false);
     if (m_last_screen != Screen::COIN
         || m_settings.lastChange() != m_last_seen_settings) {
+        SERIAL_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = std::numeric_limits<uint32_t>::max();
         m_last_seen_settings = m_settings.lastChange();
@@ -837,18 +841,20 @@ void Display::showMultipleCoins()
 #endif
 
         m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
-
         renderTitle();
-        renderCoin();
-        if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
-            chartFailed();
-            m_last_chart_update = 0;
-        }
         m_last_coin_swap = millis_test();
     }
 
     heartbeat();
     wifiConnect();
+    renderCoin();
+
+    if (rewrite || doInterval(m_last_chart_update, interval)) {
+        if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
+            chartFailed();
+            m_last_chart_update = 0;
+        }
+    }
 
     m_last_screen = Screen::COIN;
 }

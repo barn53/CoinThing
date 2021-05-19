@@ -73,12 +73,12 @@
                     <p> </p>
                     <div class="tab-pane fade show active" id="nav-1" role="tabpanel" aria-labelledby="nav-1-tab">
                         <div class="form-group">
-                            <div><label for="coin"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
+                            <div><label for="coin0"><b>Coin ID or symbol (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group" style="width:100%;">
-                                <input type="text" class="form-control enterapply" id="coin" placeholder="Coin"
-                                    autofocus>
+                                <input type="text" class="form-control enterapply sync sync_coin0" id="coin0"
+                                    placeholder="Coin" autofocus>
                                 <div class="input-group-append">
-                                    <span id="coinclear" class="input-group-text clearbutton">&times;</span>
+                                    <span id="coin0clear" class="input-group-text clearbutton">&times;</span>
                                 </div>
                             </div>
                         </div>
@@ -86,12 +86,12 @@
                         <div class="form-group">
                             <div><label for="currency0"><b>Currencies (e.g. USD, EUR)</b></label></div>
                             <div class="input-group">
-                                <input type="text" class="form-control enterapply" id="currency0"
+                                <input type="text" class="form-control enterapply sync sync_currency0" id="currency0"
                                     placeholder="Currency">
                                 <div class="input-group-append">
                                     <span id="currency0clear" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="text" class="form-control enterapply" id="currency1"
+                                <input type="text" class="form-control enterapply sync sync_currency1" id="currency1"
                                     placeholder="2nd Currency">
                                 <div class="input-group-append">
                                     <span id="currency1clear" class="input-group-text clearbutton">&times;</span>
@@ -166,11 +166,13 @@
                         <div class="form-group">
                             <div><label for="coin0-2"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group">
-                                <input type="text" class="form-control enterapply" id="coin0-2" placeholder="1st Coin">
+                                <input type="text" class="form-control enterapply sync sync_coin0" id="coin0-2"
+                                    placeholder="1st Coin">
                                 <div class="input-group-append">
                                     <span id="coin0clear-2" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="text" class="form-control enterapply" id="coin1-2" placeholder="2nd Coin">
+                                <input type="text" class="form-control enterapply sync sync_coin1" id="coin1-2"
+                                    placeholder="2nd Coin">
                                 <div class="input-group-append">
                                     <span id="coin1clear-2" class="input-group-text clearbutton">&times;</span>
                                 </div>
@@ -180,12 +182,12 @@
                         <div class="form-group">
                             <div><label for="currency0-2"><b>Currencies (e.g. USD, EUR)</b></label></div>
                             <div class="input-group">
-                                <input type="text" class="form-control enterapply" id="currency0-2"
+                                <input type="text" class="form-control enterapply sync sync_currency0" id="currency0-2"
                                     placeholder="Currency">
                                 <div class="input-group-append">
                                     <span id="currency0clear-2" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="text" class="form-control enterapply" id="currency1-2"
+                                <input type="text" class="form-control enterapply sync sync_currency1" id="currency1-2"
                                     placeholder="2nd Currency">
                                 <div class="input-group-append">
                                     <span id="currency1clear-2" class="input-group-text clearbutton">&times;</span>
@@ -198,11 +200,13 @@
                         <div class="form-group">
                             <div><label for="coin0-n"><b>Coin IDs or symbols (e.g. bitcoin, btc)</b></label></div>
                             <div class="input-group">
-                                <input type="text" class="form-control enterapply" id="coin0-n" placeholder="1st Coin">
+                                <input type="text" class="form-control enterapply sync sync_coin0" id="coin0-n"
+                                    placeholder="1st Coin">
                                 <div class="input-group-append">
                                     <span id="coin0clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="text" class="form-control enterapply" id="coin1-n" placeholder="2nd Coin">
+                                <input type="text" class="form-control enterapply sync sync_coin1" id="coin1-n"
+                                    placeholder="2nd Coin">
                                 <div class="input-group-append">
                                     <span id="coin1clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
@@ -260,12 +264,12 @@
                         <div class="form-group">
                             <div><label for="currency0-n"><b>Currencies (e.g. USD, EUR)</b></label></div>
                             <div class="input-group">
-                                <input type="text" class="form-control enterapply" id="currency0-n"
+                                <input type="text" class="form-control enterapply sync sync_currency0" id="currency0-n"
                                     placeholder="Currency">
                                 <div class="input-group-append">
                                     <span id="currency0clear-n" class="input-group-text clearbutton">&times;</span>
                                 </div>
-                                <input type="text" class="form-control enterapply" id="currency1-n"
+                                <input type="text" class="form-control enterapply sync sync_currency1" id="currency1-n"
                                     placeholder="2nd Currency">
                                 <div class="input-group-append">
                                     <span id="currency1clear-n" class="input-group-text clearbutton">&times;</span>
@@ -436,9 +440,9 @@
             if (settings.mode == 1) {
                 $('#nav-tab a[href="#nav-1"]').tab('show')
 
-                $("#coin").val(settings.coins[0].name || '')
-                $("#currency0").val(settings.currencies[0].currency || '')
-                $("#currency1").val(settings.currencies[1].currency || '')
+                $("#coin0").valEvent(settings.coins[0].name || '')
+                $("#currency0").valEvent(settings.currencies[0].currency || '')
+                $("#currency1").valEvent(settings.currencies[1].currency || '')
                 chart_period = settings.chart_period || 0
                 swap_interval = settings.swap_interval || 0
                 chart_style = settings.chart_style || 0
@@ -467,24 +471,24 @@
             } else if (settings.mode == 2) {
                 $('#nav-tab a[href="#nav-2"]').tab('show')
 
-                $("#coin0-2").val(settings.coins[0].name || '')
-                $("#coin1-2").val(settings.coins[1].name || '')
-                $("#currency0-2").val(settings.currencies[0].currency || '')
-                $("#currency1-2").val(settings.currencies[1].currency || '')
+                $("#coin0-2").valEvent(settings.coins[0].name || '')
+                $("#coin1-2").valEvent(settings.coins[1].name || '')
+                $("#currency0-2").valEvent(settings.currencies[0].currency || '')
+                $("#currency1-2").valEvent(settings.currencies[1].currency || '')
             } else if (settings.mode == 3) {
                 $('#nav-tab a[href="#nav-n"]').tab('show')
 
 
                 for (ii = 0; ii < 10; ++ii) {
                     if (ii < settings.coins.length) {
-                        $("#coin" + ii + "-n").val(settings.coins[ii].name || '')
+                        $("#coin" + ii + "-n").valEvent(settings.coins[ii].name || '')
                     } else {
                         $("#coin" + ii + "-n").val('')
                     }
                 }
 
-                $("#currency0-n").val(settings.currencies[0].currency || '')
-                $("#currency1-n").val(settings.currencies[1].currency || '')
+                $("#currency0-n").valEvent(settings.currencies[0].currency || '')
+                $("#currency1-n").valEvent(settings.currencies[1].currency || '')
                 swap_interval = settings.swap_interval || 0
                 chart_period = settings.chart_period || 0
                 chart_style = settings.chart_style || 0
@@ -615,7 +619,7 @@
         }
 
         function trimAll() {
-            $("#coin").val($("#coin").val().trim())
+            $("#coin0").val($("#coin0").val().trim())
 
             $("#coin0-2").val($("#coin0-2").val().trim())
             $("#coin1-2").val($("#coin1-2").val().trim())
@@ -649,13 +653,13 @@
             if ($("#nav-1").hasClass('active')) {
                 settings.mode = 1
 
-                if (!checkCoin($("#coin").val())
+                if (!checkCoin($("#coin0").val())
                     || !checkCurrency($("#currency0").val(), false)
                     || !checkCurrency($("#currency1").val(), true)) {
                     return
                 }
 
-                settings.coins = [getCoinInfo($("#coin").val())]
+                settings.coins = [getCoinInfo($("#coin0").val())]
 
                 settings.currencies = [
                     getCurrencyInfo($("#currency0").val(), false),
@@ -924,14 +928,14 @@
             $.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false", function (data) {
                 index = 0
                 data.forEach(element => {
-                    $("#coin" + index + "-n").val(element.name)
+                    $("#coin" + index + "-n").valEvent(element.name)
                     index++
                 });
                 if ($("#currency0-n").val().length == 0) {
-                    $("#currency0-n").val("EUR")
+                    $("#currency0-n").valEvent("EUR")
                 }
                 if ($("#currency1-n").val().length == 0) {
-                    $("#currency1-n").val("USD")
+                    $("#currency1-n").valEvent("USD")
                 }
 
                 try {
@@ -957,8 +961,10 @@
                 $("#heartbeat")[0].checked = true
 
             })
+        }
 
-
+        $.fn.valEvent = function (v) {
+            return this.val(v).trigger("input");
         }
 
         $(document).ready(function () {
@@ -980,6 +986,10 @@
 
             $('#apply').off().click(clickApply)
 
+            $("#top10").off().click(function (e) {
+                loadTop10()
+            })
+
             $(".enterapply").off().on('keyup', function (e) {
                 if (event.keyCode === 13) {
                     event.preventDefault()
@@ -989,12 +999,23 @@
 
             $(".clearbutton").off().click(function (e) {
                 clearId = '#' + e.target.id.replace('clear', '')
-                $(clearId).val('')
+                $(clearId).valEvent('')
                 $(clearId).focus()
             })
 
-            $("#top10").off().click(function (e) {
-                loadTop10()
+            $('.sync').off().on('input', (e) => {
+                toChange = ''
+                id = e.target.id
+                if (e.target.id.match(/^coin0/)) {
+                    toChange = '.sync_coin0'
+                } else if (e.target.id.match(/^coin1/)) {
+                    toChange = '.sync_coin1'
+                } else if (e.target.id.match(/^currency0/)) {
+                    toChange = '.sync_currency0'
+                } else if (e.target.id.match(/^currency1/)) {
+                    toChange = '.sync_currency1'
+                }
+                $(toChange).val($('#' + id).val())
             })
 
         })

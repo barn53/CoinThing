@@ -67,5 +67,8 @@ void setup(void)
 void loop()
 {
     display.loop();
+#if COIN_THING_SERIAL > 1
+    delay(500);
+#endif
     server.handleClient();
 }
