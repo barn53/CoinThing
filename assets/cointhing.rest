@@ -1,0 +1,41 @@
+
+###########################################################
+### Save Wifi credentials to WiFiManager
+
+POST http://192.168.4.1/wifisave HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+s={{$processEnv %FRITZ_SSID}}
+&p={{$processEnv %FRITZ_PWD}}
+
+###########################################################
+###########################################################
+
+@cointhing_ip = localhost:3000
+
+@cointhing_ip = 192.168.178.136
+
+
+###  Settings - 10 coins
+GET http://{{cointhing_ip}}/action/set?json={"mode":3,"coins":[{"id":"bitcoin","symbol":"BTC","name":"Bitcoin"},{"id":"ethereum","symbol":"ETH","name":"Ethereum"},{"id":"binancecoin","symbol":"BNB","name":"Binance Coin"},{"id":"tether","symbol":"USDT","name":"Tether"},{"id":"cardano","symbol":"ADA","name":"Cardano"},{"id":"ripple","symbol":"XRP","name":"XRP"},{"id":"dogecoin","symbol":"DOGE","name":"Dogecoin"},{"id":"polkadot","symbol":"DOT","name":"Polkadot"},{"id":"usd-coin","symbol":"USDC","name":"USD Coin"},{"id":"bitcoin-cash","symbol":"BCH","name":"Bitcoin Cash"}],"currencies":[{"currency":"EUR","symbol":"€"},{"currency":"USD","symbol":"$"}],"swap_interval":0,"chart_period":4,"chart_style":0,"number_format":1,"heartbeat":true} HTTP/1.1
+
+
+###  Settings - 2 coins
+GET http://{{cointhing_ip}}/action/set?json={"mode":2,"coins":[{"id":"bitcoin","symbol":"BTC","name":"Bitcoin"},{"id":"ethereum","symbol":"ETH","name":"Ethereum"}],"currencies":[{"currency":"EUR","symbol":"€"},{"currency":"USD","symbol":"$"}],"number_format":1,"heartbeat":true} HTTP/1.1
+
+
+###  Settings - brightness 10
+GET http://{{cointhing_ip}}/action/set?brightness=10 HTTP/1.1
+
+###  Settings - brightness 255
+GET http://{{cointhing_ip}}/action/set?brightness=255 HTTP/1.1
+
+
+
+###  Reset for delivery
+GET http://{{cointhing_ip}}/action/reset/all HTTP/1.1
+
+
+
+
+
