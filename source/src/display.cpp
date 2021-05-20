@@ -159,7 +159,7 @@ void Display::renderTitle()
         } else {
             m_tft.loadFont(F("NotoSans-Regular25"));
         }
-        m_tft.setTextColor(RGB(0x40, 0x40, 0x40), TFT_BLACK);
+        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
         m_tft.setCursor(x_name, y_symbol_curr);
         m_tft.print(symbol);
         m_tft.print(" - ");
@@ -181,7 +181,7 @@ void Display::renderTitle()
         if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
             uint32_t count(0);
             for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : RGB(0x40, 0x40, 0x40));
+                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : TFT_DARKGREY);
             }
         }
     } else { // Settings::Mode::TWO_COINS
@@ -207,7 +207,7 @@ void Display::renderTitle()
                 m_tft.loadFont(F("NotoSans-Regular25"));
             }
             m_tft.setCursor(m_tft.getCursorX() + 10, y_cursor + 4);
-            m_tft.setTextColor(RGB(0x40, 0x40, 0x40), TFT_BLACK);
+            m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
             m_tft.print(symbol);
             m_tft.unloadFont();
         }
