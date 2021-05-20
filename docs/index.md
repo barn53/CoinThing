@@ -9,9 +9,9 @@
 
 ## What's New
 
-### Version 1.2 is coming!
+### Version 1.2 is ready!
 
-#### First beta version available &ndash; see below!
+#### Version to download available &ndash; see below!
 
 #### Features Muliple Coins and new icons
 
@@ -85,17 +85,17 @@ $ python -m esptool --before default_reset --after hard_reset --chip esp8266
 
 ## Available Versions To Download
 
-### Version 1.2-beta.1:
-#### New functionality with version 1.2:
+### Version 1.2.0:
+#### New functionality with version 1.2
 - Show 2 coins simultaneously on the screen (no chart)
 - Cycle through up to 10 coins (with chart)
 - New cypto coin icons
 
-For an update to Version 1.2 you need to also upload the spiffs_v1.2-beta.1.bin file
+For an update to Version 1.2 you need to also upload the spiffs_v1.2.0.bin file
 
-[cointhing_v1.2-beta.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/cointhing_v1.2-beta.1.bin)
+[cointhing_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/cointhing_v1.2.0.bin)
 
-[spiffs_v1.2-beta.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2-beta.1/spiffs_v1.2-beta.1.bin)
+[spiffs_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/spiffs_v1.2.0.bin)
 
 -------
 
