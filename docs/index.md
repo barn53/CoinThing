@@ -76,7 +76,7 @@ Either via browser as described above, or, now you have learned something new, y
 $ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
 ```
 
-###### Or both together
+##### Or both together
 ```bash
 $ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
