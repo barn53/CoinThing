@@ -53,14 +53,14 @@ In the settings, you enter all desired data. After clicking Apply, the settings 
 If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).<br>
 You first have to download the __spiffs_v1.2.xx.bin__ and install it with the following procedure:
 
-##### You Need
+##### You need
 - a PC or Mac
 - python installed: [download python](https://www.python.org/downloads/)
 - this python module installed: [esptool](https://github.com/espressif/esptool)
 - the CoinThing connected to the PC via an USB data cable
 - maybe you need to install USB drivers, you can find the right ones here under downloads: <https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers>
 
-##### Install ```esptool```
+##### This is how to install esptool
 ```bash
 $ pip install esptool
 ```
@@ -88,7 +88,7 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266 --bau
 ## Available Versions To Download
 
 ### Version 1.2.0:
-#### New functionality with version 1.2
+#### New functionality With Version 1.2
 - Show 2 coins simultaneously on the screen (no chart)
 - Cycle through up to 10 coins (with chart)
 - New cypto coin icons
