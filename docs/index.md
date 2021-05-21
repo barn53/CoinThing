@@ -54,11 +54,11 @@ If there is an update with a change in the second version number (i.e. from 1.__
 You first have to download the __spiffs_v1.2.xx.bin__ and install it with the following procedure:
 
 ##### You Need
-- A PC or Mac
+- a PC or Mac
 - python installed: [download python](https://www.python.org/downloads/)
 - this python script installed: [esptool](https://github.com/espressif/esptool)
-- The CoinThing connected to the PC via an USB data cable
-- Maybe you need to install USB drivers, you can find the right ones here under downloads: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+- the CoinThing connected to the PC via an USB data cable
+- maybe you need to install USB drivers, you can find the right ones here under downloads: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
 ##### Install ```esptool```
 ```bash
