@@ -69,8 +69,7 @@ $ python -m esptool --before default_reset --after hard_reset --chip esp8266 --b
 ```
 
 After this was successful, you have to install the matching firmware itself
-
-Either via browser as described above, or now you have learned something new, you can also install it with the python script :-).
+Either via browser as described above, or, now you have learned something new, you can also install it with the python script :-).
 
 ##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
