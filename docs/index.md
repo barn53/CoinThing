@@ -58,29 +58,28 @@ You first have to download the __spiffs_v1.2.xx.bin__ and install it with the fo
 - this python script installed: [esptool](https://github.com/espressif/esptool)
 - The CoinThing connected to the PC via an USB cable
 
+###### Install ```esptool```
 ```bash
 $ pip install esptool
 ```
 
-This is the command line to execute:
+##### This is the command line to install the spiffs file
 ```bash
-$ python -m esptool --before default_reset --after hard_reset --chip esp8266
-       --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+$ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
-After this was successful, you have to install the matching firmware itself.
+After this was successful, you have to install the matching firmware itself
 
 Either via browser as described above, or now you have learned something new, you can also install it with the python script :-).
-Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute:
+
+##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
-$ python -m esptool --before default_reset --after hard_reset --chip esp8266
-       --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
+$ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
 ```
 
-Or both together:
+###### Or both together
 ```bash
-$ python -m esptool --before default_reset --after hard_reset --chip esp8266
-       --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+$ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
 -------
