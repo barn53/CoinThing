@@ -50,7 +50,7 @@ In the settings, you enter all desired data. After clicking Apply, the settings 
 - that's it – enjoy :-)
 
 #### Update Firmware Via Python Script
-If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).
+If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).<br>
 You first have to download the __spiffs_v1.2.xx.bin__ and install it with the following procedure:
 
 ##### You Need
@@ -68,7 +68,7 @@ $ pip install esptool
 $ python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
-After this was successful, you have to install the matching firmware itself
+After this was successful, you have to install the matching firmware itself.<br>
 Either via browser as described above, or, now you have learned something new, you can also install it with the python script :-).
 
 ##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
