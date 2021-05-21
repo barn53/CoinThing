@@ -56,6 +56,8 @@ You first have to download the __spiffs_v1.2.xx.bin__ and install it with the fo
 ##### You Need
 - python installed: [download python](https://www.python.org/downloads/)
 - this python script installed: [esptool](https://github.com/espressif/esptool)
+- The CoinThing connected to the PC via an USB cable
+
 ```bash
 $ pip install esptool
 ```
