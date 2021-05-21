@@ -56,7 +56,7 @@ You first have to download the __spiffs_v1.2.xx.bin__ and install it with the fo
 ##### You Need
 - python installed: [download python](https://www.python.org/downloads/)
 - this python script installed: [esptool](https://github.com/espressif/esptool)
-- The CoinThing connected to the PC via a USB data cable
+- The CoinThing connected to the PC via an USB data cable
 - Maybe you need to install USB drivers, you can find the right ones here under downloads: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
 
 ##### Install ```esptool```
