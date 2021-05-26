@@ -60,10 +60,46 @@ You first have to download the __spiffs_v1.2.xx.bin__ and install it with the fo
 - the CoinThing connected to the PC via an USB data cable
 - maybe you need to install USB drivers, you can find the right ones here under downloads: <https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers>
 
+##### Is python installed?
+```bash
+python --version
+```
+Should return something like ```Python 3.9.4```
+
 ##### This is how to install esptool
 ```bash
-$ pip install esptool
+pip install esptool
 ```
+
+##### Is the esptool installed?
+```bash
+python -m esptool version
+```
+Should return something like
+```
+esptool.py v3.0
+3.0
+```
+
+##### Is the CoinThing connected correctly?
+```bash
+python -m esptool --no-stub chip_id
+```
+Should return something like
+```
+esptool.py v3.0
+Serial port COM3
+Connecting....
+Detecting chip type... ESP8266
+Chip is ESP8266EX
+Features: WiFi
+Crystal is 26MHz
+MAC: 50:02:91:58:03:37
+Enabling default SPI flash mode...
+Chip ID: 0x00580337
+Hard resetting via RTS pin...
+```
+
 
 ##### This is the command line to install the spiffs file
 ```bash
@@ -71,7 +107,6 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266 --bau
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
-Either via browser as described above, or, now you have learned something new, you can also install it with the python script :-).
 
 ##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
