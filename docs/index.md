@@ -127,7 +127,7 @@ After this was successful, you have to install the matching firmware itself.<br>
 - Cycle through up to 10 coins (with chart)
 - New cypto coin icons
 
-For an update to Version 1.2 you need to also upload the spiffs_v1.2.0.bin file
+For an update to Version 1.2 you need to upload both files via python as described above.
 
 [cointhing_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/cointhing_v1.2.0.bin)
 
