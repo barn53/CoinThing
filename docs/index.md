@@ -100,15 +100,14 @@ Chip ID: 0x00580337
 Hard resetting via RTS pin...
 ```
 
-
-##### This is the command line to install the spiffs file
+##### Download the SPIFFS file e.g. __spiffs_v1.2.xx.bin__ and execute
 ```bash
 > python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
 
-##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
+##### Download the firmware file e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
 > python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
 ```
