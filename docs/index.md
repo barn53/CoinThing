@@ -62,18 +62,18 @@ You first have to download the __spiffs_v1.2.xx.bin__ and install it with the fo
 
 ##### Is python installed?
 ```bash
-python --version
+> python --version
 ```
 Should return something like ```Python 3.9.4```
 
 ##### This is how to install esptool
 ```bash
-pip install esptool
+> pip install esptool
 ```
 
 ##### Is the esptool installed?
 ```bash
-python -m esptool version
+> python -m esptool version
 ```
 Should return something like
 ```
@@ -83,7 +83,7 @@ esptool.py v3.0
 
 ##### Is the CoinThing connected correctly?
 ```bash
-python -m esptool --no-stub chip_id
+> python -m esptool --no-stub chip_id
 ```
 Should return something like
 ```
@@ -103,19 +103,19 @@ Hard resetting via RTS pin...
 
 ##### This is the command line to install the spiffs file
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
 
 ##### Download the firmware e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
+> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
 ```
 
 ##### Or both together
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
 -------
