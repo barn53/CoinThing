@@ -50,8 +50,7 @@ In the settings, you enter all desired data. After clicking Apply, the settings 
 - that's it – enjoy :-)
 
 #### Update Firmware Via Python Script
-If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).<br>
-You first have to download the __spiffs_v1.2.xx.bin__ and install it with the following procedure:
+If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).
 
 ##### You need
 - a PC or Mac
