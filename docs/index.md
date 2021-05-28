@@ -116,6 +116,9 @@ After this was successful, you have to install the matching firmware itself.<br>
 > python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
 
+That's all.<br>
+After a reboot, the CoinThing starts with the new version – enjoy!
+
 -------
 
 ## Available Versions To Download
