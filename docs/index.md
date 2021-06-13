@@ -50,15 +50,14 @@ In the settings, you enter all desired data. After clicking Apply, the settings 
 - that's it – enjoy :-)
 
 #### Update Firmware Via Python Script
-If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).<br>
-You first have to download the __spiffs_v1.2.xx.bin__ and install it with the following procedure:
+If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).
 
 ##### You need
 - a PC or Mac
 - python installed: [download python](https://www.python.org/downloads/)
 - this python module installed: [esptool](https://github.com/espressif/esptool)
 - the CoinThing connected to the PC via an USB data cable
-- maybe you need to install USB drivers, you can find the right ones here under downloads: <https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers>
+- typically under windows, the correct USB drivers will be installed automtically. If not, you need to install the USB drivers, you can find the right ones here under downloads: <https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers>
 
 ##### Is python installed?
 ```bash
@@ -116,6 +115,9 @@ After this was successful, you have to install the matching firmware itself.<br>
 ```bash
 > python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
+
+That's all.<br>
+After a reboot, the CoinThing starts with the new version – enjoy!
 
 -------
 
