@@ -274,6 +274,12 @@ void Display::renderCoin()
         m_tft.loadFont(F("NotoSans-Condensed25"));
         usdWidth = m_tft.textWidth(msg2);
         changeWidth = m_tft.textWidth(msg);
+        if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+            m_tft.unloadFont();
+            m_tft.loadFont(F("NotoSans-ExtraCondensed25"));
+            usdWidth = m_tft.textWidth(msg2);
+            changeWidth = m_tft.textWidth(msg);
+        }
     }
 
     m_tft.fillRect(0, y_change, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
@@ -345,6 +351,13 @@ void Display::renderTwoCoins()
             m_tft.loadFont(F("NotoSans-Condensed30"));
             usdWidth = m_tft.textWidth(msg2);
             changeWidth = m_tft.textWidth(msg);
+
+            if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+                m_tft.unloadFont();
+                m_tft.loadFont(F("NotoSans-ExtraCondensed30"));
+                usdWidth = m_tft.textWidth(msg2);
+                changeWidth = m_tft.textWidth(msg);
+            }
         }
 
         m_tft.fillRect(0, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
