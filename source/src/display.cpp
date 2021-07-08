@@ -357,6 +357,13 @@ void Display::renderTwoCoins()
                 m_tft.loadFont(F("NotoSans-ExtraCondensed30"));
                 usdWidth = m_tft.textWidth(msg2);
                 changeWidth = m_tft.textWidth(msg);
+
+                if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+                    m_tft.unloadFont();
+                    m_tft.loadFont(F("NotoSans-ExtraCondensed25"));
+                    usdWidth = m_tft.textWidth(msg2);
+                    changeWidth = m_tft.textWidth(msg);
+                }
             }
         }
 
