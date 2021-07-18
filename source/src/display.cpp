@@ -924,9 +924,7 @@ void Display::showUpdateQR()
         m_tft.setCursor(5, 5);
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
         m_tft.print(F("Open for Update:"));
-        m_tft.unloadFont();
 
-        m_tft.loadFont(F("NotoSans-Regular15"));
         m_tft.setCursor(5, 30);
         m_tft.print(url);
         m_tft.unloadFont();
@@ -950,9 +948,7 @@ void Display::showSettingsQR()
         m_tft.setCursor(5, 5);
         m_tft.setTextColor(TFT_RED, TFT_WHITE);
         m_tft.print(F("Open Settings:"));
-        m_tft.unloadFont();
 
-        m_tft.loadFont(F("NotoSans-Regular15"));
         m_tft.setCursor(5, 30);
         m_tft.print(url);
         m_tft.unloadFont();
