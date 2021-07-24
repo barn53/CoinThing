@@ -123,7 +123,9 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266 --bau
 
 ##### If the CoinThing does not startup after update attempts
 You can erase the CoinThing completely (you cannot damage it).
+
 After that install the firmware again.
+
 Unfortunately after this a new setup ist necessary.
 ```bash
 python -m esptool erase_flash
