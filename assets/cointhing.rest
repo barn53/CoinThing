@@ -13,7 +13,7 @@ s={{$processEnv %FRITZ_SSID}}
 
 @cointhing_ip = localhost:3000
 
-@cointhing_ip = 192.168.178.117
+@cointhing_ip = 192.168.178.61
 
 
 ###  Settings - 10 coins

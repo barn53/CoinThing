@@ -39,11 +39,11 @@ GET https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=eur&
 
 ###
 
-GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100
+GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100 HTTP/1.0
 
 ###
 
-GET https://api.coingecko.com/api/v3/coins/ethereum?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false
+GET https://api.coingecko.com/api/v3/coins/ethereum?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false HTTP/1.0
 
 ###
 
