@@ -9,11 +9,7 @@
 
 ## What's New
 
-### Version 1.2 is ready!
-
-#### Version to download available &ndash; see below!
-
-#### Features Muliple Coins and new icons
+### Version 1.3 is ready!
 
 -------
 
@@ -101,19 +97,36 @@ Hard resetting via RTS pin...
 
 ##### Download the SPIFFS file e.g. __spiffs_v1.2.xx.bin__ and execute
 ```bash
-> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
 ```
+##### ATTENTION! For version 1.3 the spiffs upload address has changed to 0x100000!
+```bash
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x100000 <path_to_download>/spiffs_v1.3.0.bin
+```
+
 
 After this was successful, you have to install the matching firmware itself.<br>
 
 ##### Download the firmware file e.g. __cointhing_v1.2.xx.bin__ and execute
 ```bash
-> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 
 ```
 
 ##### Or both together
 ```bash
-> python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.2.xx.bin 0x200000 <path_to_download>/spiffs_v1.2.xx.bin
+```
+##### ATTENTION! For version 1.3 the spiffs upload address has changed to 0x100000!
+```bash
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.3.0.bin 0x100000 <path_to_download>/spiffs_v1.3.0.bin
+```
+
+##### If the CoinThing does not startup after update attempts
+You can erase the CoinThing completely (you cannot damage it).
+After that install the firmware again.
+Unfortunately after this a new setup ist necessary.
+```bash
+python -m esptool erase_flash
 ```
 
 That's all.<br>
@@ -122,6 +135,25 @@ After a reboot, the CoinThing starts with the new version – enjoy!
 -------
 
 ## Available Versions To Download
+
+### Version 1.3.0:
+- Added ExtraCondensed font
+- Added new icons
+- Increased CPU clock
+
+For an update to Version 1.3 you need to upload both files via python as described above.
+
+[cointhing_v1.3.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.3.0/cointhing_v1.3.0.bin)
+
+[spiffs_v1.3.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.3.0/spiffs_v1.3.0.bin)
+
+#### ATTENTION!
+##### The upload address for the spiffs file has changed to 0x100000 for version 1.3!
+```bash
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.3.0.bin 0x100000 <path_to_download>/spiffs_v1.3.0.bin
+```
+
+-------
 
 ### Version 1.2.0:
 #### New functionality With Version 1.2
