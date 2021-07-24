@@ -143,7 +143,7 @@ After a reboot, the CoinThing starts with the new version – enjoy!
 - Added new icons
 - Increased CPU clock
 
-For an update to Version 1.3 you need to upload both files via python as described above.
+For an update to version 1.3 you need to upload both files via python as described above (the spiffs file address has changed to 0x100000).
 
 [cointhing_v1.3.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.3.0/cointhing_v1.3.0.bin)
 
