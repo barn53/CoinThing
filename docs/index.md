@@ -121,6 +121,11 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266 --bau
 python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.3.0.bin 0x100000 <path_to_download>/spiffs_v1.3.0.bin
 ```
 
+That's all.<br>
+After a reboot, the CoinThing starts with the new version – enjoy!
+
+
+
 ##### If the CoinThing does not startup after update attempts
 You can erase the CoinThing completely (you cannot damage it).
 
@@ -130,9 +135,6 @@ Unfortunately after this a new setup ist necessary.
 ```bash
 python -m esptool erase_flash
 ```
-
-That's all.<br>
-After a reboot, the CoinThing starts with the new version – enjoy!
 
 -------
 
