@@ -140,6 +140,11 @@ python -m esptool erase_flash
 
 ## Available Versions To Download
 
+### Version 1.3.1:
+- Only internal change
+
+[cointhing_v1.3.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.3.1/cointhing_v1.3.1.bin)
+
 ### Version 1.3.0:
 - Added ExtraCondensed font
 - Added new icons
