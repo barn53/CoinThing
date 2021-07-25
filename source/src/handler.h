@@ -25,6 +25,7 @@ private:
     bool handleGetPrice();
 
     bool handleForUpdate() const;
+    bool handleSelftest() const;
 
     Gecko& m_gecko;
     Settings& m_settings;

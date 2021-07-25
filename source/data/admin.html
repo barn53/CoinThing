@@ -50,13 +50,17 @@
                     <button id="getName" class="btn btn-info btn-sm">Get Name</button>
                     &nbsp;<span id="forName" class="text-info"></span>
                 </p>
+                <p>
+                    <button id="selftest" class="btn btn-success btn-sm">Self Test</button>
+                    &nbsp;<span id="forSelftest" class="text-success"></span>
+                </p>
+                <p>
+                    <button id="resetESP" class="btn btn-warning btn-sm">Reset ESP</button>
+                    &nbsp;<span id="forResetESP" class="text-info"></span>
+                </p>
 
                 <hr>
                 <p class="text-danger"><b>Danger-Zone</b></p>
-                <p>
-                    <button id="resetESP" class="btn btn-warning btn-sm">Reset ESP</button>
-                    &nbsp;<span id="forResetESP" class="text-warning"></span>
-                </p>
                 <p>
                     <button id="resetSettings" class="btn btn-warning btn-sm">Reset Settings</button>
                     &nbsp;<span id="forResetSettings" class="text-warning"></span>
@@ -119,6 +123,13 @@
                 $.get("/settings.json", function (data) {
                     $("#forSettings").append(JSON.stringify(data))
                 }).fail(function () { $("#forSettings").append("failure") })
+            })
+
+            $('#selftest').off().click(function (e) {
+                $("#forSelftest").empty()
+                $.get("/action/selftest", function (data) {
+                    $("#forSelftest").append(data)
+                }).fail(function () { $("#forSelftest").append("failure") })
             })
 
             $('#resetESP').off().click(function (e) {

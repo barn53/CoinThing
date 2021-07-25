@@ -98,7 +98,7 @@ void Display::wifiConnect()
         }
     } else {
         if (!m_shows_wifi_not_connected) {
-            drawBmp(F("/nowifi.bmp"), 215, yWiFi);
+            drawBmp(F("/nowifi.bmp"), m_tft, 215, yWiFi);
             m_shows_wifi_not_connected = true;
         }
     }
@@ -120,9 +120,9 @@ void Display::heartbeat()
             || ((millis_test() - m_last_heartbeat) > 1500
                 && (m_heart_beat_count == 3)))) {
         if (m_heart_beat_count % 2 == 0) {
-            drawBmp(F("/heart2.bmp"), 220, 0);
+            drawBmp(F("/heart2.bmp"), m_tft, 220, 0);
         } else {
-            drawBmp(F("/heart.bmp"), 220, 0);
+            drawBmp(F("/heart.bmp"), m_tft, 220, 0);
         }
         m_last_heartbeat = millis_test();
         ++m_heart_beat_count;
@@ -149,7 +149,7 @@ void Display::renderTitle()
         String icon(F("/"));
         icon += symbol;
         icon += F(".bmp");
-        if (drawBmp(icon, 0, 0)) {
+        if (drawBmp(icon, m_tft, 0, 0)) {
             x_name = 60;
         }
         uint8_t y_symbol_curr(35);
@@ -1065,7 +1065,7 @@ uint32_t read32(File& f)
     return result;
 }
 
-bool Display::drawBmp(const String& filename, int16_t x, int16_t y)
+bool Display::drawBmp(const String& filename, TFT_eSPI& tft, int16_t x, int16_t y)
 {
     bool ret(false);
     if (!SPIFFS.exists(filename)) {
@@ -1089,17 +1089,17 @@ bool Display::drawBmp(const String& filename, int16_t x, int16_t y)
             && (read16(f) == 16) // bit count 2 bytes -> R5 G6 B5
             && (read32(f) == 3)) { // compression 4 bytes
             y += h - 1;
-            bool oldSwapBytes = m_tft.getSwapBytes();
-            m_tft.setSwapBytes(true);
+            bool oldSwapBytes = tft.getSwapBytes();
+            tft.setSwapBytes(true);
             f.seek(seekOffset);
 
             uint8_t lineBuffer[(w * 2) + ((w * 2) % 4)];
             for (row = 0; row < h; ++row) {
                 f.read(lineBuffer, sizeof(lineBuffer));
-                m_tft.pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);
+                tft.pushImage(x, y--, w, 1, (uint16_t*)lineBuffer);
             }
             ret = true;
-            m_tft.setSwapBytes(oldSwapBytes);
+            tft.setSwapBytes(oldSwapBytes);
         }
     }
 
