@@ -17,31 +17,31 @@ CoinThingId = 8903790
 
 profile = """<?xml version="1.0"?>
 <WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
-	<name>{0}</name>
-	<SSIDConfig>
-		<SSID>
-			<name>{0}</name>
-		</SSID>
-	</SSIDConfig>
-	<connectionType>ESS</connectionType>
-	<connectionMode>auto</connectionMode>
-	<MSM>
-		<security>
-			<authEncryption>
-				<authentication>WPA2PSK</authentication>
-				<encryption>AES</encryption>
-				<useOneX>false</useOneX>
-			</authEncryption>
-			<sharedKey>
-				<keyType>passPhrase</keyType>
-				<protected>false</protected>
-				<keyMaterial>{1}</keyMaterial>
-			</sharedKey>
-		</security>
-	</MSM>
-	<MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">
-		<enableRandomization>false</enableRandomization>
-	</MacRandomization>
+    <name>{0}</name>
+    <SSIDConfig>
+        <SSID>
+            <name>{0}</name>
+        </SSID>
+    </SSIDConfig>
+    <connectionType>ESS</connectionType>
+    <connectionMode>auto</connectionMode>
+    <MSM>
+        <security>
+            <authEncryption>
+                <authentication>WPA2PSK</authentication>
+                <encryption>AES</encryption>
+                <useOneX>false</useOneX>
+            </authEncryption>
+            <sharedKey>
+                <keyType>passPhrase</keyType>
+                <protected>false</protected>
+                <keyMaterial>{1}</keyMaterial>
+            </sharedKey>
+        </security>
+    </MSM>
+    <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">
+        <enableRandomization>false</enableRandomization>
+    </MacRandomization>
 </WLANProfile>
 """
 
