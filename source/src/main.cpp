@@ -1,10 +1,10 @@
-
 #include "common.h"
 #include "display.h"
 #include "gecko.h"
 #include "handler.h"
 #include "http_json.h"
 #include "pre.h"
+#include "selftest.h"
 #include "settings.h"
 #include "utils.h"
 #include "wifi_utils.h"
@@ -52,6 +52,11 @@ void setup(void)
 
     gecko.begin();
     settings.begin();
+
+    if (SPIFFS.exists(SELFTEST_FILE)) {
+        SPIFFS.remove(SELFTEST_FILE);
+        selftest(display);
+    }
 
     server.onNotFound([]() { // If the client requests any URI
         if (!handler.handleAction()

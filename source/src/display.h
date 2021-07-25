@@ -24,6 +24,11 @@ public:
     void showUpdated();
     void showNotUpdated();
 
+    static bool drawBmp(const String& filename, TFT_eSPI& tft, int16_t x, int16_t y);
+
+    Gecko& getGecko() { return m_gecko; }
+    TFT_eSPI& getTFT() { return m_tft; }
+
 private:
     void wifiConnect();
     void renderTitle();
@@ -38,8 +43,6 @@ private:
 
     Settings::ChartPeriod nextChartPeriod() const;
     void nextCoinID();
-
-    bool drawBmp(const String& filename, int16_t x, int16_t y);
 
     enum class Screen {
         NONE,
