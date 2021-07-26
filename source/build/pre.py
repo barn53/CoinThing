@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import string
+import os
 import random
+import string
 import subprocess
 
 Import("env")
@@ -39,7 +40,14 @@ f = open(env["PROJECTDATA_DIR"] + "/version.spiffs", "w")
 f.write('%s' % (version))
 f.close()
 
+
 ## Add ./source/build to PATH for windows to execute gzip
-subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/settings.html"])
-subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/about.html"])
-subprocess.call(["gzip", "-k", "-f" , env["PROJECTDATA_DIR"] + "/admin.html"])
+subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/settings.html"])
+subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/about.html"])
+subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/admin.html"])
+subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/style.css"])
+
+os.replace(env["PROJECTDATA_DIR"] + "/../html/settings.html.gz", env["PROJECTDATA_DIR"] + "/settings.html.gz")
+os.replace(env["PROJECTDATA_DIR"] + "/../html/about.html.gz", env["PROJECTDATA_DIR"] + "/about.html.gz")
+os.replace(env["PROJECTDATA_DIR"] + "/../html/admin.html.gz", env["PROJECTDATA_DIR"] + "/admin.html.gz")
+os.replace(env["PROJECTDATA_DIR"] + "/../html/style.css.gz", env["PROJECTDATA_DIR"] + "/style.css.gz")
