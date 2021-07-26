@@ -51,3 +51,4 @@ os.replace(env["PROJECTDATA_DIR"] + "/../html/settings.html.gz", env["PROJECTDAT
 os.replace(env["PROJECTDATA_DIR"] + "/../html/about.html.gz", env["PROJECTDATA_DIR"] + "/about.html.gz")
 os.replace(env["PROJECTDATA_DIR"] + "/../html/admin.html.gz", env["PROJECTDATA_DIR"] + "/admin.html.gz")
 os.replace(env["PROJECTDATA_DIR"] + "/../html/style.css.gz", env["PROJECTDATA_DIR"] + "/style.css.gz")
+
