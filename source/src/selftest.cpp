@@ -3,6 +3,7 @@
 #include "display.h"
 #include "gecko.h"
 #include "http_json.h"
+#include "pre.h"
 #include <TFT_eSPI.h>
 
 void selftest(Display& display)
@@ -16,11 +17,27 @@ void selftest(Display& display)
     uint16_t bg(tft.color565(0xf0, 0x00, 0xff));
     tft.fillScreen(bg);
 
-    String txt(F("SELFTEST"));
+    String msg(F("SELFTEST"));
     tft.loadFont(F("NotoSans-Regular50"));
-    tft.setCursor(10, 10);
+    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 10);
     tft.setTextColor(TFT_WHITE, bg);
-    tft.print(txt);
+    tft.print(msg);
+    tft.unloadFont();
+
+    tft.loadFont(F("NotoSans-Regular20"));
+    msg = F("v: ");
+    msg += VERSION;
+    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 65);
+    tft.print(msg);
+    File file = SPIFFS.open(F("/version.spiffs"), "r");
+    if (file.available()) {
+        String spiffs(file.readString());
+        file.close();
+        msg = F("s: ");
+        msg += spiffs;
+        tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 90);
+        tft.print(msg);
+    }
     tft.unloadFont();
 
     tft.loadFont(F("NotoSans-Regular30"));
@@ -42,15 +59,15 @@ void selftest(Display& display)
             formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true);
             formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, 2);
 
-            tft.setCursor(0, 85);
-            txt = "  ";
-            txt += id;
-            txt += F(":           \n  ");
-            txt += price;
-            txt += F("$           \n\n  24h: ");
-            txt += change;
-            txt += F("%           ");
-            tft.print(txt);
+            tft.setCursor(0, 125);
+            msg = "  ";
+            msg += id;
+            msg += F(":           \n  ");
+            msg += price;
+            msg += F("$           \n  24h: ");
+            msg += change;
+            msg += F("%           ");
+            tft.print(msg);
             delay(500);
         }
     }
@@ -99,8 +116,8 @@ void selftest(Display& display)
     tft.fillScreen(bg);
     tft.setCursor(80, 80);
     tft.setTextColor(TFT_WHITE, bg);
-    txt = F("OK!");
-    tft.print(txt);
+    msg = F("OK!");
+    tft.print(msg);
 
     delay(2500);
     ESP.reset();
