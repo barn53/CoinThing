@@ -145,7 +145,7 @@ For an update to version 1.4 you need to upload both files via python as describ
 
 ### Version 1.3:
 
-#### Do not update to this version - use version v1.4.0 of later
+#### Do not update to this version - use version v1.4.0 or later
 
 -------
 
