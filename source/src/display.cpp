@@ -225,7 +225,6 @@ void Display::renderCoin()
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         SERIAL_PRINTLN("Prices unchanged - skip");
-        m_last_price_update = millis_test();
         return; // omit overwriting price with same values
     }
 
@@ -843,6 +842,7 @@ void Display::showMultipleCoins()
         m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
         renderTitle();
         m_last_coin_swap = millis_test();
+        rewrite = true;
     }
 
     heartbeat();
