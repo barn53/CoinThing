@@ -21,19 +21,15 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc)
 bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDocument& jsonFilter)
 {
     LOG_FUNC
-
-#if COIN_THING_SERIAL > 0
-    Serial.printf("read from URL: %s\n", url);
-#endif
+    LOG_I_PRINTF("read from URL: %s\n", url);
 
     m_http.begin(m_client, url);
     int httpCode = m_http.GET();
     if (httpCode > 0) {
-#if COIN_THING_SERIAL > 0
-        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-#endif
+        LOG_I_PRINTF("[HTTP] GET... code: %d\n", httpCode);
         if (httpCode == HTTP_CODE_OK) {
             ReadBufferingClient bufferedClient { m_client, 64 };
+
 #if COIN_THING_SERIAL > 1
             ReadLoggingStream loggingStream(bufferedClient, Serial);
             deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
@@ -41,12 +37,11 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
 #else
             deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
+
             return true;
         }
     } else {
-#if COIN_THING_SERIAL > 0
-        Serial.printf("[HTTP] GET... failed, error: %d - %s\n", httpCode, m_http.errorToString(httpCode).c_str());
-#endif
+        LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", httpCode, m_http.errorToString(httpCode).c_str());
     }
     return false;
 }

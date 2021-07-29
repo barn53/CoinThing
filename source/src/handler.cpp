@@ -145,9 +145,8 @@ bool Handler::handleSelftest() const
 bool Handler::streamFile(const char* filename)
 {
     LOG_FUNC
-
-    SERIAL_PRINT("  File: ")
-    SERIAL_PRINT(filename)
+    LOG_I_PRINT("  File: ")
+    LOG_PRINT(filename)
 
     String contentType = getContentType(filename);
     String filename_found;
@@ -155,8 +154,8 @@ bool Handler::streamFile(const char* filename)
     filename_gz += ".gz";
 
     if (SPIFFS.exists(filename_gz)) {
-        SERIAL_PRINT(" found .gz: ")
-        SERIAL_PRINT(filename_gz)
+        LOG_PRINT(" found .gz: ")
+        LOG_PRINT(filename_gz)
         filename_found = filename_gz;
     } else if (SPIFFS.exists(filename)) {
         filename_found = filename;
@@ -168,21 +167,21 @@ bool Handler::streamFile(const char* filename)
     server.sendHeader(F("Access-Control-Allow-Origin"), "*");
     server.streamFile(file, contentType);
     file.close();
-    SERIAL_PRINTLN(" - ok");
+    LOG_PRINTLN(" - ok");
     return true;
 
-    SERIAL_PRINTLN(" - does not exist!")
+    LOG_PRINTLN(" - does not exist!")
     return false;
 }
 
 bool Handler::handleSet() const
 {
 #if COIN_THING_SERIAL > 0
-    Serial.printf("handleSet: parsed Query:\n");
+    LOG_I_PRINTLN("handleSet: parsed Query:");
     for (int ii = 0; ii < server.args(); ++ii) {
-        Serial.print(server.argName(ii));
-        Serial.print(" -> ");
-        Serial.println(server.arg(ii));
+        LOG_I_PRINT(server.argName(ii));
+        LOG_PRINT(" -> ");
+        LOG_PRINTLN(server.arg(ii));
     }
 #endif
 
@@ -202,9 +201,7 @@ bool Handler::handleSet() const
 bool Handler::handleAction()
 {
     String path(server.uri());
-#if COIN_THING_SERIAL > 0
-    Serial.printf("handleAction: path: %s\n", path.c_str());
-#endif
+    LOG_I_PRINTF("handleAction: path: %s\n", path.c_str());
 
     if (path == F("/action/set")) {
         return handleSet();
@@ -232,10 +229,9 @@ bool Handler::handleAction()
 
 bool Handler::handleFileRead()
 {
+    LOG_FUNC
     String path(server.uri());
-#if COIN_THING_SERIAL > 0
-    Serial.printf("handleFileRead: %s\n", path.c_str());
-#endif
+    LOG_I_PRINTF("handleFileRead: %s\n", path.c_str());
 
     if (path.endsWith("/")) {
         path += F("settings.html");

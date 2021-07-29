@@ -224,10 +224,13 @@ void Display::renderCoin()
     m_gecko.price(m_current_coin_index, price, price2, change_pct);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
-        SERIAL_PRINTLN("Prices unchanged - skip");
+        LOG_I_PRINTLN("Prices unchanged - skip");
+
         m_last_price_update = millis_test();
+
         return; // omit overwriting price with same values
     }
+    LOG_I_PRINTLN("Update price display");
 
     uint16_t color(change_pct >= 0.0 ? GREEN565 : RED565);
 
@@ -307,10 +310,11 @@ void Display::renderTwoCoins()
     m_gecko.twoPrices(price[0], price2[0], change_pct[0], price[1], price2[1], change_pct[1]);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
-        SERIAL_PRINTLN("Prices unchanged - skip");
+        LOG_I_PRINTLN("Prices unchanged - skip");
         m_last_price_update = millis_test();
         return; // omit overwriting price with same values
     }
+    LOG_I_PRINTLN("Update price display");
 
     for (auto coinIndex : { 0, 1 }) {
         uint16_t color(change_pct[coinIndex] >= 0.0 ? GREEN565 : RED565);
@@ -418,10 +422,11 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     }
 
     if (m_last_chart_period == chartPeriod && !refetched) {
-        SERIAL_PRINTLN("Chart unchanged - skip");
+        LOG_I_PRINTLN("Chart unchanged - skip");
         m_last_chart_update = millis_test();
         return true; // omit overwriting the chart with the same values
     }
+    LOG_I_PRINTLN("Update chart display");
 
     int16_t textHeight(14);
 
@@ -673,6 +678,8 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 
 void Display::chartFailed()
 {
+    LOG_I_PRINTLN(F("Chart update failed!"))
+
     m_tft.loadFont(F("NotoSans-Regular20"));
     m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
     m_tft.setCursor(10, 185);
@@ -748,7 +755,7 @@ void Display::showCoin()
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
-        SERIAL_PRINTLN("rewrite")
+        LOG_I_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
@@ -781,9 +788,7 @@ void Display::showCoin()
 
     if (rewrite || doInterval(m_last_chart_update, interval)) {
         Settings::ChartPeriod next(nextChartPeriod());
-#if COIN_THING_SERIAL > 0
-        Serial.printf("last chartPeriod: %u -> next chartPeriod: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
-#endif
+        LOG_I_PRINTF("last chartPeriod: %u -> next chartPeriod: %u, setting: %u\n", m_last_chart_period, next, m_settings.chartPeriod());
         if (!renderChart(next)) {
             chartFailed();
             m_last_chart_update = 0;
@@ -801,7 +806,7 @@ void Display::showTwoCoins()
     bool rewrite(false);
 
     if (m_last_screen != Screen::COIN || m_settings.lastChange() != m_last_seen_settings) {
-        SERIAL_PRINTLN("rewrite")
+        LOG_I_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
@@ -842,28 +847,27 @@ void Display::showMultipleCoins()
     bool rewrite(false);
     if (m_last_screen != Screen::COIN
         || m_settings.lastChange() != m_last_seen_settings) {
-        SERIAL_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = std::numeric_limits<uint32_t>::max();
         m_last_seen_settings = m_settings.lastChange();
         m_shows_wifi_not_connected = false;
+        LOG_I_PRINTLN("rewrite")
         rewrite = true;
     }
 
-    if (rewrite || doInterval(m_last_coin_swap, interval)) {
+    LOG_I_PRINTF("m_last_coin_swap: [%d] \n", (m_last_coin_swap / 1000));
 
-#if COIN_THING_SERIAL > 0
-        Serial.printf("last coin index: %u -> ", m_current_coin_index);
-#endif
+    if (rewrite || doInterval(m_last_coin_swap, interval)) {
+        LOG_I_PRINTF("last coin index: %u -> ", m_current_coin_index);
         nextCoinID();
-#if COIN_THING_SERIAL > 0
-        Serial.printf("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
-#endif
+        LOG_PRINTF("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
 
         m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
         renderTitle();
         m_last_coin_swap = millis_test();
     }
+
+    LOG_I_PRINTF("m_last_price_update: [%d], m_last_chart_update: [%d] \n", (m_last_price_update / 1000), (m_last_chart_update / 1000));
 
     heartbeat();
     wifiConnect();

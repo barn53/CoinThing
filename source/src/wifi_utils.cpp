@@ -46,6 +46,8 @@ void setupWiFi()
 
 void handleWifiManager(WiFiManager& wifiManager, Display& display)
 {
+    LOG_FUNC
+
     if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
         File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "r");
         String beforeVersion(f.readString());
@@ -66,10 +68,10 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
         File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
         f.print(VERSION);
         f.close();
-        SERIAL_PRINTLN(F("CoinThing in update mode"));
+        LOG_I_PRINTLN(F("CoinThing in update mode"));
 
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
-            SERIAL_PRINTLN("AP Callback For Update");
+            LOG_I_PRINTLN("AP Callback For Update");
             display.showUpdateQR();
         });
 
@@ -81,23 +83,23 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
         WiFi.hostname(HostName);
 
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
-            SERIAL_PRINTLN("AP Callback For WiFi Config");
+            LOG_I_PRINTLN("AP Callback For WiFi Config");
             display.showAPQR();
         });
 
         wifiManager.setSaveConfigCallback([&]() {
-            SERIAL_PRINTLN("Save Config Callback");
+            LOG_I_PRINTLN("Save Config Callback");
             if (wifiManager.getWiFiIsSaved()) {
-                SERIAL_PRINTLN(F("WiFi Saved - reset"));
+                LOG_I_PRINTLN(F("WiFi Saved - reset"));
             } else {
-                SERIAL_PRINTLN(F("WiFi NOT Saved"));
+                LOG_I_PRINTLN(F("WiFi NOT Saved"));
             }
             delay(1000);
             ESP.reset();
         });
 
         if (!wifiManager.autoConnect(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
-            SERIAL_PRINTLN(F("failed to connect, we should reset and see if it connects"));
+            LOG_I_PRINTLN(F("failed to connect, we should reset and see if it connects"));
             delay(3000);
             ESP.reset();
             delay(5000);

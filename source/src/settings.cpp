@@ -40,16 +40,17 @@ void Settings::read()
         File file;
         file = SPIFFS.open(SETTINGS_FILE, "r");
         if (file) {
-            SERIAL_PRINTLN("Read settings: " SETTINGS_FILE);
+            LOG_I_PRINTLN("Read settings: " SETTINGS_FILE);
             DynamicJsonDocument doc(JSON_DOCUMENT_CONFIG_SIZE);
-
             ReadBufferingStream bufferedFile { file, 64 };
+
 #if COIN_THING_SERIAL > 0
             ReadLoggingStream loggingStream(bufferedFile, Serial);
             DeserializationError error = deserializeJson(doc, loggingStream);
 #else
             DeserializationError error = deserializeJson(doc, bufferedFile);
 #endif
+
             if (!error) {
                 set(doc, false);
             } else {
@@ -157,18 +158,18 @@ bool Settings::valid() const
 void Settings::trace() const
 {
 #if COIN_THING_SERIAL > 0
-    Serial.printf("Mode: >%u<\n", m_mode);
-    Serial.printf("Coins:\n");
+    LOG_I_PRINTF("Mode: >%u<\n", m_mode)
+    LOG_I_PRINTLN("Coins:")
     for (const auto& c : m_coins) {
-        Serial.printf("id: >%s<, name: >%s<, symbol: >%s<, \n", c.id.c_str(), c.name.c_str(), c.symbol.c_str());
+        LOG_I_PRINTF("id: >%s<, name: >%s<, symbol: >%s<, \n", c.id.c_str(), c.name.c_str(), c.symbol.c_str())
     }
-    Serial.printf("Currency:       >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str());
-    Serial.printf("Currency 2:     >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str());
-    Serial.printf("Number format:  >%u<\n", m_number_format);
-    Serial.printf("Chart period:   >%u<\n", m_chart_period);
-    Serial.printf("Swap interval:  >%u<\n", m_swap_interval);
-    Serial.printf("Chart style:    >%u<\n", m_chart_style);
-    Serial.printf("Heart beat:     >%s<\n", (m_heartbeat ? "true" : "false"));
+    LOG_I_PRINTF("Currency:       >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str())
+    LOG_I_PRINTF("Currency 2:     >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str())
+    LOG_I_PRINTF("Number format:  >%u<\n", m_number_format)
+    LOG_I_PRINTF("Chart period:   >%u<\n", m_chart_period)
+    LOG_I_PRINTF("Swap interval:  >%u<\n", m_swap_interval)
+    LOG_I_PRINTF("Chart style:    >%u<\n", m_chart_style)
+    LOG_I_PRINTF("Heart beat:     >%s<\n", (m_heartbeat ? "true" : "false"))
 #endif
 }
 
@@ -229,22 +230,22 @@ void Settings::readBrightness()
         File file;
         file = SPIFFS.open(BRIGHTNESS_FILE, "r");
         if (file) {
-            SERIAL_PRINTLN("Read brightness: " BRIGHTNESS_FILE);
+            LOG_I_PRINTLN("Read brightness: " BRIGHTNESS_FILE);
             StaticJsonDocument<JSON_DOCUMENT_BRIGHTNESS_SIZE> doc;
-
             ReadBufferingStream bufferedFile { file, 64 };
+
 #if COIN_THING_SERIAL > 0
             ReadLoggingStream loggingStream(bufferedFile, Serial);
             DeserializationError error = deserializeJson(doc, loggingStream);
 #else
             DeserializationError error = deserializeJson(doc, bufferedFile);
 #endif
+
             if (!error) {
                 m_brightness = doc["b"] | std::numeric_limits<uint8_t>::max();
             } else {
                 m_brightness = std::numeric_limits<uint8_t>::max();
             }
-
             file.close();
         }
     }

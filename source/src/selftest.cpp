@@ -8,7 +8,9 @@
 
 void selftest(Display& display)
 {
-    Serial.printf("\nS E L F T E S T\n");
+    LOG_FUNC
+    LOG_I_PRINTLN("")
+    LOG_I_PRINTLN("S E L F T E S T")
 
     auto& tft(display.getTFT());
     auto& gecko(display.getGecko());

@@ -1,5 +1,10 @@
 #include "utils.h"
 
+#if COIN_THING_SERIAL > 0
+int callDepth { 0 };
+uint32_t lastIndentMillis { 0 };
+#endif
+
 void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
 {
     char buf[21];
