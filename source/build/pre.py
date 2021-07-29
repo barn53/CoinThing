@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import glob
 import os
 import random
 import string
@@ -41,7 +42,14 @@ f.write('%s' % (version))
 f.close()
 
 
-## Add ./source/build to PATH for windows to execute gzip
+fileList = glob.glob(env["PROJECTDATA_DIR"] + "/*.gz")
+for filePath in fileList:
+    try:
+        os.remove(filePath)
+    except OSError:
+        print("Error while deleting file")
+
+# Add ./source/build to PATH for windows to execute gzip
 subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/settings.html"])
 subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/about.html"])
 subprocess.call(["gzip", "-k", "-f", env["PROJECTDATA_DIR"] + "/../html/admin.html"])
