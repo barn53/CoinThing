@@ -225,9 +225,6 @@ void Display::renderCoin()
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
-
-        m_last_price_update = millis_test();
-
         return; // omit overwriting price with same values
     }
     LOG_I_PRINTLN("Update price display");
@@ -742,10 +739,14 @@ Settings::ChartPeriod Display::nextChartPeriod() const
 
 void Display::nextCoinID()
 {
+    LOG_FUNC
+
+    LOG_I_PRINTF("last coin index: %u -> ", m_current_coin_index);
     m_current_coin_index = m_current_coin_index + 1;
     if (m_current_coin_index == m_settings.numberCoins()) {
         m_current_coin_index = 0;
     }
+    LOG_PRINTF("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
 }
 
 void Display::showCoin()
@@ -858,13 +859,11 @@ void Display::showMultipleCoins()
     LOG_I_PRINTF("m_last_coin_swap: [%d] \n", (m_last_coin_swap / 1000));
 
     if (rewrite || doInterval(m_last_coin_swap, interval)) {
-        LOG_I_PRINTF("last coin index: %u -> ", m_current_coin_index);
         nextCoinID();
-        LOG_PRINTF("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
-
         m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
         renderTitle();
         m_last_coin_swap = millis_test();
+        rewrite = true;
     }
 
     LOG_I_PRINTF("m_last_price_update: [%d], m_last_chart_update: [%d] \n", (m_last_price_update / 1000), (m_last_chart_update / 1000));
