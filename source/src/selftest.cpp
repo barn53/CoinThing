@@ -82,9 +82,34 @@ void selftest(Display& display)
         analogWrite(TFT_BL, b);
         delay(10);
     }
+
+    tft.setTextColor(TFT_DARKGREEN, TFT_BLACK);
+    for (const auto* font : {
+             F("NotoSans-Regular15"),
+             F("NotoSans-Regular20"),
+             F("NotoSans-Regular25"),
+             F("NotoSans-Regular30"),
+             F("NotoSans-Regular50"),
+             F("NotoSans-Condensed25"),
+             F("NotoSans-Condensed30"),
+             F("NotoSans-Condensed50"),
+             F("NotoSans-ExtraCondensed25"),
+             F("NotoSans-ExtraCondensed30"),
+             F("NotoSans-ExtraCondensed50") }) {
+        tft.unloadFont();
+        tft.loadFont(font);
+        tft.fillScreen(TFT_BLACK);
+        tft.setCursor(10, 100);
+        String f(font);
+        f.replace(F("NotoSans-"), (""));
+        tft.print(f);
+        delay(300);
+    }
+
+    tft.unloadFont();
+    tft.loadFont(F("NotoSans-Regular30"));
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
-
     int16_t bmpX(0);
     int16_t bmpY(0);
     int16_t bmpCount(0);
@@ -102,7 +127,7 @@ void selftest(Display& display)
                     bmpY = 0;
                     tft.setCursor(0, 210);
                     tft.print(bmpCount);
-                    delay(500);
+                    delay(300);
                     tft.fillScreen(TFT_BLACK);
                 }
             }
