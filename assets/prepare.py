@@ -8,7 +8,7 @@ import urllib.request
 
 ###############################
 
-CoinThingId = 12836965
+CoinThingId = 8903790
 
 ###############################
 
@@ -43,7 +43,7 @@ profile = """<?xml version="1.0"?>
 </WLANProfile>
 """
 
-APpassword = "czfazedr"  # version dependent CoinThing AP password
+APpassword = "pnvxvyvi"  # version dependent CoinThing AP password
 CoinThing = "CoinThing-" + str(CoinThingId)
 filename = "cointhing.xml"
 
