@@ -21,6 +21,8 @@ public:
     void showAPIOK();
     void showAPIFailed();
 
+    void showPrepareUpdate();
+    void showPrepareUpdateFailed();
     void showUpdated();
     void showNotUpdated();
 

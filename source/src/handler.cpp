@@ -49,7 +49,7 @@ bool Handler::handleResetESP() const
     server.send(200, F("text/plain"), "1");
 
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 
@@ -59,7 +59,7 @@ bool Handler::handleResetSettings() const
 
     m_settings.deleteFile();
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 
@@ -70,7 +70,7 @@ bool Handler::handleResetWiFi() const
     delay(200);
     WiFi.disconnect();
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 
@@ -82,7 +82,7 @@ bool Handler::handleResetAll() const
     delay(200);
     WiFi.disconnect();
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 
@@ -125,7 +125,7 @@ bool Handler::handleForUpdate() const
     f.close();
 
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 
@@ -138,7 +138,7 @@ bool Handler::handleSelftest() const
     f.close();
 
     delay(200);
-    ESP.reset();
+    ESP.restart();
     return true;
 }
 

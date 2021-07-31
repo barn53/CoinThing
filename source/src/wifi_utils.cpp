@@ -48,7 +48,54 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
 {
     LOG_FUNC
 
-    if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
+    WiFi.mode(WIFI_STA);
+
+    wifiManager.setWiFiAutoReconnect(true);
+    wifiManager.setDebugOutput(true);
+
+    if (SPIFFS.exists(FOR_UPDATE_FILE)) {
+        display.showPrepareUpdate();
+
+        LOG_I_PRINTLN(F("CoinThing in update mode"));
+        LOG_I_PRINT(F("Version before update: "));
+        LOG_PRINTLN(VERSION);
+
+        File f = SPIFFS.open(FOR_UPDATE_FILE, "r");
+        String tries(f.readString());
+        f.close();
+        int triesI(tries.toInt());
+        if (triesI < 1) {
+            f = SPIFFS.open(FOR_UPDATE_FILE, "w");
+            f.print(triesI + 1);
+            f.close();
+            LOG_I_PRINTF("This is try: %u\n", triesI);
+        } else {
+            LOG_I_PRINTF("Number of tries: %u - this is the last try\n", triesI);
+            SPIFFS.remove(FOR_UPDATE_FILE);
+        }
+
+        wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
+            LOG_I_PRINTLN("AP Callback For Update");
+
+            if (!WiFi.isConnected()) {
+                LOG_I_PRINTLN(F("Not connected – restart"));
+                if (!SPIFFS.exists(FOR_UPDATE_FILE)) { // was last try and failed again
+                    display.showPrepareUpdateFailed();
+                    delay(5000);
+                }
+                ESP.restart();
+            }
+
+            f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
+            f.print(VERSION);
+            f.close();
+            SPIFFS.remove(FOR_UPDATE_FILE);
+            display.showUpdateQR();
+        });
+
+        delay(1000);
+        wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
+    } else if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
         File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "r");
         String beforeVersion(f.readString());
         f.close();
@@ -60,22 +107,12 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
         } else {
             display.showNotUpdated();
         }
+
         delay(2500);
-    }
-
-    if (SPIFFS.exists(FOR_UPDATE_FILE)) {
-        SPIFFS.remove(FOR_UPDATE_FILE);
-        File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
-        f.print(VERSION);
-        f.close();
-        LOG_I_PRINTLN(F("CoinThing in update mode"));
-
-        wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
-            LOG_I_PRINTLN("AP Callback For Update");
-            display.showUpdateQR();
-        });
-
-        wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
+        if (!WiFi.isConnected()) {
+            LOG_I_PRINTLN(F("Not connected – restart"));
+            ESP.restart();
+        }
     } else {
         const char* menu[] = { "wifi" };
         wifiManager.setMenu(menu, 1);
@@ -83,25 +120,25 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
         WiFi.hostname(HostName);
 
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
-            LOG_I_PRINTLN("AP Callback For WiFi Config");
+            LOG_I_PRINTLN(F("AP Callback For WiFi Config"));
             display.showAPQR();
         });
 
         wifiManager.setSaveConfigCallback([&]() {
-            LOG_I_PRINTLN("Save Config Callback");
+            LOG_I_PRINTLN(F("Save Config Callback"));
             if (wifiManager.getWiFiIsSaved()) {
                 LOG_I_PRINTLN(F("WiFi Saved - reset"));
             } else {
                 LOG_I_PRINTLN(F("WiFi NOT Saved"));
             }
             delay(1000);
-            ESP.reset();
+            ESP.restart();
         });
 
         if (!wifiManager.autoConnect(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
             LOG_I_PRINTLN(F("failed to connect, we should reset and see if it connects"));
             delay(3000);
-            ESP.reset();
+            ESP.restart();
             delay(5000);
         }
     }

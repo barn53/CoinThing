@@ -886,6 +886,7 @@ void Display::showAPQR()
 {
     if (m_last_screen != Screen::AP_QR) {
         m_tft.fillScreen(TFT_WHITE);
+        m_tft.setTextColor(TFT_RED, TFT_WHITE);
 
         String qrText(F("WIFI:T:WPA;S:"));
         qrText += HostName;
@@ -896,7 +897,6 @@ void Display::showAPQR()
         tftQR.qrcode(qrText.c_str(), 20, 50, 200, 3);
 
         m_tft.loadFont(F("NotoSans-Regular20"));
-        m_tft.setTextColor(TFT_RED, TFT_WHITE);
 
         String msg = F("WiFi: ");
         msg += HostName;
@@ -916,6 +916,7 @@ void Display::showUpdateQR()
 {
     if (m_last_screen != Screen::UPDATE_QR) {
         m_tft.fillScreen(TFT_WHITE);
+        m_tft.setTextColor(TFT_RED, TFT_WHITE);
 
         String url(F("http://"));
         url += WiFi.localIP().toString().c_str();
@@ -925,10 +926,9 @@ void Display::showUpdateQR()
 
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setCursor(5, 5);
-        m_tft.setTextColor(TFT_RED, TFT_WHITE);
         m_tft.print(F("Open for Update:"));
-
         m_tft.unloadFont();
+
         m_tft.loadFont(F("NotoSans-Regular15"));
         m_tft.setCursor(5, 30);
         m_tft.print(url);
@@ -942,6 +942,7 @@ void Display::showSettingsQR()
 {
     if (m_last_screen != Screen::SETTINGS_QR) {
         m_tft.fillScreen(TFT_WHITE);
+        m_tft.setTextColor(TFT_RED, TFT_WHITE);
 
         String url(F("http://"));
         url += WiFi.localIP().toString().c_str();
@@ -951,7 +952,6 @@ void Display::showSettingsQR()
 
         m_tft.loadFont(F("NotoSans-Regular20"));
         m_tft.setCursor(5, 5);
-        m_tft.setTextColor(TFT_RED, TFT_WHITE);
         m_tft.print(F("Open Settings:"));
 
         m_tft.setCursor(5, 30);
@@ -965,21 +965,21 @@ void Display::showSettingsQR()
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
-        m_tft.loadFont(F("NotoSans-Regular50"));
         m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
         m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
 
+        m_tft.loadFont(F("NotoSans-Regular50"));
         String msg = F("CoinThing");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
         m_tft.print(msg);
-
         m_tft.unloadFont();
+
         m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("To The Moon!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 110);
         m_tft.print(msg);
-
         m_tft.unloadFont();
+
         m_tft.loadFont(F("NotoSans-Regular20"));
         msg = VERSION;
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
@@ -990,7 +990,6 @@ void Display::showAPIOK()
         msg += "/";
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 210);
         m_tft.print(msg);
-
         m_tft.unloadFont();
 
         m_last_screen = Screen::API_OK;
@@ -1000,23 +999,71 @@ void Display::showAPIOK()
 void Display::showAPIFailed()
 {
     if (m_last_screen != Screen::API_FAILED) {
-        m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.fillScreen(TFT_RED);
+        m_tft.setTextColor(TFT_BLACK, TFT_RED);
+
+        m_tft.loadFont(F("NotoSans-Regular30"));
         String msg = F("Gecko API failed!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
-        m_tft.setTextColor(TFT_BLACK, TFT_RED);
         m_tft.print(msg);
         m_tft.unloadFont();
+
         m_last_screen = Screen::API_FAILED;
     }
 }
 
+void Display::showPrepareUpdate()
+{
+    m_tft.fillScreen(TFT_DARKGREEN);
+    m_tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular30"));
+    msg = F("Prepare Update");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
+    m_tft.print(msg);
+
+    msg = F("Please wait...");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 160);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+}
+
+void Display::showPrepareUpdateFailed()
+{
+    m_tft.fillScreen(TFT_ORANGE);
+    m_tft.setTextColor(TFT_WHITE, TFT_ORANGE);
+
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular30"));
+    msg = F("Prepare Update");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular20"));
+    msg = F("Failed - please try again...");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 160);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+}
+
 void Display::showUpdated()
 {
-    m_tft.loadFont(F("NotoSans-Regular50"));
     m_tft.fillScreen(RGB(0x0, 0x80, 0x30));
     m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x80, 0x30));
 
+    m_tft.loadFont(F("NotoSans-Regular50"));
     String msg = F("CoinThing");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
@@ -1035,19 +1082,28 @@ void Display::showUpdated()
 
 void Display::showNotUpdated()
 {
-    m_tft.loadFont(F("NotoSans-Regular50"));
     m_tft.fillScreen(RGB(0x80, 0x30, 0x0));
     m_tft.setTextColor(TFT_WHITE, RGB(0x80, 0x30, 0x0));
 
+    m_tft.loadFont(F("NotoSans-Regular50"));
     String msg = F("CoinThing");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
     m_tft.unloadFont();
 
     m_tft.loadFont(F("NotoSans-Regular30"));
-
     msg = F("Not Updated");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 130);
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular20"));
+    msg = F("Version");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 160);
+    m_tft.print(msg);
+
+    msg = VERSION;
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 190);
     m_tft.print(msg);
     m_tft.unloadFont();
 }

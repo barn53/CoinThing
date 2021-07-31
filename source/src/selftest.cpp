@@ -147,5 +147,5 @@ void selftest(Display& display)
     tft.print(msg);
 
     delay(2500);
-    ESP.reset();
+    ESP.restart();
 }
