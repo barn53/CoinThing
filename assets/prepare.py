@@ -56,13 +56,14 @@ if 1 == 1:
 
     subprocess.run('netsh wlan add profile filename="' + filename + '"')
 
-    print("Enter to proceed...")
+    print("\n>>  Enter to proceed...")
     input()
 
     print("Connect PC to CoinThing AP...")
     subprocess.run('netsh wlan connect name="' + CoinThing + '"')
 
-    print("Enter to proceed...")
+    print("\n>>  Wait for captive portal in browser...")
+    print(">>    Enter to proceed...")
     input()
 
     os.remove(filename)
@@ -76,7 +77,8 @@ if 1 == 1:
         print("Connect CoinThing to " + os.environ['FRITZ_SSID'] + "...")
         requests.post(url, data=payload, headers=header)
 
-        print("Enter to proceed...")
+        print("\n>>  Wait for blue screen/open settings screen...")
+        print(">>    Enter to proceed...")
         input()
 
     except:
@@ -91,7 +93,8 @@ print("Start selftest...")
 url = "http://{0}/action/selftest".format(CoinThing)
 urllib.request.urlopen(url)
 
-print("Enter to proceed...")
+print("\n>>  Wait for selftest end, blue screen/open settings screen...")
+print(">>    Enter to proceed...")
 input()
 
 print("Settings test...")
@@ -100,7 +103,8 @@ url += urllib.parse.quote('''{"mode":3,"coins":[{"id":"bitcoin","symbol":"BTC","
 
 urllib.request.urlopen(url)
 
-print("Enter to proceed...")
+print("\n>>  Let CoinThing run a bit with settings...")
+print(">>    Enter to proceed...")
 input()
 
 print("Reset for delivery...")
