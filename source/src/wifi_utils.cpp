@@ -44,6 +44,25 @@ void setupWiFi()
 }
 #endif
 
+bool waitWiFiConnect()
+{
+    LOG_FUNC
+
+    LOG_I_PRINT("Connect");
+    int counter(0);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(100);
+        if (counter > 50) {
+            LOG_PRINTLN(" -");
+            return false;
+        }
+        LOG_PRINT(" .");
+        ++counter;
+    }
+    LOG_PRINTLN(" +");
+    return true;
+}
+
 void handleWifiManager(WiFiManager& wifiManager, Display& display)
 {
     LOG_FUNC
@@ -54,46 +73,30 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
     wifiManager.setDebugOutput(true);
 
     if (SPIFFS.exists(FOR_UPDATE_FILE)) {
-        display.showPrepareUpdate();
+        display.showPrepareUpdate(false);
 
         LOG_I_PRINTLN(F("CoinThing in update mode"));
         LOG_I_PRINT(F("Version before update: "));
         LOG_PRINTLN(VERSION);
 
-        File f = SPIFFS.open(FOR_UPDATE_FILE, "r");
-        String tries(f.readString());
-        f.close();
-        int triesI(tries.toInt());
-        if (triesI < 1) {
-            f = SPIFFS.open(FOR_UPDATE_FILE, "w");
-            f.print(triesI + 1);
-            f.close();
-            LOG_I_PRINTF("This is try: %u\n", triesI);
-        } else {
-            LOG_I_PRINTF("Number of tries: %u - this is the last try\n", triesI);
-            SPIFFS.remove(FOR_UPDATE_FILE);
-        }
-
+        SPIFFS.remove(FOR_UPDATE_FILE);
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
             LOG_I_PRINTLN("AP Callback For Update");
 
-            if (!WiFi.isConnected()) {
+            if (WiFi.status() != WL_CONNECTED) {
                 LOG_I_PRINTLN(F("Not connected – restart"));
-                if (!SPIFFS.exists(FOR_UPDATE_FILE)) { // was last try and failed again
-                    display.showPrepareUpdateFailed();
-                    delay(5000);
-                }
+                display.showPrepareUpdate(true);
+                delay(5000);
                 ESP.restart();
             }
 
-            f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
+            File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
             f.print(VERSION);
             f.close();
-            SPIFFS.remove(FOR_UPDATE_FILE);
             display.showUpdateQR();
         });
 
-        delay(1000);
+        waitWiFiConnect();
         wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
     } else if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
         File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "r");
@@ -109,7 +112,7 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
         }
 
         delay(2500);
-        if (!WiFi.isConnected()) {
+        if (!waitWiFiConnect()) {
             LOG_I_PRINTLN(F("Not connected – restart"));
             ESP.restart();
         }
@@ -139,7 +142,6 @@ void handleWifiManager(WiFiManager& wifiManager, Display& display)
             LOG_I_PRINTLN(F("failed to connect, we should reset and see if it connects"));
             delay(3000);
             ESP.restart();
-            delay(5000);
         }
     }
 }
