@@ -135,14 +135,20 @@ python -m esptool erase_flash
 - Added new icons
 - Increased CPU clock
 
-For an update to version 1.4 you need to upload the files **spiffs_v1.4.0.bin** and one of the **cointhing_v1.4.*.bin** as described above.
+For an update from version 1.3 or below to version 1.4 you need to upload the file **spiffs_v1.4.0.bin** and one of the **cointhing_v1.4.*.bin** files as described above.
 
 [spiffs_v1.4.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.0/spiffs_v1.4.0.bin)
 
+When your CoinThing is already on Version 1.4.*, you can update via the browser update method.
+
+### Version 1.4.2:
+- Stabilized browser update procedure - prevent "IP unset" error.
+
+
+[cointhing_v1.4.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.2/cointhing_v1.4.2.bin)
+
 ### Version 1.4.1:
 - Fixed a situation where no chart was drawn when multiple coins were displayed.
-
-When your CoinThing is already on Version 1.4.*, you can update via the browser update method.
 
 [cointhing_v1.4.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.1/cointhing_v1.4.1.bin)
 ### Version 1.4.0:
@@ -153,7 +159,7 @@ When your CoinThing is already on Version 1.4.*, you can update via the browser 
 
 ## Version 1.3:
 
-#### Do not update to this version - use version v1.4.0 or later
+#### Do not update to this version - use version v1.4 or later
 
 -------
 
@@ -163,19 +169,19 @@ When your CoinThing is already on Version 1.4.*, you can update via the browser 
 - Cycle through up to 10 coins (with chart)
 - New cypto coin icons
 
-For an update to version 1.2 you need to upload the files **spiffs_v1.2.0.bin** and one of the **cointhing_v1.2.*.bin** as described above.
+For an update from version 1.1 or below to version 1.2 you need to upload the files **spiffs_v1.2.0.bin** and one of the **cointhing_v1.2.*.bin** as described above.
 
 [spiffs_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/spiffs_v1.2.0.bin)
+
+When your CoinThing is already on Version 1.2.*, you can update via the browser update method.
 
 ### Version 1.2.1:
 - Fixed a situation where no chart was drawn when multiple coins were displayed.
 
-When your CoinThing is already on Version 1.2.*, you can update via the browser update method.
 
 [cointhing_v1.2.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.1/cointhing_v1.2.1.bin)
 
 ### Version 1.2.0:
-For an update to Version 1.2 you need to upload both files via python as described above.
 
 [cointhing_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/cointhing_v1.2.0.bin)
 
