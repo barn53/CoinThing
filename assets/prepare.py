@@ -43,7 +43,7 @@ profile = """<?xml version="1.0"?>
 </WLANProfile>
 """
 
-APpassword = "pnvxvyvi"  # version dependent CoinThing AP password
+APpassword = "syjazlog"  # version dependent CoinThing AP password
 CoinThing = "CoinThing-" + str(CoinThingId)
 filename = "cointhing.xml"
 
