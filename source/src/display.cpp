@@ -990,6 +990,45 @@ void Display::showAPIFailed()
     }
 }
 
+void Display::showPrepareUpdate(bool failed)
+{
+    if (failed) {
+        m_tft.fillScreen(TFT_ORANGE);
+        m_tft.setTextColor(TFT_BLACK, TFT_ORANGE);
+    } else {
+        m_tft.fillScreen(TFT_DARKGREEN);
+        m_tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+    }
+
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+
+    m_tft.loadFont(F("NotoSans-Regular30"));
+    msg = F("Prepare Update");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
+    m_tft.print(msg);
+
+    if (failed) {
+        msg = F("Failed!");
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 160);
+        m_tft.print(msg);
+        m_tft.unloadFont();
+
+        m_tft.loadFont(F("NotoSans-Regular20"));
+        msg = F("Please try again...");
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 200);
+        m_tft.print(msg);
+    } else {
+        msg = F("Please wait...");
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 160);
+        m_tft.print(msg);
+    }
+    m_tft.unloadFont();
+}
+
 void Display::showUpdated()
 {
     m_tft.loadFont(F("NotoSans-Regular50"));
