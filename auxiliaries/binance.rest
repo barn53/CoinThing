@@ -17,8 +17,12 @@ GET  https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1h&limit=24 HT
 ###
 
 
-GET https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1m&limit=50
+GET https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1m&limit=50 HTTP/1.0
 
+###
+
+
+GET https://api.binance.com/api/v3/exchangeInfo HTTP/1.0
 
 ###
 
