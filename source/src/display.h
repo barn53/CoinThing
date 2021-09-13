@@ -17,9 +17,6 @@ public:
 
     void showAPQR();
     void showUpdateQR();
-    void showSettingsQR();
-    void showAPIOK();
-    void showAPIFailed();
 
     void showPrepareUpdate(bool failed);
     void showUpdated();
@@ -42,6 +39,12 @@ private:
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
 
+    void showAPIOK();
+    void showAPIFailed();
+    void showSettingsQR();
+    void showCheckInfo();
+    void showCheckError();
+
     Settings::ChartPeriod nextChartPeriod() const;
     void nextCoinID();
 
@@ -52,7 +55,9 @@ private:
         API_OK,
         API_FAILED,
         SETTINGS_QR,
-        COIN
+        COIN,
+        CHECK_INFO,
+        CHECK_ERROR
     };
 
     Gecko& m_gecko;
@@ -67,8 +72,11 @@ private:
     uint8_t m_heart_beat_count { 0 };
     uint32_t m_last_price_update { 0 };
     uint32_t m_last_chart_update { 0 };
-    uint32_t m_display_start { 0 };
+
+    uint32_t m_show_api_ok_start { 0 };
+    uint32_t m_show_check_info_start { 0 };
     bool m_show_api_ok { true };
+    bool m_show_check_info { true };
 
     uint32_t m_current_coin_index { std::numeric_limits<uint32_t>::max() };
     uint32_t m_last_coin_swap { 0 };

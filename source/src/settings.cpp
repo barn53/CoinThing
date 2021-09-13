@@ -69,22 +69,22 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
 
     m_last_change = millis_test();
 
-    m_mode = static_cast<Mode>(doc["mode"] | static_cast<uint8_t>(Mode::ONE_COIN));
+    m_mode = static_cast<Mode>(doc[F("mode")] | static_cast<uint8_t>(Mode::ONE_COIN));
 
     m_coins.clear();
-    for (JsonObject elem : doc["coins"].as<JsonArray>()) {
+    for (JsonObject elem : doc[F("coins")].as<JsonArray>()) {
         Coin c;
-        c.id = elem["id"] | "";
-        c.symbol = elem["symbol"] | "";
-        c.name = elem["name"] | "";
+        c.id = elem[F("id")] | "";
+        c.symbol = elem[F("symbol")] | "";
+        c.name = elem[F("name")] | "";
         m_coins.emplace_back(c);
     }
 
     size_t ii(0);
-    for (JsonObject elem : doc["currencies"].as<JsonArray>()) {
+    for (JsonObject elem : doc[F("currencies")].as<JsonArray>()) {
         Currency c;
-        c.currency = elem["currency"] | "";
-        c.symbol = elem["symbol"] | c.currency;
+        c.currency = elem[F("currency")] | "";
+        c.symbol = elem[F("symbol")] | c.currency;
         m_currencies[ii] = c;
         ++ii;
         if (ii >= m_currencies.size()) {
@@ -92,11 +92,11 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
         }
     }
 
-    m_number_format = static_cast<NumberFormat>(doc["number_format"] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-    m_chart_period = doc["chart_period"] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
-    m_swap_interval = static_cast<Swap>(doc["swap_interval"] | static_cast<uint8_t>(Swap::INTERVAL_1));
-    m_chart_style = static_cast<ChartStyle>(doc["chart_style"] | static_cast<uint8_t>(ChartStyle::SIMPLE));
-    m_heartbeat = doc["heartbeat"] | true;
+    m_number_format = static_cast<NumberFormat>(doc[F("number_format")] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
+    m_chart_period = doc[F("chart_period")] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
+    m_swap_interval = static_cast<Swap>(doc[F("swap_interval")] | static_cast<uint8_t>(Swap::INTERVAL_1));
+    m_chart_style = static_cast<ChartStyle>(doc[F("chart_style")] | static_cast<uint8_t>(ChartStyle::SIMPLE));
+    m_heartbeat = doc[F("heartbeat")] | true;
 
     trace();
     if (toFile) {
@@ -242,7 +242,7 @@ void Settings::readBrightness()
 #endif
 
             if (!error) {
-                m_brightness = doc["b"] | std::numeric_limits<uint8_t>::max();
+                m_brightness = doc[F("b")] | std::numeric_limits<uint8_t>::max();
             } else {
                 m_brightness = std::numeric_limits<uint8_t>::max();
             }

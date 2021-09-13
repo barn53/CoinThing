@@ -25,6 +25,7 @@
 #define DISTANCE_CHART_VALUE 3
 
 #define API_OK_SHOW_TIME (4 * 1000)
+#define CHECK_INFO_SHOW_TIME (4 * 1000)
 
 extern String HostName;
 
@@ -57,14 +58,25 @@ void Display::loop()
 
     m_gecko.loop();
     if (m_gecko.succeeded()) {
-        if (m_show_api_ok) {
-            if (m_display_start == 0) {
-                m_display_start = millis_test();
+        if (!m_gecko.getCheckError().isEmpty()) {
+            showCheckError();
+        } else if (m_show_api_ok) {
+            if (m_show_api_ok_start == 0) {
+                m_show_api_ok_start = millis_test();
             }
-            if (millis_test() - m_display_start < API_OK_SHOW_TIME) {
+            if (millis_test() - m_show_api_ok_start < API_OK_SHOW_TIME) {
                 showAPIOK();
             } else {
                 m_show_api_ok = false;
+            }
+        } else if (m_show_check_info && !m_gecko.getCheckInfo().isEmpty()) {
+            if (m_show_check_info_start == 0) {
+                m_show_check_info_start = millis_test();
+            }
+            if (millis_test() - m_show_check_info_start < CHECK_INFO_SHOW_TIME) {
+                showCheckInfo();
+            } else {
+                m_show_check_info = false;
             }
         } else {
             if (m_settings.valid()) {
@@ -969,7 +981,7 @@ void Display::showAPIOK()
         m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
 
         m_tft.loadFont(F("NotoSans-Regular50"));
-        String msg = F("CoinThing");
+        String msg = F("RevoThing");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
         m_tft.print(msg);
         m_tft.unloadFont();
@@ -993,6 +1005,42 @@ void Display::showAPIOK()
         m_tft.unloadFont();
 
         m_last_screen = Screen::API_OK;
+    }
+}
+
+void Display::showCheckInfo()
+{
+    if (m_last_screen != Screen::CHECK_INFO) {
+        m_tft.fillScreen(TFT_BROWN);
+        m_tft.setTextColor(TFT_BLACK, TFT_BROWN);
+        m_tft.setTextWrap(true);
+
+        const String& msg(m_gecko.getCheckInfo());
+        m_tft.loadFont(F("NotoSans-Regular25"));
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
+        m_tft.print(msg);
+        m_tft.unloadFont();
+        m_tft.setTextWrap(false);
+
+        m_last_screen = Screen::CHECK_INFO;
+    }
+}
+
+void Display::showCheckError()
+{
+    if (m_last_screen != Screen::CHECK_ERROR) {
+        m_tft.fillScreen(TFT_RED);
+        m_tft.setTextColor(TFT_WHITE, TFT_RED);
+        m_tft.setTextWrap(true);
+
+        const String& msg(m_gecko.getCheckError());
+        m_tft.loadFont(F("NotoSans-Regular25"));
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
+        m_tft.print(msg);
+        m_tft.unloadFont();
+        m_tft.setTextWrap(false);
+
+        m_last_screen = Screen::CHECK_ERROR;
     }
 }
 

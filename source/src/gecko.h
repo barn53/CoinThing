@@ -18,6 +18,9 @@ public:
     bool ping();
     bool succeeded() const { return m_succeeded; }
 
+    const String& getCheckInfo() const { return m_check_info; }
+    const String& getCheckError() const { return m_check_error; }
+
     void price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
     void twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
         gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2);
@@ -34,6 +37,7 @@ private:
     bool fetchCoinPriceChange(uint32_t coinIndex);
     bool fetchTwoCoinsPriceChange();
     bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
+    void check();
 
     bool m_succeeded { false };
 
@@ -55,4 +59,7 @@ private:
 
     HttpJson& m_http;
     Settings& m_settings;
+
+    String m_check_info;
+    String m_check_error;
 };
