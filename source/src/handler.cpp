@@ -67,6 +67,7 @@ bool Handler::handleResetWiFi() const
 {
     server.send(200, F("text/plain"), "1");
 
+    SPIFFS.remove(WIFI_FILE);
     delay(200);
     WiFi.disconnect();
     delay(200);
@@ -79,6 +80,7 @@ bool Handler::handleResetAll() const
     server.send(200, F("text/plain"), "1");
 
     m_settings.deleteFile();
+    SPIFFS.remove(WIFI_FILE);
     delay(200);
     WiFi.disconnect();
     delay(200);

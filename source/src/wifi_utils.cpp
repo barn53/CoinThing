@@ -3,13 +3,16 @@
 #include "display.h"
 #include "pre.h"
 #include "utils.h"
+#include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
+#include <StreamUtils.h>
 #include <WiFiManager.h>
 
 extern String HostName;
 
-#if 0
+#define JSON_DOCUMENT_WIFI_SIZE 128
+
 void wifiSleep()
 {
     WiFi.disconnect();
@@ -25,47 +28,70 @@ void wifiWake()
     WiFi.mode(WIFI_STA);
 }
 
-void setupWiFi()
-{
-    wifiWake();
-
-    WiFi.begin(SECRET_SSID, SECRET_PASSWORD);
-    WiFi.hostname(HostName);
-
-    Serial.print(F("Connecting "));
-    while (WiFi.status() != WL_CONNECTED) {
-        Serial.print(".");
-        delay(100);
-    }
-
-    Serial.printf("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
-    Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
-    Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
-}
-#endif
-
 bool waitWiFiConnect()
 {
     LOG_FUNC
 
-    LOG_I_PRINT("Connect");
+    LOG_I_PRINT("Connecting ");
     int counter(0);
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
         if (counter > 50) {
-            LOG_PRINTLN(" -");
+            LOG_PRINTLN(" - failed");
             return false;
         }
-        LOG_PRINT(" .");
+        LOG_PRINT(".");
         ++counter;
     }
-    LOG_PRINTLN(" +");
+    LOG_PRINTLN(" - success");
+
+    LOG_I_PRINTF("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
+    LOG_I_PRINTF(" Hostname: %s\n", WiFi.hostname().c_str());
+    LOG_I_PRINTF(" MAC: %s\n", WiFi.macAddress().c_str());
     return true;
 }
 
-void handleWifiManager(WiFiManager& wifiManager, Display& display)
+bool setupWiFi(const char* ssid, const char* pwd)
+{
+    wifiWake();
+
+    WiFi.hostname(HostName);
+    WiFi.begin(ssid, pwd);
+
+    return waitWiFiConnect();
+}
+
+void handleWifi(Display& display)
 {
     LOG_FUNC
+
+    if (SPIFFS.exists(WIFI_FILE)) {
+        LOG_I_PRINTLN(F("CoinThing WiFi initialization from /wifi.json file"));
+
+        File file;
+        file = SPIFFS.open(WIFI_FILE, "r");
+        bool success(false);
+        if (file) {
+            DynamicJsonDocument doc(JSON_DOCUMENT_WIFI_SIZE);
+            ReadBufferingStream bufferedFile { file, 64 };
+            DeserializationError error = deserializeJson(doc, bufferedFile);
+
+            if (!error) {
+                const char* ssid(doc[F("ssid")] | "");
+                const char* pwd(doc[F("pwd")] | "");
+                success = setupWiFi(ssid, pwd);
+            } else {
+                LOG_I_PRINTLN(F("deserializeJson() failed: "));
+                LOG_I_PRINTLN(error.f_str());
+            }
+            file.close();
+        }
+        if (success) {
+            return;
+        }
+    }
+
+    WiFiManager wifiManager;
 
     WiFi.mode(WIFI_STA);
 
