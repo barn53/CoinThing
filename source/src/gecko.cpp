@@ -272,7 +272,7 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
     DynamicJsonDocument doc(DYNAMIC_JSON_CHART_SIZE);
 
     if (m_http.read(url.c_str(), doc, filter)) {
-        JsonArray jPrices = doc["prices"];
+        JsonArray jPrices = doc[F("prices")];
         size_t jj(jPrices.size());
         for (const auto& p : jPrices) {
             if (jj <= expectValues) { // omit oldest, because there are some more (1, 2) entries in JSON result than expected
@@ -294,9 +294,9 @@ bool Gecko::ping()
     if (doInterval(m_last_ping, PING_INTERVAL)) {
         m_succeeded = false;
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
-        if (m_http.read("https://api.coingecko.com/api/v3/ping", doc)) {
-            const char* gecko_says = doc["gecko_says"] | ""; // "(V3) To the Moon!"
-            m_succeeded = strcmp(gecko_says, "(V3) To the Moon!") == 0;
+        if (m_http.read(String(F("https://api.coingecko.com/api/v3/ping")).c_str(), doc)) {
+            const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
+            m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
         }
         m_last_ping = millis_test();
     }
