@@ -66,16 +66,19 @@
                     &nbsp;<span id="forResetSettings" class="text-warning"></span>
                 </p>
                 <p>
-                    <button id="resetWiFi" class="btn btn-warning btn-sm">Reset WiFi</button>
-                    &nbsp;<span id="forResetWiFi" class="text-warning"></span>
-                </p>
-                <p>
                     <button id="resetUpdate" class="btn btn-warning btn-sm">Reset For Update</button>
                     &nbsp;<span id="forResetUpdate" class="text-warning"></span>
                 </p>
                 <p>
+                    <button id="resetWiFi" class="btn btn-warning btn-sm">Reset WiFi</button>
+                    &nbsp;<span id="forResetWiFi" class="text-warning"></span>
+                </p>
+                <p>
                     <button id="resetDelivery" class="btn btn-danger btn-sm">Reset For Delivery</button>
                     &nbsp;<span id="forResetDelivery" class="text-danger"></span>
+                </p>
+                <p>
+                    <span id="wifijson" class="text-info"></span>
                 </p>
                 <p style="height:50px;"></p>
             </div>
@@ -91,6 +94,14 @@
     </footer>
 
     <script type="text/javascript">
+
+        function checkForWiFiJson() {
+            $.get("/wifi.json", function (data) {
+                $("#wifijson").append("wifi.json exists")
+            }).fail(function () {
+                $("#wifijson").empty().append("wifi.json does not exist")
+            })
+        }
 
         $(document).ready(function () {
 
@@ -146,10 +157,18 @@
                 }).fail(function () { $("#forResetSettings").append("failure") })
             })
 
+            $('#resetUpdate').off().click(function (e) {
+                $("#forResetUpdate").empty()
+                $.get("/action/reset/forupdate", function (data) {
+                    $("#forResetUpdate").append(data)
+                }).fail(function () { $("#forResetUpdate").append("failure") })
+            })
+
             $('#resetWiFi').off().click(function (e) {
                 $("#forResetWiFi").empty()
                 $.get("/action/reset/wifi", function (data) {
                     $("#forResetWiFi").append(data)
+                    $("#wifijson").empty()
                 }).fail(function () { $("#forResetWiFi").append("failure") })
             })
 
@@ -157,15 +176,11 @@
                 $("#forResetDelivery").empty()
                 $.get("/action/reset/all", function (data) {
                     $("#forResetDelivery").append(data)
+                    $("#wifijson").empty()
                 }).fail(function () { $("#forResetDelivery").append("failure") })
             })
 
-            $('#resetUpdate').off().click(function (e) {
-                $("#forResetUpdate").empty()
-                $.get("/action/reset/forupdate", function (data) {
-                    $("#forResetUpdate").append(data)
-                }).fail(function () { $("#forResetUpdate").append("failure") })
-            })
+            checkForWiFiJson()
 
         })
 
