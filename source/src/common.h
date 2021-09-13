@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #define FOR_UPDATE_FILE F("/forupdate")
+#define WIFI_FILE F("/wifi.json")
 #define SELFTEST_FILE F("/selftest")
 #define VERSION_BEFORE_UPDATE_FILE F("/versionbeforeupdate")
 

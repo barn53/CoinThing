@@ -3,4 +3,5 @@ secrets.h
 pre.h
 
 data/version.spiffs
+data/wifi.json
 data/*.gz

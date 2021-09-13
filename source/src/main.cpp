@@ -9,7 +9,6 @@
 #include "utils.h"
 #include "wifi_utils.h"
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>
 
 ESP8266WebServer server(80);
 
@@ -43,12 +42,7 @@ void setup(void)
 
     display.begin();
 
-    WiFiManager wifiManager;
-    handleWifiManager(wifiManager, display);
-
-    Serial.printf("\nConnected\n IP address: %s\n", WiFi.localIP().toString().c_str());
-    Serial.printf(" Hostname: %s\n", WiFi.hostname().c_str());
-    Serial.printf(" MAC: %s\n", WiFi.macAddress().c_str());
+    handleWifi(display);
 
     gecko.begin();
     settings.begin();
