@@ -5,7 +5,7 @@
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
-#define DYNAMIC_JSON_CHECK_SIZE 64
+#define DYNAMIC_JSON_CHECK_SIZE 256
 #define DYNAMIC_JSON_PRICE_CHANGE_SIZE 384
 #define DYNAMIC_JSON_CHART_SIZE 3072
 
@@ -293,6 +293,8 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
 
 bool Gecko::ping()
 {
+    LOG_FUNC
+
     if (doInterval(m_last_ping, PING_INTERVAL)) {
         m_succeeded = false;
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
@@ -310,13 +312,19 @@ bool Gecko::ping()
 
 void Gecko::check()
 {
-    DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
+    LOG_FUNC
+
     m_check_info.clear();
     m_check_error.clear();
-    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/CoinThing/revolution/source/check/check.json")).c_str(), doc)) {
+
+    DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
+    DynamicJsonDocument filter(32);
+    filter["prices"] = true;
+
+    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/CoinThing/revolution/source/check/check.json")).c_str(), doc, filter)) {
         m_check_info = doc[F("info")] | "";
         m_check_error = doc[F("error")] | "";
     }
 
-    Serial.printf("\ncheck info: %s, error: %s\n", m_check_info.c_str(), m_check_error.c_str());
+    LOG_I_PRINTF("\ncheck info: %s, error: %s\n", m_check_info.c_str(), m_check_error.c_str());
 }
