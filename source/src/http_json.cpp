@@ -37,11 +37,12 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
 #else
             deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
-
+            m_http.end();
             return true;
         }
     } else {
         LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", httpCode, m_http.errorToString(httpCode).c_str());
     }
+    m_http.end();
     return false;
 }

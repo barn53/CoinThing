@@ -979,9 +979,9 @@ void Display::showAPIOK()
     if (m_last_screen != Screen::API_OK) {
         m_tft.fillScreen(TFT_BLACK);
 
-        drawBmp(F("/logo.bmp"), m_tft, 0, 15);
+        drawBmp(F("/logo.bmp"), m_tft, 0, 20);
 
-        m_tft.setTextColor(RGB(4, 44, 189), TFT_BLACK);
+        m_tft.setTextColor(RGB(4, 30, 150), TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular20"));
         String msg = VERSION;
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
