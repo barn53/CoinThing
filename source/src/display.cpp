@@ -24,7 +24,7 @@
 #define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
 
-#define API_OK_SHOW_TIME (4 * 1000)
+#define API_OK_SHOW_TIME (10 * 1000)
 #define CHECK_INFO_SHOW_TIME (4 * 1000)
 
 extern String HostName;
@@ -977,23 +977,13 @@ void Display::showSettingsQR()
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
-        m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
-        m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
+        m_tft.fillScreen(TFT_BLACK);
 
-        m_tft.loadFont(F("NotoSans-Regular50"));
-        String msg = F("RevoThing");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
-        m_tft.print(msg);
-        m_tft.unloadFont();
+        drawBmp(F("/logo.bmp"), m_tft, 0, 15);
 
-        m_tft.loadFont(F("NotoSans-Regular30"));
-        msg = F("To The Moon!");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 110);
-        m_tft.print(msg);
-        m_tft.unloadFont();
-
+        m_tft.setTextColor(RGB(4, 44, 189), TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular20"));
-        msg = VERSION;
+        String msg = VERSION;
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
         m_tft.print(msg);
 
@@ -1003,7 +993,6 @@ void Display::showAPIOK()
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 210);
         m_tft.print(msg);
         m_tft.unloadFont();
-
         m_last_screen = Screen::API_OK;
     }
 }
@@ -1071,7 +1060,7 @@ void Display::showPrepareUpdate(bool failed)
     }
 
     m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
+    String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
     m_tft.unloadFont();
@@ -1105,7 +1094,7 @@ void Display::showUpdated()
     m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x80, 0x30));
 
     m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
+    String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
     m_tft.unloadFont();
@@ -1127,7 +1116,7 @@ void Display::showNotUpdated()
     m_tft.setTextColor(TFT_WHITE, RGB(0x80, 0x30, 0x0));
 
     m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
+    String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
     m_tft.unloadFont();

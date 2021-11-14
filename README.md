@@ -1,2 +1,2 @@
-# CoinThing
+# WhaleTicker
 a coin ticker display

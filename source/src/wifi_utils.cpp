@@ -66,7 +66,7 @@ void handleWifi(Display& display)
     LOG_FUNC
 
     if (SPIFFS.exists(WIFI_FILE)) {
-        LOG_I_PRINTLN(F("CoinThing WiFi initialization from /wifi.json file"));
+        LOG_I_PRINTLN(F("WhaleTicker WiFi initialization from /wifi.json file"));
 
         File file;
         file = SPIFFS.open(WIFI_FILE, "r");
@@ -101,7 +101,7 @@ void handleWifi(Display& display)
     if (SPIFFS.exists(FOR_UPDATE_FILE)) {
         display.showPrepareUpdate(false);
 
-        LOG_I_PRINTLN(F("CoinThing in update mode"));
+        LOG_I_PRINTLN(F("WhaleTicker in update mode"));
         LOG_I_PRINT(F("Version before update: "));
         LOG_PRINTLN(VERSION);
 

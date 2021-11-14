@@ -321,7 +321,7 @@ void Gecko::check()
     DynamicJsonDocument filter(32);
     filter["prices"] = true;
 
-    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/CoinThing/revolution/source/check/check.json")).c_str(), doc, filter)) {
+    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/CoinThing/whaleticker/source/check/check.json")).c_str(), doc, filter)) {
         m_check_info = doc[F("info")] | "";
         m_check_error = doc[F("error")] | "";
     }

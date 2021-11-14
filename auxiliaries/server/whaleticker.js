@@ -7,7 +7,7 @@ var server = require('http').createServer(app)
 var port = 3000
 
 server.listen(port, function () {
-    console.log('CoinThing server port: %d', port)
+    console.log('WhaleTicker server port: %d', port)
     console.log('Serve path: ' + __dirname + '/../../source')
 })
 
@@ -28,7 +28,7 @@ app.get('/action/set', function (req, res) {
 })
 
 app.get('/action/get/name', function (req, res) {
-    res.send('CoinThing Server')
+    res.send('WhaleTicker Server')
 })
 
 app.get('/action/get/version', function (req, res) {

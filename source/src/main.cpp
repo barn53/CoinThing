@@ -29,7 +29,7 @@ void setup(void)
     Serial.begin(115200);
     SPIFFS.begin();
 
-    HostName = F("CoinThing-");
+    HostName = F("WhaleTicker-");
     HostName += ESP.getChipId();
 
 #if COIN_THING_SERIAL > 0
