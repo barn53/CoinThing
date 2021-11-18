@@ -319,7 +319,8 @@ void Gecko::check()
 
     DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
     DynamicJsonDocument filter(32);
-    filter["prices"] = true;
+    filter["info"] = true;
+    filter["error"] = true;
 
     if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/CoinThing/whaleticker/source/check/check.json")).c_str(), doc, filter)) {
         m_check_info = doc[F("info")] | "";

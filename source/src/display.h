@@ -39,6 +39,7 @@ private:
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
 
+    void drawWhale();
     void showAPIOK();
     void showAPIFailed();
     void showSettingsQR();

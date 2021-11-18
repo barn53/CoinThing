@@ -45,6 +45,7 @@ void Display::begin()
     m_tft.setRotation(0); // 0 & 2 Portrait. 1 & 3 landscape
     m_tft.setTextWrap(false);
     m_tft.fillScreen(TFT_BLACK);
+    drawWhale();
 
     analogWriteRange(std::numeric_limits<uint8_t>::max());
     analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
@@ -974,12 +975,16 @@ void Display::showSettingsQR()
     }
 }
 
+void Display::drawWhale()
+{
+    drawBmp(F("/logo.bmp"), m_tft, 0, 20);
+}
+
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
         m_tft.fillScreen(TFT_BLACK);
-
-        drawBmp(F("/logo.bmp"), m_tft, 0, 20);
+        drawWhale();
 
         m_tft.setTextColor(RGB(4, 30, 150), TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular20"));
