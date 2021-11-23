@@ -1,0 +1,989 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A3 16535 11693
+encoding utf-8
+Sheet 1 1
+Title "CoinThing 2\" ESP8266"
+Date "2021-11-23"
+Rev "rev.A"
+Comp "barn53"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L barn53-kicad:ESP-12E U2
+U 1 1 60095902
+P 9700 3500
+F 0 "U2" H 9300 4350 50  0000 C CNN
+F 1 "ESP-12E" H 9400 4250 50  0000 C CNN
+F 2 "barn53-kicad:ESP-12E" H 9700 3500 50  0001 C CNN
+F 3 "http://wiki.ai-thinker.com/_media/esp8266/esp8266_series_modules_user_manual_v1.1.pdf" H 9350 3600 50  0001 C CNN
+F 4 "C82891" H 9700 3500 50  0001 C CNN "LCSC"
+	1    9700 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L barn53-kicad:USB_B_Micro J1
+U 1 1 5DB8FF43
+P 1650 8550
+F 0 "J1" H 1707 9017 50  0000 C CNN
+F 1 "USB_B_Micro" H 1707 8926 50  0000 C CNN
+F 2 "barn53-kicad:MicroUSB_through_hole_fixing" H 1800 8500 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/szlcsc/1811131820_Jing-Extension-of-the-Electronic-Co-C10418_C10418.pdf" H 1800 8500 50  0001 C CNN
+F 4 "C10418" H 1650 8550 50  0001 C CNN "LCSC3"
+F 5 "C404969" H 1650 8550 50  0001 C CNN "LCSC"
+	1    1650 8550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR019
+U 1 1 60970310
+P 1650 9200
+F 0 "#PWR019" H 1650 8950 50  0001 C CNN
+F 1 "GND" H 1655 9027 50  0000 C CNN
+F 2 "" H 1650 9200 50  0001 C CNN
+F 3 "" H 1650 9200 50  0001 C CNN
+	1    1650 9200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 8950 1650 9100
+Wire Wire Line
+	1550 8950 1550 9100
+Wire Wire Line
+	1550 9100 1650 9100
+Connection ~ 1650 9100
+Wire Wire Line
+	1650 9100 1650 9200
+$Comp
+L power:GND #PWR022
+U 1 1 60095905
+P 5000 9800
+F 0 "#PWR022" H 5000 9550 50  0001 C CNN
+F 1 "GND" H 5005 9627 50  0000 C CNN
+F 2 "" H 5000 9800 50  0001 C CNN
+F 3 "" H 5000 9800 50  0001 C CNN
+	1    5000 9800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VBUS #PWR018
+U 1 1 60970311
+P 2100 8250
+F 0 "#PWR018" H 2100 8100 50  0001 C CNN
+F 1 "VBUS" H 2115 8423 50  0000 C CNN
+F 2 "" H 2100 8250 50  0001 C CNN
+F 3 "" H 2100 8250 50  0001 C CNN
+	1    2100 8250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1950 8350 2100 8350
+Wire Wire Line
+	2100 8350 2100 8250
+$Comp
+L power:VBUS #PWR020
+U 1 1 60970312
+P 4100 9100
+F 0 "#PWR020" H 4100 8950 50  0001 C CNN
+F 1 "VBUS" H 4115 9273 50  0000 C CNN
+F 2 "" H 4100 9100 50  0001 C CNN
+F 3 "" H 4100 9100 50  0001 C CNN
+	1    4100 9100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C6
+U 1 1 60095908
+P 4100 9550
+F 0 "C6" H 4215 9596 50  0000 L CNN
+F 1 "1u" H 4215 9505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 4138 9400 50  0001 C CNN
+F 3 "~" H 4100 9550 50  0001 C CNN
+F 4 "C15849" H 4100 9550 50  0001 C CNN "LCSC"
+F 5 "X5R ±10% 50V 1uF 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 4100 9550 50  0001 C CNN "Description"
+	1    4100 9550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4100 9200 4100 9100
+Wire Wire Line
+	4100 9200 4500 9200
+Wire Wire Line
+	4100 9400 4100 9200
+Connection ~ 4100 9200
+Wire Wire Line
+	4500 9400 4500 9200
+Connection ~ 4500 9200
+Wire Wire Line
+	4500 9200 4700 9200
+Wire Wire Line
+	5300 9200 5450 9200
+Wire Wire Line
+	5900 9200 5900 9400
+Wire Wire Line
+	5450 9400 5450 9200
+Connection ~ 5450 9200
+Wire Wire Line
+	5450 9200 5900 9200
+$Comp
+L power:+3V3 #PWR021
+U 1 1 60970337
+P 5900 9100
+F 0 "#PWR021" H 5900 8950 50  0001 C CNN
+F 1 "+3V3" H 5915 9273 50  0000 C CNN
+F 2 "" H 5900 9100 50  0001 C CNN
+F 3 "" H 5900 9100 50  0001 C CNN
+	1    5900 9100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5900 9100 5900 9200
+Connection ~ 5900 9200
+Connection ~ 5000 9750
+Wire Wire Line
+	4100 9750 4500 9750
+Wire Wire Line
+	5000 9500 5000 9750
+Wire Wire Line
+	5000 9750 5450 9750
+Wire Wire Line
+	4100 9700 4100 9750
+Wire Wire Line
+	4500 9700 4500 9750
+Connection ~ 4500 9750
+Wire Wire Line
+	4500 9750 5000 9750
+Wire Wire Line
+	5450 9700 5450 9750
+Connection ~ 5450 9750
+Wire Wire Line
+	5450 9750 5900 9750
+Wire Wire Line
+	5900 9700 5900 9750
+Wire Wire Line
+	5000 9800 5000 9750
+NoConn ~ 1950 8750
+Wire Wire Line
+	1950 8550 2200 8550
+Wire Wire Line
+	1950 8650 2200 8650
+Wire Wire Line
+	3400 5650 3650 5650
+Wire Wire Line
+	3400 6300 3650 6300
+Wire Wire Line
+	3000 5950 3950 5950
+Wire Wire Line
+	3000 5650 3000 5950
+Connection ~ 3000 5650
+Wire Wire Line
+	3000 5650 3100 5650
+Wire Wire Line
+	3000 6300 3000 6150
+Wire Wire Line
+	3000 6150 3750 6150
+Wire Wire Line
+	3750 6150 3750 5850
+Wire Wire Line
+	3750 5850 3950 5850
+Connection ~ 3000 6300
+Wire Wire Line
+	3000 6300 3100 6300
+Wire Wire Line
+	3950 6500 3950 6550
+Wire Wire Line
+	3950 5450 3950 5400
+Wire Wire Line
+	3950 5400 4600 5400
+Wire Wire Line
+	3950 5950 3950 6100
+Wire Wire Line
+	4600 4900 4600 5000
+Wire Wire Line
+	4600 5300 4600 5400
+Connection ~ 4600 5400
+Wire Wire Line
+	4600 5400 5350 5400
+Wire Wire Line
+	4600 5400 4600 5500
+Wire Wire Line
+	4600 5800 4600 5900
+$Comp
+L power:GND #PWR08
+U 1 1 5DC0E4BB
+P 9700 4300
+F 0 "#PWR08" H 9700 4050 50  0001 C CNN
+F 1 "GND" H 9705 4127 50  0000 C CNN
+F 2 "" H 9700 4300 50  0001 C CNN
+F 3 "" H 9700 4300 50  0001 C CNN
+	1    9700 4300
+	1    0    0    -1  
+$EndComp
+NoConn ~ 9100 3500
+NoConn ~ 9100 3600
+NoConn ~ 9100 3700
+NoConn ~ 9100 3800
+NoConn ~ 9100 3900
+NoConn ~ 9100 4000
+Wire Wire Line
+	9700 4200 9700 4300
+$Comp
+L power:+3V3 #PWR05
+U 1 1 5DC2AC3F
+P 9700 2450
+F 0 "#PWR05" H 9700 2300 50  0001 C CNN
+F 1 "+3V3" H 9715 2623 50  0000 C CNN
+F 2 "" H 9700 2450 50  0001 C CNN
+F 3 "" H 9700 2450 50  0001 C CNN
+	1    9700 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9700 2450 9700 2700
+Wire Wire Line
+	9100 3100 8250 3100
+Wire Wire Line
+	8250 3100 8250 2700
+$Comp
+L power:+3V3 #PWR02
+U 1 1 60970316
+P 8250 2350
+F 0 "#PWR02" H 8250 2200 50  0001 C CNN
+F 1 "+3V3" H 8265 2523 50  0000 C CNN
+F 2 "" H 8250 2350 50  0001 C CNN
+F 3 "" H 8250 2350 50  0001 C CNN
+	1    8250 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8250 2350 8250 2400
+Wire Wire Line
+	9100 2900 8750 2900
+NoConn ~ 10300 3900
+NoConn ~ 10300 3500
+Wire Wire Line
+	5150 6100 5150 6200
+Wire Wire Line
+	3950 6550 5150 6550
+Wire Wire Line
+	5150 6500 5150 6550
+Connection ~ 5150 6550
+Wire Wire Line
+	10950 3100 10950 2700
+$Comp
+L power:+3V3 #PWR03
+U 1 1 6097033A
+P 10950 2350
+F 0 "#PWR03" H 10950 2200 50  0001 C CNN
+F 1 "+3V3" H 10965 2523 50  0000 C CNN
+F 2 "" H 10950 2350 50  0001 C CNN
+F 3 "" H 10950 2350 50  0001 C CNN
+	1    10950 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10950 2350 10950 2400
+Wire Wire Line
+	10300 3100 10950 3100
+$Comp
+L power:GND #PWR010
+U 1 1 5DC76A97
+P 10500 4350
+F 0 "#PWR010" H 10500 4100 50  0001 C CNN
+F 1 "GND" H 10505 4177 50  0000 C CNN
+F 2 "" H 10500 4350 50  0001 C CNN
+F 3 "" H 10500 4350 50  0001 C CNN
+	1    10500 4350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10500 3950 10500 3800
+Wire Wire Line
+	10500 3800 10300 3800
+Wire Wire Line
+	10500 4350 10500 4250
+$Comp
+L power:+3V3 #PWR011
+U 1 1 5DCD2000
+P 4600 4900
+F 0 "#PWR011" H 4600 4750 50  0001 C CNN
+F 1 "+3V3" H 4615 5073 50  0000 C CNN
+F 2 "" H 4600 4900 50  0001 C CNN
+F 3 "" H 4600 4900 50  0001 C CNN
+	1    4600 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR012
+U 1 1 60970319
+P 4600 5900
+F 0 "#PWR012" H 4600 5650 50  0001 C CNN
+F 1 "GND" H 4605 5727 50  0000 C CNN
+F 2 "" H 4600 5900 50  0001 C CNN
+F 3 "" H 4600 5900 50  0001 C CNN
+	1    4600 5900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3V3 #PWR013
+U 1 1 6097031A
+P 5150 6100
+F 0 "#PWR013" H 5150 5950 50  0001 C CNN
+F 1 "+3V3" H 5165 6273 50  0000 C CNN
+F 2 "" H 5150 6100 50  0001 C CNN
+F 3 "" H 5150 6100 50  0001 C CNN
+	1    5150 6100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR016
+U 1 1 6097031C
+P 12100 7700
+F 0 "#PWR016" H 12100 7450 50  0001 C CNN
+F 1 "GND" H 12105 7527 50  0000 C CNN
+F 2 "" H 12100 7700 50  0001 C CNN
+F 3 "" H 12100 7700 50  0001 C CNN
+	1    12100 7700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12100 7600 12100 7700
+Wire Wire Line
+	13050 6500 12100 6500
+Wire Wire Line
+	12100 6500 12100 6900
+Connection ~ 12100 7600
+Wire Wire Line
+	13050 7100 12900 7100
+Connection ~ 12100 7100
+$Comp
+L power:+3V3 #PWR014
+U 1 1 60970320
+P 12300 6850
+F 0 "#PWR014" H 12300 6700 50  0001 C CNN
+F 1 "+3V3" H 12315 7023 50  0000 C CNN
+F 2 "" H 12300 6850 50  0001 C CNN
+F 3 "" H 12300 6850 50  0001 C CNN
+	1    12300 6850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	13050 7400 12900 7400
+Wire Wire Line
+	12900 7400 12900 7300
+Connection ~ 12900 7300
+Wire Wire Line
+	12900 7300 13050 7300
+Wire Wire Line
+	12100 7100 12100 7600
+Wire Wire Line
+	13050 7200 12900 7200
+Wire Wire Line
+	12900 7200 12900 7100
+Connection ~ 12900 7100
+Wire Wire Line
+	12900 7100 12100 7100
+Text Label 12700 7500 0    50   ~ 0
+LEDK
+Wire Wire Line
+	12700 7500 13050 7500
+Text Label 12600 7000 0    50   ~ 0
+GPIO0
+Wire Wire Line
+	12600 7000 13050 7000
+Text Label 12600 6800 0    50   ~ 0
+TFT_SCL
+Wire Wire Line
+	12600 6800 13050 6800
+Text Label 12600 6700 0    50   ~ 0
+TFT_SDA
+Wire Wire Line
+	12600 6700 13050 6700
+Text Label 12600 6600 0    50   ~ 0
+~TFT_RES
+Wire Wire Line
+	12600 6600 13050 6600
+Wire Wire Line
+	12300 6850 12300 7300
+Wire Wire Line
+	12300 7300 12900 7300
+Text Label 8750 2900 0    50   ~ 0
+~Reset
+Text Label 5350 5400 2    50   ~ 0
+~Reset
+Text Label 10800 2900 2    50   ~ 0
+GPIO0
+Wire Wire Line
+	10300 2900 10800 2900
+Text Label 5650 6550 2    50   ~ 0
+GPIO0
+Wire Wire Line
+	5150 6550 5650 6550
+Text Label 2200 8550 2    50   ~ 0
+D+
+Text Label 2200 8650 2    50   ~ 0
+D-
+Text Label 2700 5650 0    50   ~ 0
+DTR
+Wire Wire Line
+	2700 5650 3000 5650
+Wire Wire Line
+	2700 6300 3000 6300
+Text Label 2700 6300 0    50   ~ 0
+RTS
+Text Label 10800 3000 2    50   ~ 0
+RxD
+Text Label 10800 3200 2    50   ~ 0
+TxD
+Wire Wire Line
+	10300 3200 10800 3200
+Wire Wire Line
+	12100 6900 13050 6900
+Connection ~ 12100 6900
+Wire Wire Line
+	12100 6900 12100 7100
+Wire Wire Line
+	10300 3000 10800 3000
+Text Label 10800 3600 2    50   ~ 0
+TFT_SDA
+Wire Wire Line
+	10300 3600 10800 3600
+Text Label 10800 3700 2    50   ~ 0
+TFT_SCL
+Wire Wire Line
+	10300 3700 10800 3700
+Text Label 10800 3100 2    50   ~ 0
+~TFT_RES
+NoConn ~ 9100 3300
+Text Label 10800 3300 2    50   ~ 0
+TFT_BL
+Wire Wire Line
+	10800 3300 10300 3300
+Text Label 10800 3400 2    50   ~ 0
+GPIO5
+Wire Wire Line
+	10800 3400 10300 3400
+$Comp
+L barn53-kicad:S8050_J3Y Q2
+U 1 1 60970325
+P 8950 7850
+F 0 "Q2" H 9141 7896 50  0000 L CNN
+F 1 "S8050_J3Y" H 9141 7805 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 9150 7775 50  0001 L CIN
+F 3 "https://datasheet.lcsc.com/szlcsc/1910111742_MDD-Microdiode-Electronics-S8050-J3Y_C364312.pdf" H 8950 7850 50  0001 L CNN
+F 4 "C2146" H 9350 7650 50  0001 C CNN "LCSC"
+	1    8950 7850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 7550 9050 7550
+Wire Wire Line
+	9050 7550 9050 7650
+Wire Wire Line
+	9450 7550 9700 7550
+Text Label 9700 7550 2    50   ~ 0
+LEDK
+$Comp
+L power:GND #PWR017
+U 1 1 6001FE05
+P 9050 8150
+F 0 "#PWR017" H 9050 7900 50  0001 C CNN
+F 1 "GND" H 9055 7977 50  0000 C CNN
+F 2 "" H 9050 8150 50  0001 C CNN
+F 3 "" H 9050 8150 50  0001 C CNN
+	1    9050 8150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9050 8050 9050 8150
+Wire Wire Line
+	8750 7850 8700 7850
+Wire Wire Line
+	8300 7850 7900 7850
+Text Label 7900 7850 0    50   ~ 0
+TFT_BL
+Wire Wire Line
+	8700 7750 8700 7850
+Connection ~ 8700 7850
+Wire Wire Line
+	8700 7850 8600 7850
+Wire Wire Line
+	8700 7450 8700 7400
+$Comp
+L power:+3V3 #PWR015
+U 1 1 6097032F
+P 8700 7400
+F 0 "#PWR015" H 8700 7250 50  0001 C CNN
+F 1 "+3V3" H 8715 7573 50  0000 C CNN
+F 2 "" H 8700 7400 50  0001 C CNN
+F 3 "" H 8700 7400 50  0001 C CNN
+	1    8700 7400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R9
+U 1 1 60970324
+P 9300 7550
+F 0 "R9" V 9093 7550 50  0000 C CNN
+F 1 "10" V 9184 7550 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 9230 7550 50  0001 C CNN
+F 3 "~" H 9300 7550 50  0001 C CNN
+F 4 "C22859" H 9300 7550 50  0001 C CNN "LCSC"
+F 5 "±1% ±400ppm/℃ 10Ω 0.1W 0603 Chip Resistor - Surface Mount ROHS" V 9300 7550 50  0001 C CNN "Comment"
+	1    9300 7550
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R11
+U 1 1 6002480E
+P 8450 7850
+F 0 "R11" V 8243 7850 50  0000 C CNN
+F 1 "1k" V 8334 7850 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 8380 7850 50  0001 C CNN
+F 3 "~" H 8450 7850 50  0001 C CNN
+F 4 "C21190" H 8450 7850 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 1kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" V 8450 7850 50  0001 C CNN "Comment"
+	1    8450 7850
+	0    1    1    0   
+$EndComp
+NoConn ~ 3950 2800
+NoConn ~ 3950 2900
+NoConn ~ 3150 3300
+NoConn ~ 3150 3400
+$Comp
+L power:VBUS #PWR07
+U 1 1 6097E482
+P 2600 2950
+F 0 "#PWR07" H 2600 2800 50  0001 C CNN
+F 1 "VBUS" H 2615 3123 50  0000 C CNN
+F 2 "" H 2600 2950 50  0001 C CNN
+F 3 "" H 2600 2950 50  0001 C CNN
+	1    2600 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2600 2950 2600 3000
+Wire Wire Line
+	2600 3000 3150 3000
+NoConn ~ 3150 2600
+NoConn ~ 3150 2700
+NoConn ~ 3650 2400
+$Comp
+L power:GND #PWR09
+U 1 1 6097E48D
+P 3650 4350
+F 0 "#PWR09" H 3650 4100 50  0001 C CNN
+F 1 "GND" H 3655 4177 50  0000 C CNN
+F 2 "" H 3650 4350 50  0001 C CNN
+F 3 "" H 3650 4350 50  0001 C CNN
+	1    3650 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L dk_Interface-Controllers:CP2102-GMR_NRND U1
+U 1 1 6097E49C
+P 3450 3200
+F 0 "U1" H 3350 4000 60  0000 C CNN
+F 1 "CP2102-GMR_NRND" V 2950 2600 60  0000 C CNN
+F 2 "Package_DFN_QFN:QFN-28-1EP_5x5mm_P0.5mm_EP3.35x3.35mm" H 3650 3400 60  0001 L CNN
+F 3 "https://www.silabs.com/documents/public/data-sheets/CP2102-9.pdf" H 3650 3500 60  0001 L CNN
+F 4 "336-1160-1-ND" H 3650 3600 60  0001 L CNN "Digi-Key_PN"
+F 5 "CP2102-GMR" H 3650 3700 60  0001 L CNN "MPN"
+F 6 "Integrated Circuits (ICs)" H 3650 3800 60  0001 L CNN "Category"
+F 7 "Interface - Controllers" H 3650 3900 60  0001 L CNN "Family"
+F 8 "https://www.silabs.com/documents/public/data-sheets/CP2102-9.pdf" H 3650 4000 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/silicon-labs/CP2102-GMR/336-1160-1-ND/3672615" H 3650 4100 60  0001 L CNN "DK_Detail_Page"
+F 10 "IC USB-TO-UART BRIDGE 28VQFN" H 3650 4200 60  0001 L CNN "Description"
+F 11 "Silicon Labs" H 3650 4300 60  0001 L CNN "Manufacturer"
+F 12 "Not For New Designs" H 3650 4400 60  0001 L CNN "Status"
+F 13 "C6568" H 3450 3200 50  0001 C CNN "LCSC"
+	1    3450 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3550 4200 3550 4250
+Wire Wire Line
+	3550 4250 3650 4250
+Wire Wire Line
+	3650 4250 3650 4200
+Wire Wire Line
+	3650 4250 3650 4350
+Connection ~ 3650 4250
+Wire Wire Line
+	2200 3100 2400 3100
+Wire Wire Line
+	2700 3100 3150 3100
+Wire Wire Line
+	4300 3100 3950 3100
+$Comp
+L power:VBUS #PWR01
+U 1 1 6097E4AA
+P 3750 2000
+F 0 "#PWR01" H 3750 1850 50  0001 C CNN
+F 1 "VBUS" H 3765 2173 50  0000 C CNN
+F 2 "" H 3750 2000 50  0001 C CNN
+F 3 "" H 3750 2000 50  0001 C CNN
+	1    3750 2000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4600 2250 4600 2200
+Wire Wire Line
+	4600 2200 4200 2200
+Wire Wire Line
+	3750 2200 3750 2400
+Wire Wire Line
+	4200 2250 4200 2200
+Connection ~ 4200 2200
+Wire Wire Line
+	4200 2200 3750 2200
+Wire Wire Line
+	4200 2550 4200 2600
+Wire Wire Line
+	4200 2600 4600 2600
+Wire Wire Line
+	4600 2600 4600 2550
+$Comp
+L power:GND #PWR06
+U 1 1 6097E4BF
+P 4600 2650
+F 0 "#PWR06" H 4600 2400 50  0001 C CNN
+F 1 "GND" H 4605 2477 50  0000 C CNN
+F 2 "" H 4600 2650 50  0001 C CNN
+F 3 "" H 4600 2650 50  0001 C CNN
+	1    4600 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4600 2650 4600 2600
+Connection ~ 4600 2600
+$Comp
+L power:GND #PWR04
+U 1 1 6097E4CD
+P 2800 2450
+F 0 "#PWR04" H 2800 2200 50  0001 C CNN
+F 1 "GND" H 2805 2277 50  0000 C CNN
+F 2 "" H 2800 2450 50  0001 C CNN
+F 3 "" H 2800 2450 50  0001 C CNN
+	1    2800 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 2450 2800 2400
+Wire Wire Line
+	3550 2050 3550 2400
+Wire Wire Line
+	2800 2100 2800 2050
+Wire Wire Line
+	2800 2050 3550 2050
+Wire Wire Line
+	3750 2000 3750 2200
+Connection ~ 3750 2200
+Wire Wire Line
+	2550 2050 2800 2050
+Connection ~ 2800 2050
+Text Label 2900 2800 0    50   ~ 0
+D+
+Text Label 2900 2900 0    50   ~ 0
+D-
+Wire Wire Line
+	2900 2900 3150 2900
+Wire Wire Line
+	2900 2800 3150 2800
+Text Label 2200 3100 0    50   ~ 0
+VDD
+Text Label 2550 2050 0    50   ~ 0
+VDD
+Text Label 4300 3200 2    50   ~ 0
+DTR
+Text Label 4300 3000 2    50   ~ 0
+RTS
+Wire Wire Line
+	3950 3200 4300 3200
+Wire Wire Line
+	3950 3000 4300 3000
+Text Label 4300 3100 2    50   ~ 0
+TxD
+Text Label 2900 3200 0    50   ~ 0
+RxD
+Wire Wire Line
+	2900 3200 3150 3200
+$Comp
+L barn53-kicad:IPSDisplay_240x320 D1
+U 1 1 619D7B2A
+P 13050 7600
+F 0 "D1" H 13650 8650 50  0000 L CNN
+F 1 "IPSDisplay_240x320" H 13550 7650 50  0000 L CNN
+F 2 "barn53-kicad:IPS_Display_240x320_FPC_105deg" H 13900 7400 50  0001 C CNN
+F 3 "http://www.lcdwiki.com/res/MSP1308/TFT1301-SPEC.pdf" H 13050 7600 50  0001 C CNN
+	1    13050 7600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_BJT:BC847BS Q1
+U 1 1 61A6C31C
+P 3850 5650
+F 0 "Q1" H 4040 5696 50  0000 L CNN
+F 1 "BC847BS" H 4040 5605 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-363_SC-70-6" H 4050 5750 50  0001 C CNN
+F 3 "https://assets.nexperia.com/documents/data-sheet/BC847BS.pdf" H 3850 5650 50  0001 C CNN
+F 4 "C8653" H 3850 5650 50  0001 C CNN "LCSC"
+	1    3850 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_BJT:BC847BS Q1
+U 2 1 61A6CD0D
+P 3850 6300
+F 0 "Q1" H 4040 6254 50  0000 L CNN
+F 1 "BC847BS" H 4040 6345 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-363_SC-70-6" H 4050 6400 50  0001 C CNN
+F 3 "https://assets.nexperia.com/documents/data-sheet/BC847BS.pdf" H 3850 6300 50  0001 C CNN
+F 4 "C8653" H 3850 6300 50  0001 C CNN "LCSC"
+	2    3850 6300
+	1    0    0    1   
+$EndComp
+$Comp
+L Device:C C7
+U 1 1 61A7B054
+P 4500 9550
+F 0 "C7" H 4615 9596 50  0000 L CNN
+F 1 "100n" H 4615 9505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 4538 9400 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 4500 9550 50  0001 C CNN
+F 4 "C14663" H 4500 9550 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 4500 9550 50  0001 C CNN "Comment"
+	1    4500 9550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C8
+U 1 1 61A7B900
+P 5450 9550
+F 0 "C8" H 5565 9596 50  0000 L CNN
+F 1 "100n" H 5565 9505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 5488 9400 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 5450 9550 50  0001 C CNN
+F 4 "C14663" H 5450 9550 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 5450 9550 50  0001 C CNN "Comment"
+	1    5450 9550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C9
+U 1 1 61A7BD59
+P 5900 9550
+F 0 "C9" H 6015 9596 50  0000 L CNN
+F 1 "22u" H 6015 9505 50  0000 L CNN
+F 2 "Capacitor_Tantalum_SMD:CP_EIA-3216-18_Kemet-A" H 5938 9400 50  0001 C CNN
+F 3 "~" H 5900 9550 50  0001 C CNN
+F 4 "C129272" H 5900 9550 50  0001 C CNN "LCSC"
+F 5 "Tantalum" H 6100 9700 50  0000 C CNN "Comment"
+	1    5900 9550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:AMS1117-3.3 U3
+U 1 1 619DE975
+P 5000 9200
+F 0 "U3" H 5000 9442 50  0000 C CNN
+F 1 "AMS1117-3.3" H 5000 9351 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 5000 9400 50  0001 C CNN
+F 3 "http://www.advanced-monolithic.com/pdf/ds1117.pdf" H 5100 8950 50  0001 C CNN
+F 4 "C6186" H 5000 9200 50  0001 C CNN "LCSC"
+	1    5000 9200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R5
+U 1 1 61A80840
+P 4600 5150
+F 0 "R5" H 4530 5104 50  0000 R CNN
+F 1 "10k" H 4530 5195 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 4530 5150 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 4600 5150 50  0001 C CNN
+F 4 "C25804" H 4600 5150 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 4600 5150 50  0001 C CNN "Description"
+	1    4600 5150
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 61A81018
+P 2550 3100
+F 0 "R3" H 2480 3054 50  0000 R CNN
+F 1 "10k" H 2480 3145 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 2480 3100 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 2550 3100 50  0001 C CNN
+F 4 "C25804" H 2550 3100 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 2550 3100 50  0001 C CNN "Description"
+	1    2550 3100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R8
+U 1 1 61A81535
+P 5150 6350
+F 0 "R8" H 5080 6304 50  0000 R CNN
+F 1 "10k" H 5080 6395 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 5080 6350 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 5150 6350 50  0001 C CNN
+F 4 "C25804" H 5150 6350 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 5150 6350 50  0001 C CNN "Description"
+	1    5150 6350
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R6
+U 1 1 61A81C74
+P 3250 5650
+F 0 "R6" H 3180 5604 50  0000 R CNN
+F 1 "10k" H 3180 5695 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 3180 5650 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 3250 5650 50  0001 C CNN
+F 4 "C25804" H 3250 5650 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 3250 5650 50  0001 C CNN "Description"
+	1    3250 5650
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R7
+U 1 1 61A82909
+P 3250 6300
+F 0 "R7" H 3180 6254 50  0000 R CNN
+F 1 "10k" H 3180 6345 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 3180 6300 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 3250 6300 50  0001 C CNN
+F 4 "C25804" H 3250 6300 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 3250 6300 50  0001 C CNN "Description"
+	1    3250 6300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C C1
+U 1 1 61A835C0
+P 2800 2250
+F 0 "C1" H 2915 2296 50  0000 L CNN
+F 1 "100n" H 2915 2205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 2838 2100 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 2800 2250 50  0001 C CNN
+F 4 "C14663" H 2800 2250 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 2800 2250 50  0001 C CNN "Comment"
+	1    2800 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C3
+U 1 1 61A83FF3
+P 4600 2400
+F 0 "C3" H 4715 2446 50  0000 L CNN
+F 1 "100n" H 4715 2355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 4638 2250 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 4600 2400 50  0001 C CNN
+F 4 "C14663" H 4600 2400 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 4600 2400 50  0001 C CNN "Comment"
+	1    4600 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 61A845D8
+P 4200 2400
+F 0 "C2" H 4315 2446 50  0000 L CNN
+F 1 "4.7u" H 4315 2355 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 4238 2250 50  0001 C CNN
+F 3 "~" H 4200 2400 50  0001 C CNN
+F 4 "C19666" H 4200 2400 50  0001 C CNN "LCSC"
+F 5 "X5R ±10% 4.7uF 16V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS" H 4200 2400 50  0001 C CNN "Comment"
+	1    4200 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C4
+U 1 1 61A855F6
+P 4600 5650
+F 0 "C4" H 4715 5696 50  0000 L CNN
+F 1 "100n" H 4715 5605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 4638 5500 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 4600 5650 50  0001 C CNN
+F 4 "C14663" H 4600 5650 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 4600 5650 50  0001 C CNN "Comment"
+	1    4600 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R4
+U 1 1 61A85CF0
+P 10500 4100
+F 0 "R4" H 10430 4054 50  0000 R CNN
+F 1 "10k" H 10430 4145 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 10430 4100 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 10500 4100 50  0001 C CNN
+F 4 "C25804" H 10500 4100 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 10500 4100 50  0001 C CNN "Description"
+	1    10500 4100
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 61A86198
+P 8250 2550
+F 0 "R1" H 8180 2504 50  0000 R CNN
+F 1 "10k" H 8180 2595 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 8180 2550 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 8250 2550 50  0001 C CNN
+F 4 "C25804" H 8250 2550 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 8250 2550 50  0001 C CNN "Description"
+	1    8250 2550
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 61A866D3
+P 10950 2550
+F 0 "R2" H 10880 2504 50  0000 R CNN
+F 1 "10k" H 10880 2595 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 10880 2550 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 10950 2550 50  0001 C CNN
+F 4 "C25804" H 10950 2550 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 10950 2550 50  0001 C CNN "Description"
+	1    10950 2550
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R10
+U 1 1 61A87524
+P 8700 7600
+F 0 "R10" H 8630 7554 50  0000 R CNN
+F 1 "10k" H 8630 7645 50  0000 R CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 8630 7600 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1811062009_UNI-ROYAL-Uniroyal-Elec-0603WAF1002T5E_C25804.pdf" H 8700 7600 50  0001 C CNN
+F 4 "C25804" H 8700 7600 50  0001 C CNN "LCSC"
+F 5 "±1% ±100ppm/℃ 10kΩ 0.1W 0603 Chip Resistor - Surface Mount ROHS" H 8700 7600 50  0001 C CNN "Description"
+	1    8700 7600
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C C5
+U 1 1 61A88752
+P 12300 7450
+F 0 "C5" H 12415 7496 50  0000 L CNN
+F 1 "100n" H 12415 7405 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 12338 7300 50  0001 C CNN
+F 3 "https://datasheet.lcsc.com/lcsc/1809301912_YAGEO-CC0603KRX7R9BB104_C14663.pdf" H 12300 7450 50  0001 C CNN
+F 4 "C14663" H 12300 7450 50  0001 C CNN "LCSC"
+F 5 "X7R 100nF ±10% 50V 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHSCopy" H 12300 7450 50  0001 C CNN "Comment"
+	1    12300 7450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12100 7600 12300 7600
+Connection ~ 12300 7300
+Connection ~ 12300 7600
+Wire Wire Line
+	12300 7600 13050 7600
+$EndSCHEMATC
