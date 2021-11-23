@@ -141,9 +141,16 @@ For an update from version 1.3 or below to version 1.4 you need to upload the fi
 
 When your CoinThing is already on Version 1.4.*, you can update via the browser update method.
 
+### Version 1.4.4:
+- Minor server stabilisation for settings page.
+
+[cointhing_v1.4.4.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.4/cointhing_v1.4.4.bin)
+
+### Version 1.4.3:
+- Internal.
+
 ### Version 1.4.2:
 - Stabilized browser update procedure - prevent "IP unset" error.
-
 
 [cointhing_v1.4.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.2/cointhing_v1.4.2.bin)
 
@@ -151,6 +158,7 @@ When your CoinThing is already on Version 1.4.*, you can update via the browser 
 - Fixed a situation where no chart was drawn when multiple coins were displayed.
 
 [cointhing_v1.4.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.1/cointhing_v1.4.1.bin)
+
 ### Version 1.4.0:
 
 [cointhing_v1.4.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.0/cointhing_v1.4.0.bin)
