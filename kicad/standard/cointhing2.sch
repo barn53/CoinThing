@@ -263,7 +263,6 @@ Wire Wire Line
 	8250 2350 8250 2400
 Wire Wire Line
 	9100 2900 8750 2900
-NoConn ~ 10300 3900
 NoConn ~ 10300 3500
 Wire Wire Line
 	5150 6100 5150 6200
@@ -986,4 +985,10 @@ Connection ~ 12300 7300
 Connection ~ 12300 7600
 Wire Wire Line
 	12300 7600 13050 7600
+Wire Wire Line
+	10300 3900 10800 3900
+Text Label 10800 3900 2    50   ~ 0
+~Reset
+Text Notes 10850 3900 0    50   ~ 0
+Deep Sleep Wakeup
 $EndSCHEMATC
