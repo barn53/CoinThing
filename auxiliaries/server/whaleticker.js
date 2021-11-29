@@ -8,10 +8,11 @@ var port = 3000
 
 server.listen(port, function () {
     console.log('WhaleTicker server port: %d', port)
-    console.log('Serve path: ' + __dirname + '/../../source')
+    console.log('Serve path: ' + __dirname + '/../../source/data')
 })
 
-app.use(express.static(__dirname + '/../../source'))
+app.use(express.static(__dirname + '/../../source/data'))
+app.use(express.static(__dirname + '/../../source/html'))
 app.get('/action/set', function (req, res) {
 
     for (const [key, value] of Object.entries(req.query)) {
