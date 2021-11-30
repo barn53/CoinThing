@@ -133,6 +133,8 @@ python -m esptool erase_flash
 ### New features
 - New 2" screen
 - Can get the 7 top trending coins in the settings page
+- Show market capitalization and volume
+- Page to show 3 coins at once (without charts)
 
 <!-- For an update from version 2.0 or below to version 2.1 you need to upload the file **cointhing_spiffs_v2.1.0.bin** and one of the **cointhing_v2.10.*.bin** files as described above. -->
 
@@ -142,6 +144,9 @@ When your CoinThing is already on Version 2.0.*, you can update via the browser 
 
 ### Version 2.0.0:
 - initial 2" version.
+- Can get the 7 top trending coins in the settings page
+- Show market capitalization and volume
+- Page to show 3 coins at once (without charts)
 
 [cointhing_v2.0.0.bin](https://github.com/barn53/CoinThing/releases/download/v2.0.0/cointhing_v2.0.0.bin)
 

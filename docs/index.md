@@ -9,7 +9,7 @@
 
 ## What's New
 
-### Version 1.4 is ready!
+### Version 1.5 is ready!
 
 -------
 
@@ -95,21 +95,21 @@ Chip ID: 0x00580337
 Hard resetting via RTS pin...
 ```
 
-##### Download the SPIFFS file e.g. __spiffs_v1.4.0.bin__ and execute
+##### Download the SPIFFS file e.g. __spiffs_v1.5.0.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.4.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.5.0.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
 
-##### Download the firmware file e.g. __cointhing_v1.4.1.bin__ and execute
+##### Download the firmware file e.g. __cointhing_v1.5.1.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.4.1.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.1.bin
 ```
 
 ##### Or both together
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.4.1.bin 0x200000 <path_to_download>/spiffs_v1.4.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.1.bin 0x200000 <path_to_download>/spiffs_v1.5.0.bin
 ```
 
 That's all.<br>
@@ -128,6 +128,26 @@ python -m esptool erase_flash
 -------
 
 ## Available Versions To Download
+
+<!--
+
+## Version 1.5:
+### New features
+- Can get the 7 top trending coins in the settings page
+
+For an update from version 1.4 or below to version 1.5 you need to upload the file **spiffs_v1.5.0.bin** and one of the **cointhing_v1.5.*.bin** files as described above.
+
+[spiffs_v1.5.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.0/spiffs_v1.5.0.bin)
+
+When your CoinThing is already on Version 1.5.*, you can update via the browser update method.
+
+### Version 1.5.0:
+- Can get the 7 top trending coins in the settings page
+- Minor server stabilisation for settings page.
+
+[cointhing_v1.5.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.0/cointhing_v1.5.0.bin)
+
+-->
 
 ## Version 1.4:
 ### New features
