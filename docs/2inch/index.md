@@ -46,7 +46,7 @@ In the settings, you enter all desired data. After clicking Apply, the settings 
 - that's it – enjoy :-)
 
 #### Update Firmware Via Python Script
-If there is an update with a change in the second version number (i.e. from 1.__1__.xx to 1.__2__.xx), things are a bit more complicated :-).
+If there is an update with a change in the second version number (i.e. from 2.__0__.xx to 2.__1__.xx), things are a bit more complicated :-).
 
 ##### You need
 - a PC or Mac
@@ -95,21 +95,21 @@ Chip ID: 0x00580337
 Hard resetting via RTS pin...
 ```
 
-##### Download the SPIFFS file e.g. __spiffs_v1.4.0.bin__ and execute
+##### Download the SPIFFS file e.g. __cointhing_spiffs_v2.0.0.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.4.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/cointhing_spiffs_v2.0.0.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
 
-##### Download the firmware file e.g. __cointhing_v1.4.1.bin__ and execute
+##### Download the firmware file e.g. __cointhing_v2.0.1.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.4.1.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v2.0.1.bin
 ```
 
 ##### Or both together
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.4.1.bin 0x200000 <path_to_download>/spiffs_v1.4.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v2.0.1.bin 0x200000 <path_to_download>/cointhing_spiffs_v2.0.0.bin
 ```
 
 That's all.<br>
@@ -129,104 +129,19 @@ python -m esptool erase_flash
 
 ## Available Versions To Download
 
-## Version 1.4:
+## Version 2.0:
 ### New features
-- Added ExtraCondensed font, so larger numbers fit onto the display
-- Added new icons
-- Increased CPU clock
+- New 2" screen
+- Can get the 7 top trending coins in the settings page
 
-For an update from version 1.3 or below to version 1.4 you need to upload the file **spiffs_v1.4.0.bin** and one of the **cointhing_v1.4.*.bin** files as described above.
+<!-- For an update from version 2.0 or below to version 2.1 you need to upload the file **cointhing_spiffs_v2.1.0.bin** and one of the **cointhing_v2.10.*.bin** files as described above. -->
 
-[spiffs_v1.4.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.0/spiffs_v1.4.0.bin)
+[spiffs_v2.0.0.bin](https://github.com/barn53/CoinThing/releases/download/v2.0.0/cointhing_spiffs_v0.0.0.bin)
 
-When your CoinThing is already on Version 1.4.*, you can update via the browser update method.
+When your CoinThing is already on Version 2.0.*, you can update via the browser update method.
 
-### Version 1.4.4:
-- Minor server stabilisation for settings page.
+### Version 2.0.0:
+- initial 2" version.
 
-[cointhing_v1.4.4.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.4/cointhing_v1.4.4.bin)
-
-### Version 1.4.3:
-- Internal.
-
-### Version 1.4.2:
-- Stabilized browser update procedure - prevent "IP unset" error.
-
-[cointhing_v1.4.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.2/cointhing_v1.4.2.bin)
-
-### Version 1.4.1:
-- Fixed a situation where no chart was drawn when multiple coins were displayed.
-
-[cointhing_v1.4.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.1/cointhing_v1.4.1.bin)
-
-### Version 1.4.0:
-
-[cointhing_v1.4.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.4.0/cointhing_v1.4.0.bin)
-
--------
-
-## Version 1.3:
-
-#### Do not update to this version - use version v1.4 or later
-
--------
-
-## Version 1.2
-### New features
-- Show 2 coins simultaneously on the screen (no chart)
-- Cycle through up to 10 coins (with chart)
-- New cypto coin icons
-
-For an update from version 1.1 or below to version 1.2 you need to upload the files **spiffs_v1.2.0.bin** and one of the **cointhing_v1.2.*.bin** as described above.
-
-[spiffs_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/spiffs_v1.2.0.bin)
-
-When your CoinThing is already on Version 1.2.*, you can update via the browser update method.
-
-### Version 1.2.2:
-- Stabilized browser update procedure - prevent “IP unset” error.
-
-[cointhing_v1.2.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.2/cointhing_v1.2.2.bin)
-
-### Version 1.2.1:
-- Fixed a situation where no chart was drawn when multiple coins were displayed.
-
-[cointhing_v1.2.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.1/cointhing_v1.2.1.bin)
-
-### Version 1.2.0:
-
-[cointhing_v1.2.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.2.0/cointhing_v1.2.0.bin)
-
--------
-
-## Version 1.1:
-### Version 1.1.0:
-The second currency was always USD, it is now also configurable in the settings.
-
-For an update from Version 1.0, please also upload the spiffs_v1.1.0.bin file as described above to the CoinThing.
-
-[cointhing_v1.1.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.1.0/cointhing_v1.1.0.bin)
-
-[spiffs_v1.1.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.1.0/spiffs_v1.1.0.bin)
-
--------
-
-## Version 1.0:
-### Version 1.0.3:
-
-[cointhing_v1.0.3.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.3/cointhing_v1.0.3.bin)
-
-[spiffs_v1.0.3.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.3/spiffs_v1.0.3.bin)
-
-### Version 1.0.2:
-
-[cointhing_v1.0.2.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.2/cointhing_v1.0.2.bin)
-
-### Version 1.0.1:
-
-[cointhing_v1.0.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.1/cointhing_v1.0.1.bin)
-
-### Version 1.0.0:
-
-[cointhing_v1.0.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.0.0/cointhing_v1.0.0.bin)
+[cointhing_v2.0.0.bin](https://github.com/barn53/CoinThing/releases/download/v2.0.0/cointhing_v2.0.0.bin)
 
