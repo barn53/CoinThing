@@ -4,9 +4,9 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "CoinThing ESP8266"
-Date "2021-05-08"
-Rev "rev.E"
+Title "WhaleTicker ESP8266"
+Date "2021-11-30"
+Rev "rev.A"
 Comp "barn53"
 Comment1 ""
 Comment2 ""
