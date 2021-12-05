@@ -60,7 +60,9 @@ void setup(void)
     });
     server.begin(); // Actually start the server
 
-    Serial.println(F("\r\nInitialisation done."));
+    Serial.println(F("\nInitialisation done."));
+    Serial.print(F("IP: "));
+    Serial.println(WiFi.localIP().toString());
 }
 
 void loop()
