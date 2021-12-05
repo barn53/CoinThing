@@ -371,12 +371,7 @@ F 3 "" H 12300 6850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	13050 7400 12900 7400
-Wire Wire Line
-	12900 7400 12900 7300
-Connection ~ 12900 7300
-Wire Wire Line
-	12900 7300 13050 7300
+	13050 7400 12700 7400
 Wire Wire Line
 	12100 7100 12100 7600
 Wire Wire Line
@@ -408,8 +403,6 @@ Wire Wire Line
 	12600 6600 13050 6600
 Wire Wire Line
 	12300 6850 12300 7300
-Wire Wire Line
-	12300 7300 12900 7300
 Text Label 8750 2900 0    50   ~ 0
 ~Reset
 Text Label 5350 5400 2    50   ~ 0
@@ -528,11 +521,11 @@ L Device:R R9
 U 1 1 60970324
 P 9300 7550
 F 0 "R9" V 9093 7550 50  0000 C CNN
-F 1 "10" V 9184 7550 50  0000 C CNN
+F 1 "27" V 9184 7550 50  0000 C CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" V 9230 7550 50  0001 C CNN
 F 3 "~" H 9300 7550 50  0001 C CNN
-F 4 "C22859" H 9300 7550 50  0001 C CNN "LCSC"
-F 5 "±1% ±400ppm/℃ 10Ω 0.1W 0603 Chip Resistor - Surface Mount ROHS" V 9300 7550 50  0001 C CNN "Comment"
+F 4 "C25190" H 9300 7550 50  0001 C CNN "LCSC"
+F 5 "±1% ±200ppm/℃ 27Ω 0.1W 0603 Chip Resistor - Surface Mount ROHSCopy" V 9300 7550 50  0001 C CNN "Comment"
 	1    9300 7550
 	0    1    1    0   
 $EndComp
@@ -991,4 +984,25 @@ Text Label 10800 3900 2    50   ~ 0
 ~Reset
 Text Notes 10850 3900 0    50   ~ 0
 Deep Sleep Wakeup
+Wire Wire Line
+	12300 7300 13050 7300
+$Comp
+L power:VBUS #PWR?
+U 1 1 61AE26AF
+P 9050 7150
+F 0 "#PWR?" H 9050 7000 50  0001 C CNN
+F 1 "VBUS" H 9065 7323 50  0000 C CNN
+F 2 "" H 9050 7150 50  0001 C CNN
+F 3 "" H 9050 7150 50  0001 C CNN
+	1    9050 7150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9050 7200 9050 7150
+Wire Wire Line
+	9050 7200 9700 7200
+Text Label 9700 7200 2    50   ~ 0
+LEDA
+Text Label 12700 7400 0    50   ~ 0
+LEDA
 $EndSCHEMATC
