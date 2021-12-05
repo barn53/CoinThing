@@ -131,7 +131,7 @@ python -m esptool erase_flash
 
 ## Version 1.5:
 ### New features
-- Can get the 7 top trending coins in the settings page
+- Get the 7 top trending coins in the settings page
 - Stabilizations
 
 For an update from version 1.4 or below to version 1.5 you need to upload the file **spiffs_v1.5.0.bin** and one of the **cointhing_v1.5.*.bin** files as described above.
@@ -141,7 +141,7 @@ For an update from version 1.4 or below to version 1.5 you need to upload the fi
 When your CoinThing is already on Version 1.5.*, you can update via the browser update method.
 
 ### Version 1.5.0:
-- Can get the 7 top trending coins in the settings page
+- Get the 7 top trending coins in the settings page
 - Minor server stabilisation for settings page.
 
 [cointhing_v1.5.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.0/cointhing_v1.5.0.bin)
