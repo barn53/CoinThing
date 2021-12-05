@@ -9,7 +9,7 @@
 
 ## What's New
 
-### Version 1.5 is ready!
+### Version 1.5 is out!
 
 -------
 
@@ -102,14 +102,14 @@ python -m esptool --before default_reset --after hard_reset --chip esp8266 --bau
 
 After this was successful, you have to install the matching firmware itself.<br>
 
-##### Download the firmware file e.g. __cointhing_v1.5.1.bin__ and execute
+##### Download the firmware file e.g. __cointhing_v1.5.0.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.1.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.0.bin
 ```
 
 ##### Or both together
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.1.bin 0x200000 <path_to_download>/spiffs_v1.5.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.5.0.bin 0x200000 <path_to_download>/spiffs_v1.5.0.bin
 ```
 
 That's all.<br>
@@ -118,7 +118,7 @@ After a reboot, the CoinThing starts with the new version – enjoy!
 ##### If the CoinThing does not startup after update attempts
 You can erase the CoinThing completely (you cannot damage it).
 
-After that, install the firmware again.
+After that, install the firmware again, as described above.
 
 Unfortunately, after this a new setup ist necessary.
 ```bash
@@ -129,11 +129,10 @@ python -m esptool erase_flash
 
 ## Available Versions To Download
 
-<!--
-
 ## Version 1.5:
 ### New features
 - Can get the 7 top trending coins in the settings page
+- Stabilizations
 
 For an update from version 1.4 or below to version 1.5 you need to upload the file **spiffs_v1.5.0.bin** and one of the **cointhing_v1.5.*.bin** files as described above.
 
@@ -147,7 +146,7 @@ When your CoinThing is already on Version 1.5.*, you can update via the browser 
 
 [cointhing_v1.5.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.0/cointhing_v1.5.0.bin)
 
--->
+-------
 
 ## Version 1.4:
 ### New features
