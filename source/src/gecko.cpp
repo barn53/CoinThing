@@ -156,7 +156,8 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
     String change24h(currency);
     change24h += F("_24h_change");
 
-    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
+    String url(F(GECKO_API_SERVER));
+    url += F("/api/v3/simple/price?ids=");
     url += coinId;
     url += F("&vs_currencies=");
     url += currency;
@@ -197,7 +198,8 @@ bool Gecko::fetchTwoCoinsPriceChange()
     String change24h(currency);
     change24h += F("_24h_change");
 
-    String url(F("https://api.coingecko.com/api/v3/simple/price?ids="));
+    String url(F(GECKO_API_SERVER));
+    url += F("/api/v3/simple/price?ids=");
     url += coinId1;
     url += F(",");
     url += coinId2;
@@ -241,7 +243,8 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
     coinId.toLowerCase();
     currency.toLowerCase();
 
-    String url(F("https://api.coingecko.com/api/v3/coins/"));
+    String url(F(GECKO_API_SERVER));
+    url += F("/api/v3/coins/");
     url += coinId;
     url += F("/market_chart?vs_currency=");
     url += currency;
@@ -294,7 +297,9 @@ bool Gecko::ping()
     if (doInterval(m_last_ping, PING_INTERVAL)) {
         m_succeeded = false;
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
-        if (m_http.read(String(F("https://api.coingecko.com/api/v3/ping")).c_str(), doc)) {
+        String url(F(GECKO_API_SERVER));
+        url += F("/api/v3/ping");
+        if (m_http.read(url.c_str(), doc)) {
             const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
             m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
         }
