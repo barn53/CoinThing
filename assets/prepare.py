@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os
-import requests
-import subprocess
-import time
-
 import urllib.parse
 import urllib.request
 
 
 ###############################
 
-CoinThingIP = "192.168.178.74"
+CoinThingIP = "192.168.178.72"
 
 ###############################
 
