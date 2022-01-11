@@ -83,4 +83,17 @@ private:
     uint32_t m_last_coin_swap { 0 };
 
     bool m_shows_wifi_not_connected { false };
+
+    static uint16_t RED565;
+    static uint16_t GREEN565;
+    static uint16_t GREY_LEVEL2;
+    static uint16_t PERIOD_COLOR;
+    static uint16_t CURRENT_COIN_DOT_COLOR;
+    static uint16_t CHART_VERTICAL_LINE_COLOR;
+    static uint16_t CHART_FIRST_COLOR;
+    static uint16_t CHART_LAST_COLOR;
+    static uint16_t CHART_HIGH_COLOR;
+    static uint16_t CHART_LOW_COLOR;
+    static uint16_t CHART_BOX_BG;
+    static uint16_t CHART_BOX_MARGIN_COLOR;
 };

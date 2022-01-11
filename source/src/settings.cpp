@@ -265,3 +265,21 @@ void Settings::setBrightness(uint8_t b)
         }
     }
 }
+
+void Settings::setColorSet(uint8_t colorSet)
+{
+    File f = SPIFFS.open(COLOR_SET_FILE, "w");
+    f.print(colorSet);
+    f.close();
+}
+
+uint8_t Settings::getColorSet()
+{
+    if (SPIFFS.exists(COLOR_SET_FILE)) {
+        File f = SPIFFS.open(COLOR_SET_FILE, "r");
+        String colorSet(f.readString());
+        f.close();
+        return colorSet.toInt();
+    }
+    return 0;
+}
