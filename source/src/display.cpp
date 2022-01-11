@@ -59,8 +59,9 @@ Display::Display(Gecko& gecko, const Settings& settings)
 
 void Display::begin()
 {
+    analogWriteRange(std::numeric_limits<uint8_t>::max());
     pinMode(TFT_BL, OUTPUT);
-    analogWrite(TFT_BL, 30);
+    analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
 
     uint8_t colorSet = m_settings.getColorSet();
     if (colorSet == 1) {
@@ -83,8 +84,12 @@ void Display::begin()
     m_tft.setTextWrap(false);
     m_tft.fillScreen(TFT_BLACK);
 
-    analogWriteRange(std::numeric_limits<uint8_t>::max());
-    analogWrite(TFT_BL, std::numeric_limits<uint8_t>::max());
+    m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    String msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
+    m_tft.print(msg);
+    m_tft.unloadFont();
 }
 
 void Display::loop()
