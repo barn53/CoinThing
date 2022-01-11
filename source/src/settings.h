@@ -78,6 +78,9 @@ public:
 
     uint32_t lastChange() const { return m_last_change; }
 
+    static void setColorSet(uint8_t colorSet);
+    static uint8_t getColorSet();
+
 private:
     void set(DynamicJsonDocument& doc, bool toFile);
     void trace() const;

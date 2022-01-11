@@ -13,9 +13,6 @@
 
 #define RGB(r, g, b) (m_tft.color565(r, g, b))
 
-#define RED565 (0xd800)
-#define GREEN565 (0x06c0)
-
 #define DISPLAY_WIDTH TFT_WIDTH
 #define DISPLAY_HEIGHT TFT_HEIGHT
 
@@ -28,17 +25,58 @@
 
 extern String HostName;
 
+uint16_t Display::RED565;
+uint16_t Display::GREEN565;
+uint16_t Display::GREY_LEVEL2;
+uint16_t Display::PERIOD_COLOR;
+uint16_t Display::CURRENT_COIN_DOT_COLOR;
+uint16_t Display::CHART_VERTICAL_LINE_COLOR;
+uint16_t Display::CHART_FIRST_COLOR;
+uint16_t Display::CHART_LAST_COLOR;
+uint16_t Display::CHART_HIGH_COLOR;
+uint16_t Display::CHART_LOW_COLOR;
+uint16_t Display::CHART_BOX_BG;
+uint16_t Display::CHART_BOX_MARGIN_COLOR;
+
 Display::Display(Gecko& gecko, const Settings& settings)
     : m_gecko(gecko)
     , m_settings(settings)
     , m_tft(TFT_eSPI())
 {
+    RED565 = RGB(0xd8, 0x0, 0x0); // -> rgb565: 0xd800
+    GREEN565 = RGB(0x0, 0xd8, 0x0); // -> rgb565: 0x06c0
+    GREY_LEVEL2 = TFT_DARKGREY;
+    PERIOD_COLOR = RGB(0x0, 0x30, 0x90);
+    CURRENT_COIN_DOT_COLOR = RGB(0xff, 0x66, 0x0);
+    CHART_VERTICAL_LINE_COLOR = RGB(0x03, 0x04, 0x03);
+    CHART_FIRST_COLOR = RGB(0xa0, 0x0, 0xa0);
+    CHART_LAST_COLOR = RGB(0xa0, 0x80, 0x0);
+    CHART_HIGH_COLOR = TFT_DARKGREEN;
+    CHART_LOW_COLOR = TFT_RED;
+    CHART_BOX_BG = RGB(0x03, 0x03, 0x03);
+    CHART_BOX_MARGIN_COLOR = RGB(0x20, 0x20, 0x20);
 }
 
 void Display::begin()
 {
     pinMode(TFT_BL, OUTPUT);
     analogWrite(TFT_BL, 30);
+
+    uint8_t colorSet = m_settings.getColorSet();
+    if (colorSet == 1) {
+        RED565 = RGB(0xee, 0x0, 0xa);
+        GREEN565 = RGB(0x0, 0xee, 0xa);
+        GREY_LEVEL2 = RGB(0xb8, 0xb8, 0xb8);
+        PERIOD_COLOR = RGB(0x0, 0x7a, 0xea);
+        CURRENT_COIN_DOT_COLOR = RGB(0xdd, 0xaa, 0x0);
+        CHART_VERTICAL_LINE_COLOR = RGB(0x30, 0x30, 0x30);
+        CHART_FIRST_COLOR = RGB(0xa0, 0x0, 0xa0);
+        CHART_LAST_COLOR = RGB(0xa0, 0x80, 0x0);
+        CHART_HIGH_COLOR = RGB(0x0, 0xee, 0xa);
+        CHART_LOW_COLOR = RGB(0xee, 0x0, 0xa);
+        CHART_BOX_BG = RGB(0x03, 0x03, 0x03);
+        CHART_BOX_MARGIN_COLOR = RGB(0x20, 0x20, 0x20);
+    }
 
     m_tft.begin();
     m_tft.setRotation(0); // 0 & 2 Portrait. 1 & 3 landscape
@@ -159,7 +197,7 @@ void Display::renderTitle()
         } else {
             m_tft.loadFont(F("NotoSans-Regular25"));
         }
-        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        m_tft.setTextColor(GREY_LEVEL2, TFT_BLACK);
         m_tft.setCursor(x_name, y_symbol_curr);
         m_tft.print(symbol);
         m_tft.print(" - ");
@@ -181,7 +219,7 @@ void Display::renderTitle()
         if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
             uint32_t count(0);
             for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? RGB(0xff, 0x66, 0x0) : TFT_DARKGREY);
+                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? CURRENT_COIN_DOT_COLOR : GREY_LEVEL2);
             }
         }
     } else { // Settings::Mode::TWO_COINS
@@ -207,7 +245,7 @@ void Display::renderTitle()
                 m_tft.loadFont(F("NotoSans-Regular25"));
             }
             m_tft.setCursor(m_tft.getCursorX() + 10, y_cursor + 4);
-            m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+            m_tft.setTextColor(GREY_LEVEL2, TFT_BLACK);
             m_tft.print(symbol);
             m_tft.unloadFont();
         }
@@ -284,7 +322,7 @@ void Display::renderCoin()
 
     m_tft.fillRect(0, y_change, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
     m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, y_change);
-    m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+    m_tft.setTextColor(GREY_LEVEL2, TFT_BLACK);
     m_tft.print(msg2);
 
     m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, y_change, 15, 25, TFT_BLACK);
@@ -370,7 +408,7 @@ void Display::renderTwoCoins()
 
         m_tft.fillRect(0, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
         m_tft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
-        m_tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        m_tft.setTextColor(GREY_LEVEL2, TFT_BLACK);
         m_tft.print(msg2);
 
         m_tft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), 15, 25, TFT_BLACK);
@@ -455,9 +493,9 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     ///////////////////////////////////////////////////////////
     // draw vertical time lines
     for (uint8_t x = 0; x < DISPLAY_WIDTH; x += 24) {
-        m_tft.drawLine(x, DISPLAY_HEIGHT, x, CHART_Y_START - (textHeight / 2), RGB(0x03, 0x04, 0x03));
+        m_tft.drawLine(x, DISPLAY_HEIGHT, x, CHART_Y_START - (textHeight / 2), CHART_VERTICAL_LINE_COLOR);
     }
-    m_tft.drawLine(DISPLAY_WIDTH - 1, DISPLAY_HEIGHT, DISPLAY_WIDTH - 1, CHART_Y_START - (textHeight / 2), RGB(0x03, 0x04, 0x03));
+    m_tft.drawLine(DISPLAY_WIDTH - 1, DISPLAY_HEIGHT, DISPLAY_WIDTH - 1, CHART_Y_START - (textHeight / 2), CHART_VERTICAL_LINE_COLOR);
 
     ///////////////////////////////////////////////////////////
     // draw period as background
@@ -481,7 +519,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
             }
         }
 
-        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
+        m_tft.setTextColor(PERIOD_COLOR, TFT_BLACK);
         m_tft.setCursor(periodX, (DISPLAY_HEIGHT - 24));
         m_tft.print(period);
         m_tft.unloadFont();
@@ -496,8 +534,8 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     uint8_t yLast(min<uint8_t>(calcY(prices->back()), DISPLAY_HEIGHT - 1));
     for (uint8_t x = 0; x < DISPLAY_WIDTH; ++x) {
         if (dotted >= 0 && dotted < 4) {
-            m_tft.drawPixel(x, yFirst, TFT_PURPLE);
-            m_tft.drawPixel(x, yLast, TFT_BROWN);
+            m_tft.drawPixel(x, yFirst, CHART_FIRST_COLOR);
+            m_tft.drawPixel(x, yLast, CHART_LAST_COLOR);
         }
         ++dotted;
         dotted %= 10;
@@ -525,12 +563,12 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
                 xAt = xAtHigh;
                 yMarker = CHART_Y_START;
                 formatNumber(high, number, m_settings.numberFormat(), false, true);
-                m_tft.setTextColor(TFT_DARKGREEN, TFT_BLACK);
+                m_tft.setTextColor(CHART_HIGH_COLOR, TFT_BLACK);
             } else {
                 xAt = xAtLow;
                 yMarker = DISPLAY_HEIGHT - (textHeight / 2);
                 formatNumber(low, number, m_settings.numberFormat(), false, true);
-                m_tft.setTextColor(TFT_RED, TFT_BLACK);
+                m_tft.setTextColor(CHART_LOW_COLOR, TFT_BLACK);
             }
             number += m_settings.currencySymbol();
             int16_t widthNumber(m_tft.textWidth(number));
@@ -548,9 +586,9 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
                 m_tft.drawLine(xAt + 1, yMarker, xAt + 6, yMarker + 4, TFT_BLACK);
                 m_tft.drawLine(xAt - 1, yMarker, xAt + 4, yMarker + 4, TFT_BLACK);
 
-                m_tft.drawLine(xAt, yMarker, xAt + 30, yMarker, TFT_DARKGREY);
-                m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker - 4, TFT_DARKGREY);
-                m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker + 4, TFT_DARKGREY);
+                m_tft.drawLine(xAt, yMarker, xAt + 30, yMarker, GREY_LEVEL2);
+                m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker - 4, GREY_LEVEL2);
+                m_tft.drawLine(xAt, yMarker, xAt + 5, yMarker + 4, GREY_LEVEL2);
 
                 m_tft.setCursor(xAt + 30 + DISTANCE_CHART_VALUE, yMarker - (textHeight / 2));
                 m_tft.print(number);
@@ -567,9 +605,9 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
                 m_tft.drawLine(xAt + 1, yMarker, xAt - 4, yMarker + 4, TFT_BLACK);
                 m_tft.drawLine(xAt - 1, yMarker, xAt - 6, yMarker + 4, TFT_BLACK);
 
-                m_tft.drawLine(xAt, yMarker, xAt - 30, yMarker, TFT_DARKGREY);
-                m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker - 4, TFT_DARKGREY);
-                m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker + 4, TFT_DARKGREY);
+                m_tft.drawLine(xAt, yMarker, xAt - 30, yMarker, GREY_LEVEL2);
+                m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker - 4, GREY_LEVEL2);
+                m_tft.drawLine(xAt, yMarker, xAt - 5, yMarker + 4, GREY_LEVEL2);
 
                 m_tft.setCursor(xAt - 30 - widthNumber - DISTANCE_CHART_VALUE, yMarker - (textHeight / 2));
                 m_tft.print(number);
@@ -614,34 +652,33 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         if (widthLast > maxWidth) {
             maxWidth = widthLast;
         }
-        uint16_t boxBG(RGB(0x03, 0x03, 0x03));
-        m_tft.fillRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, boxBG);
+        m_tft.fillRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, CHART_BOX_BG);
 
-        m_tft.setTextColor(TFT_DARKGREEN, boxBG);
+        m_tft.setTextColor(CHART_HIGH_COLOR, CHART_BOX_BG);
         m_tft.setCursor(20, boxY);
         m_tft.print("high");
         m_tft.setCursor(55 + maxWidth - widthHigh, boxY);
         m_tft.print(numberHigh);
 
-        m_tft.setTextColor(TFT_RED, boxBG);
+        m_tft.setTextColor(CHART_LOW_COLOR, CHART_BOX_BG);
         m_tft.setCursor(20, boxY + (textHeight + 2));
         m_tft.print("low");
         m_tft.setCursor(55 + maxWidth - widthLow, boxY + (textHeight + 2));
         m_tft.print(numberLow);
 
-        m_tft.setTextColor(TFT_PURPLE, boxBG);
+        m_tft.setTextColor(CHART_FIRST_COLOR, CHART_BOX_BG);
         m_tft.setCursor(20, boxY + (2 * (textHeight + 2)));
         m_tft.print("first");
         m_tft.setCursor(55 + maxWidth - widthFirst, boxY + (2 * (textHeight + 2)));
         m_tft.print(numberFirst);
 
-        m_tft.setTextColor(TFT_BROWN, boxBG);
+        m_tft.setTextColor(CHART_LAST_COLOR, CHART_BOX_BG);
         m_tft.setCursor(20, boxY + (3 * (textHeight + 2)));
         m_tft.print("last");
         m_tft.setCursor(55 + maxWidth - widthLast, boxY + (3 * (textHeight + 2)));
         m_tft.print(numberLast);
 
-        m_tft.drawRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, RGB(0x20, 0x20, 0x20));
+        m_tft.drawRect(20 - 5, boxY - 4, 55 - 20 + maxWidth + 10, (4 * (textHeight + 2)) + 8, CHART_BOX_MARGIN_COLOR);
     }
 
     ///////////////////////////////////////////////////////////
@@ -661,7 +698,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         auto widthPeriod(m_tft.textWidth(period));
         m_tft.fillRect(DISPLAY_WIDTH - widthPeriod - (2 * DISTANCE_CHART_VALUE), periodY - DISTANCE_CHART_VALUE,
             widthPeriod + (2 * DISTANCE_CHART_VALUE), textHeight + (2 * DISTANCE_CHART_VALUE), TFT_BLACK);
-        m_tft.setTextColor(RGB(0x00, 0x30, 0x90), TFT_BLACK);
+        m_tft.setTextColor(PERIOD_COLOR, TFT_BLACK);
         m_tft.setCursor(DISPLAY_WIDTH - widthPeriod, periodY);
         m_tft.print(period);
     }
@@ -965,8 +1002,8 @@ void Display::showSettingsQR()
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
-        m_tft.fillScreen(RGB(0x00, 0x30, 0x90));
-        m_tft.setTextColor(TFT_WHITE, RGB(0x00, 0x30, 0x90));
+        m_tft.fillScreen(RGB(0x0, 0x30, 0x90));
+        m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x30, 0x90));
 
         m_tft.loadFont(F("NotoSans-Regular50"));
         String msg = F("CoinThing");
