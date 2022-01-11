@@ -81,6 +81,7 @@ bool Handler::handleResetAll() const
 
     m_settings.deleteFile();
     SPIFFS.remove(WIFI_FILE);
+    // keep COLOR_SET_FILE
     delay(200);
     WiFi.disconnect();
     delay(200);
@@ -193,6 +194,11 @@ bool Handler::handleSet() const
     } else if (server.hasArg(F("json"))) {
         m_settings.set(server.arg(F("json")).c_str());
         streamFile(SETTINGS_FILE);
+    } else if (server.hasArg(F("colorset"))) {
+        m_settings.setColorSet(server.arg(F("colorset")).toInt());
+        server.send(200, F("text/plain"), server.arg(F("colorset")));
+        delay(200);
+        ESP.restart();
     } else {
         server.send(200, F("application/json"), F(R"({"error":"Nothing to set!"})"));
     }

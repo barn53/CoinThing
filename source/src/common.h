@@ -6,6 +6,7 @@
 #define WIFI_FILE F("/wifi.json")
 #define SELFTEST_FILE F("/selftest")
 #define VERSION_BEFORE_UPDATE_FILE F("/versionbeforeupdate")
+#define COLOR_SET_FILE F("/colorset")
 
 #define FS_NO_GLOBALS
 #include <FS.h>
