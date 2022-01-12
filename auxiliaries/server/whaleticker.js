@@ -13,6 +13,7 @@ server.listen(port, function () {
 
 app.use(express.static(__dirname + '/../../source/data'))
 app.use(express.static(__dirname + '/../../source/html'))
+
 app.get('/action/set', function (req, res) {
 
     for (const [key, value] of Object.entries(req.query)) {
