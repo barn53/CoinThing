@@ -62,6 +62,11 @@
                 <hr>
                 <p class="text-danger"><b>Danger-Zone</b></p>
                 <p>
+                    <button id="colorSet0" class="btn btn-warning btn-sm">Color Set 0</button>
+                    <button id="colorSet1" class="btn btn-warning btn-sm">Color Set 1</button>
+                    &nbsp;<span id="forColorSet" class="text-warning"></span>
+                </p>
+                <p>
                     <button id="resetSettings" class="btn btn-warning btn-sm">Reset Settings</button>
                     &nbsp;<span id="forResetSettings" class="text-warning"></span>
                 </p>
@@ -148,6 +153,19 @@
                 $.get("/action/reset/esp", function (data) {
                     $("#forResetESP").append(data)
                 }).fail(function () { $("#forResetESP").append("failure") })
+            })
+
+            $('#colorSet0').off().click(function (e) {
+                $("#forColorSet").empty()
+                $.get("/action/set?colorset=0", function (data) {
+                    $("#forColorSet").append(data)
+                }).fail(function () { $("#forColorSet").append("failure") })
+            })
+            $('#colorSet1').off().click(function (e) {
+                $("#forColorSet").empty()
+                $.get("/action/set?colorset=1", function (data) {
+                    $("#forColorSet").append(data)
+                }).fail(function () { $("#forColorSet").append("failure") })
             })
 
             $('#resetSettings').off().click(function (e) {
