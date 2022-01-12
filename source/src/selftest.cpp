@@ -29,7 +29,8 @@ void selftest(Display& display)
     tft.loadFont(F("NotoSans-Regular20"));
     msg = F("v: ");
     msg += VERSION;
-    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 65);
+    size_t textY(65);
+    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
     tft.print(msg);
     File file = SPIFFS.open(F("/version.spiffs"), "r");
     if (file.available()) {
@@ -37,9 +38,15 @@ void selftest(Display& display)
         file.close();
         msg = F("s: ");
         msg += spiffs;
-        tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 90);
+        textY += 22;
+        tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
         tft.print(msg);
     }
+    msg = F("colorset: ");
+    msg += Settings::getColorSet();
+    textY += 22;
+    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
+    tft.print(msg);
     tft.unloadFont();
 
     tft.loadFont(F("NotoSans-Regular30"));
@@ -61,7 +68,7 @@ void selftest(Display& display)
             formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true);
             formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, 2);
 
-            tft.setCursor(0, 125);
+            tft.setCursor(0, 140);
             msg = "  ";
             msg += id;
             msg += F(":           \n  ");
