@@ -19,6 +19,7 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 fp-info-cache
+cointhing2-backups
 
 # Netlist files (exported from Eeschema)
 *.net
@@ -26,6 +27,7 @@ fp-info-cache
 # Autorouter files (exported from Pcbnew)
 *.dsn
 *.ses
+*.bin
 
 # Exported Fabrication files
 *.gbr
