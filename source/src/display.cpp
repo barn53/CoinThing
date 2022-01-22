@@ -1101,7 +1101,7 @@ void Display::showPrepareUpdate(bool failed)
         m_tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
     }
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.loadFont(F("NotoSans-Condensed50"));
     String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
@@ -1135,7 +1135,7 @@ void Display::showUpdated()
     m_tft.fillScreen(RGB(0x0, 0x80, 0x30));
     m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x80, 0x30));
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.loadFont(F("NotoSans-Condensed50"));
     String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
@@ -1157,7 +1157,7 @@ void Display::showNotUpdated()
     m_tft.fillScreen(RGB(0x80, 0x30, 0x0));
     m_tft.setTextColor(TFT_WHITE, RGB(0x80, 0x30, 0x0));
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
+    m_tft.loadFont(F("NotoSans-Condensed50"));
     String msg = F("WhaleTicker");
     m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
     m_tft.print(msg);
