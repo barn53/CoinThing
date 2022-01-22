@@ -6,16 +6,18 @@ import time
 
 ###############################
 
-CoinThingIP = "192.168.178.74"
+CoinThingIP = "192.168.178.66"
 ColorSet = 1
 
 ###############################
 
+print()
+print()
 if ColorSet != 0:
     print("Set color set to: {0}".format(ColorSet))
     url = 'http://{0}/action/set?colorset={1}'.format(CoinThingIP, ColorSet)
     urllib.request.urlopen(url)
-    print("\n>>  Wait for blue screen/open settings screen...")
+    print("\n>>  Wait for restart, blue screen/open settings screen...")
     print(">>    Enter to proceed...")
     input()
 
