@@ -46,8 +46,8 @@ app.get('/api/v3/simple/price', function (req, res) {
 
 app.get('/api/v3/coins/(*)/market_chart', function (req, res) {
 
-    res.status(404).send('Sorry, cant find that');
-    return
+    //res.status(404).send('Sorry, cant find that');
+    //return
 
     console.log(req.path)
     console.log(req.query)

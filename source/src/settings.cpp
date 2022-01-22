@@ -295,6 +295,11 @@ void Settings::setFakeGeckoServer(String address)
     }
 }
 
+bool Settings::isFakeGeckoServer()
+{
+    return SPIFFS.exists(FAKE_GECKO_SERVER_FILE);
+}
+
 String Settings::getGeckoServer()
 {
     if (SPIFFS.exists(FAKE_GECKO_SERVER_FILE)) {

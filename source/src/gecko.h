@@ -29,6 +29,8 @@ public:
     void prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod);
 
     HttpJson& getHttpJson() { return m_http; }
+    int getLastHttpCode() const;
+    size_t getHttpCount() const;
 
 private:
     bool fetchCoinPriceChange(uint32_t coinIndex);

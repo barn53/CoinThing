@@ -721,8 +721,11 @@ void Display::chartFailed()
 
     m_tft.loadFont(F("NotoSans-Regular20"));
     m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-    m_tft.setCursor(10, 185);
+    m_tft.setCursor(10, 175);
     m_tft.print(F("Chart update failed!"));
+
+    m_tft.setCursor(10, 200);
+    m_tft.printf("( %d / %u )     ", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
     m_tft.unloadFont();
 }
 
@@ -1010,8 +1013,9 @@ void Display::showAPIOK()
         m_tft.fillScreen(RGB(0x0, 0x30, 0x90));
         m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x30, 0x90));
 
+        String msg;
         m_tft.loadFont(F("NotoSans-Regular50"));
-        String msg = F("CoinThing");
+        msg = F("CoinThing");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
         m_tft.print(msg);
         m_tft.unloadFont();
@@ -1023,6 +1027,12 @@ void Display::showAPIOK()
         m_tft.unloadFont();
 
         m_tft.loadFont(F("NotoSans-Regular20"));
+        if (m_settings.isFakeGeckoServer()) {
+            msg = m_settings.getGeckoServer();
+            m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);
+            m_tft.print(msg);
+        }
+
         msg = VERSION;
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
         m_tft.print(msg);
