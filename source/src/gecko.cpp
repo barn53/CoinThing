@@ -308,3 +308,13 @@ bool Gecko::ping()
     }
     return m_succeeded;
 }
+
+int Gecko::getLastHttpCode() const
+{
+    return m_http.getLastHttpCode();
+}
+
+size_t Gecko::getHttpCount() const
+{
+    return m_http.getHttpCount();
+}
