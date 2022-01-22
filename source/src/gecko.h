@@ -3,14 +3,6 @@
 #include "utils.h"
 #include <Arduino.h>
 
-#ifdef USE_GECKO_API_FAKE_SERVER
-#if USE_GECKO_API_FAKE_SERVER > 0
-#define GECKO_API_SERVER "https://192.168.178.81:3443"
-#else
-#define GECKO_API_SERVER "https://api.coingecko.com"
-#endif
-#endif
-
 class HttpJson;
 
 bool isCoin(const char* coin);
@@ -44,6 +36,8 @@ private:
     bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
 
     bool m_succeeded { false };
+
+    String m_gecko_server;
 
     gecko_t m_price { 0. };
     gecko_t m_price2 { 0. };

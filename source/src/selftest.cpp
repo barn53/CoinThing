@@ -50,7 +50,7 @@ void selftest(Display& display)
     tft.unloadFont();
 
     tft.loadFont(F("NotoSans-Regular30"));
-    String pre(F(GECKO_API_SERVER));
+    String pre(F("https://api.coingecko.com"));
     pre += F("/api/v3/simple/price?ids=");
     String post(F("&vs_currencies=usd&include_24hr_change=true"));
     for (const auto* id : { F("bitcoin"), F("ethereum"), F("ripple"), F("cardano"), F("dogecoin") }) {

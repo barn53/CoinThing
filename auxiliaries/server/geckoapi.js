@@ -3,6 +3,7 @@ const https = require('https')
 const fs = require('fs')
 var cors = require('cors')
 const { nextTick } = require('process')
+var ip = require("ip");
 var app = express()
 app.use(cors())
 
@@ -13,7 +14,7 @@ var options = {
     cert: cert
 }
 
-function fileToJSON() {
+function fileToJSON(filename) {
     return JSON.parse(fs.readFileSync(__dirname + filename))
 }
 
@@ -22,7 +23,7 @@ var server = https.createServer(options, app)
 var port = 3443
 
 server.listen(port, function () {
-    console.log('Gecko API server port: %d', port)
+    console.log('Gecko API server address: https://%s:%d', ip.address(), port);
 })
 
 app.get('/*', function (req, res, next) {
@@ -33,7 +34,7 @@ app.get('/*', function (req, res, next) {
 
 app.get('/api/v3/simple/price', function (req, res) {
     console.log(req.path)
-    // console.log(req.query)
+    console.log(req.query)
     console.log('coin ids: ' + req.query.ids)
 
     priceCoin = fileToJSON('/geckofakedata/price_coin.json')
@@ -44,6 +45,10 @@ app.get('/api/v3/simple/price', function (req, res) {
 
 
 app.get('/api/v3/coins/(*)/market_chart', function (req, res) {
+
+    res.status(404).send('Sorry, cant find that');
+    return
+
     console.log(req.path)
     console.log(req.query)
     console.log('coin id: ' + req.params[0])
@@ -52,6 +57,7 @@ app.get('/api/v3/coins/(*)/market_chart', function (req, res) {
     console.log('result: ' + JSON.stringify(marketChart))
     res.send(JSON.stringify(marketChart))
 })
+
 
 app.get('/api/v3/ping', function (req, res) {
     console.log('API ping')

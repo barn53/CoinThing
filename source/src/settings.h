@@ -81,6 +81,9 @@ public:
     static void setColorSet(uint8_t colorSet);
     static uint8_t getColorSet();
 
+    static void setFakeGeckoServer(String address);
+    static String getGeckoServer();
+
 private:
     void set(DynamicJsonDocument& doc, bool toFile);
     void trace() const;
