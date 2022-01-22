@@ -733,7 +733,7 @@ void Display::chartFailed()
     m_tft.print(F("Chart update failed!"));
 
     m_tft.setCursor(10, 200);
-    m_tft.printf("( %d / %u )", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
+    m_tft.printf("( %d / %u )     ", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
     m_tft.unloadFont();
 }
 
