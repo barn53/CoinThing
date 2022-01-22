@@ -729,8 +729,11 @@ void Display::chartFailed()
 
     m_tft.loadFont(F("NotoSans-Regular20"));
     m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-    m_tft.setCursor(10, 185);
+    m_tft.setCursor(10, 175);
     m_tft.print(F("Chart update failed!"));
+
+    m_tft.setCursor(10, 200);
+    m_tft.printf("( %d / %u )", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
     m_tft.unloadFont();
 }
 
@@ -1025,7 +1028,15 @@ void Display::showAPIOK()
 
         m_tft.setTextColor(RGB(4, 30, 150), TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular20"));
-        String msg = VERSION;
+
+        String msg;
+        if (m_settings.isFakeGeckoServer()) {
+            msg = m_settings.getGeckoServer();
+            m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);
+            m_tft.print(msg);
+        }
+
+        msg = VERSION;
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
         m_tft.print(msg);
 

@@ -297,8 +297,6 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
 
 bool Gecko::ping()
 {
-    LOG_FUNC
-
     if (doInterval(m_last_ping, PING_INTERVAL)) {
         m_succeeded = false;
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
@@ -306,9 +304,6 @@ bool Gecko::ping()
         url += F("/api/v3/ping");
         if (m_http.read(url.c_str(), doc)) {
             const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
-
-            Serial.printf("Gecko says: %s\n", gecko_says);
-
             m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
         }
         m_last_ping = millis_test();
@@ -334,4 +329,14 @@ void Gecko::check()
     }
 
     LOG_I_PRINTF("\ncheck info: %s, error: %s\n", m_check_info.c_str(), m_check_error.c_str());
+}
+
+int Gecko::getLastHttpCode() const
+{
+    return m_http.getLastHttpCode();
+}
+
+size_t Gecko::getHttpCount() const
+{
+    return m_http.getHttpCount();
 }

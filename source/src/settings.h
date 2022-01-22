@@ -82,6 +82,7 @@ public:
     static uint8_t getColorSet();
 
     static void setFakeGeckoServer(String address);
+    static bool isFakeGeckoServer();
     static String getGeckoServer();
 
 private:
