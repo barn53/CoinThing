@@ -41,6 +41,8 @@ private:
 
     bool m_succeeded { false };
 
+    String m_gecko_server;
+
     gecko_t m_price { 0. };
     gecko_t m_price2 { 0. };
     gecko_t m_change_pct { 0. };

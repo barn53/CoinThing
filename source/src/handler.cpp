@@ -81,6 +81,7 @@ bool Handler::handleResetAll() const
 
     m_settings.deleteFile();
     SPIFFS.remove(WIFI_FILE);
+    SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
     // keep COLOR_SET_FILE
     delay(200);
     WiFi.disconnect();
@@ -197,6 +198,11 @@ bool Handler::handleSet() const
     } else if (server.hasArg(F("colorset"))) {
         m_settings.setColorSet(server.arg(F("colorset")).toInt());
         server.send(200, F("text/plain"), server.arg(F("colorset")));
+        delay(200);
+        ESP.restart();
+    } else if (server.hasArg(F("fakegeckoserver"))) {
+        m_settings.setFakeGeckoServer(server.arg(F("fakegeckoserver")));
+        server.send(200, F("text/plain"), server.arg(F("fakegeckoserver")));
         delay(200);
         ESP.restart();
     } else {

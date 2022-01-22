@@ -86,6 +86,9 @@
                 <p>
                     <span id="wifijson" class="text-info"></span>
                 </p>
+                <p>
+                    <span id="fakegeckoserver" class="text-info"></span>
+                </p>
                 <p style="height:50px;"></p>
             </div>
             <div class="col-sm-3 sidenav">
@@ -106,6 +109,14 @@
                 $("#wifijson").append("wifi.json exists")
             }).fail(function () {
                 $("#wifijson").empty().append("wifi.json does not exist")
+            })
+        }
+
+        function checkForFakeGeckoServer() {
+            $.get("/fakegeckoserver", function (data) {
+                $("#fakegeckoserver").empty().append("Fake Gecko Server: " + data)
+            }).fail(function () {
+                $("#fakegeckoserver").empty()
             })
         }
 
@@ -200,6 +211,7 @@
             })
 
             checkForWiFiJson()
+            checkForFakeGeckoServer()
 
         })
 

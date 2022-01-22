@@ -283,3 +283,25 @@ uint8_t Settings::getColorSet()
     }
     return 0;
 }
+
+void Settings::setFakeGeckoServer(String address)
+{
+    if (address.isEmpty()) {
+        SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
+    } else {
+        File f = SPIFFS.open(FAKE_GECKO_SERVER_FILE, "w");
+        f.print(address);
+        f.close();
+    }
+}
+
+String Settings::getGeckoServer()
+{
+    if (SPIFFS.exists(FAKE_GECKO_SERVER_FILE)) {
+        File f = SPIFFS.open(FAKE_GECKO_SERVER_FILE, "r");
+        String fakeGeckoServer(f.readString());
+        f.close();
+        return fakeGeckoServer;
+    }
+    return F("https://api.coingecko.com");
+}
