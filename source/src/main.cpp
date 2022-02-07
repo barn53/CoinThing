@@ -24,6 +24,8 @@ Handler handler(gecko, settings);
 
 String HostName;
 
+#ifndef UNIT_TEST
+
 void setup(void)
 {
     Serial.begin(115200);
@@ -73,3 +75,5 @@ void loop()
 #endif
     server.handleClient();
 }
+
+#endif // UNIT_TEST
