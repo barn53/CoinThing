@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-#if COIN_THING_SERIAL > 0
+#if COIN_THING_SERIAL > 0 && !defined UNIT_TEST
 extern int callDepth;
 extern uint32_t lastIndentMillis;
 
