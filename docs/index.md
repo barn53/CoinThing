@@ -140,6 +140,11 @@ For an update from version 1.4 or below to version 1.5 you need to upload the fi
 
 When your CoinThing is already on Version 1.5.*, you can update via the browser update method.
 
+### Version 1.5.1:
+- Internal.
+
+[cointhing_v1.5.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.1/cointhing_v1.5.1.bin)
+
 ### Version 1.5.0:
 - Get the 7 top trending coins in the settings page
 - Minor server stabilisation for settings page.
