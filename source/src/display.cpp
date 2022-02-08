@@ -285,7 +285,7 @@ void Display::renderCoin()
     String msg;
     m_tft.setTextColor(color, TFT_BLACK);
     m_tft.loadFont(F("NotoSans-Regular50"));
-    formatNumber(price, msg, m_settings.numberFormat(), false, true);
+    formatNumber(price, msg, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
     msg += m_settings.currencySymbol();
 
     auto priceWidth(m_tft.textWidth(msg));
@@ -312,8 +312,8 @@ void Display::renderCoin()
     m_tft.unloadFont();
 
     String msg2;
-    formatNumber(price2, msg2, m_settings.numberFormat(), false, true);
-    formatNumber(change_pct, msg, m_settings.numberFormat(), true, false, 2);
+    formatNumber(price2, msg2, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+    formatNumber(change_pct, msg, m_settings.numberFormat(), true, false, false, 2);
     msg2 += m_settings.currency2Symbol();
     msg += "%";
     m_tft.loadFont(F("NotoSans-Regular25"));
@@ -370,7 +370,7 @@ void Display::renderTwoCoins()
         String msg;
         m_tft.setTextColor(color, TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular50"));
-        formatNumber(price[coinIndex], msg, m_settings.numberFormat(), false, true);
+        formatNumber(price[coinIndex], msg, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         msg += m_settings.currencySymbol();
 
         auto priceWidth(m_tft.textWidth(msg));
@@ -390,8 +390,8 @@ void Display::renderTwoCoins()
         m_tft.unloadFont();
 
         String msg2;
-        formatNumber(price2[coinIndex], msg2, m_settings.numberFormat(), false, true);
-        formatNumber(change_pct[coinIndex], msg, m_settings.numberFormat(), true, false, 2);
+        formatNumber(price2[coinIndex], msg2, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+        formatNumber(change_pct[coinIndex], msg, m_settings.numberFormat(), true, false, false, 2);
         msg2 += m_settings.currency2Symbol();
         msg += "%";
         m_tft.loadFont(F("NotoSans-Regular30"));
@@ -514,7 +514,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     // draw period as background
     if (m_settings.chartStyle() != Settings::ChartStyle::HIGH_LOW_FIRST_LAST) {
         String lowNumber;
-        formatNumber(low, lowNumber, m_settings.numberFormat(), false, true);
+        formatNumber(low, lowNumber, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         m_tft.loadFont(F("NotoSans-Regular15"));
         int16_t widthLowNumber(m_tft.textWidth(lowNumber) + 30);
         m_tft.unloadFont();
@@ -575,12 +575,12 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
             if (ii == 0) {
                 xAt = xAtHigh;
                 yMarker = CHART_Y_START;
-                formatNumber(high, number, m_settings.numberFormat(), false, true);
+                formatNumber(high, number, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
                 m_tft.setTextColor(CHART_HIGH_COLOR, TFT_BLACK);
             } else {
                 xAt = xAtLow;
                 yMarker = DISPLAY_HEIGHT - (textHeight / 2);
-                formatNumber(low, number, m_settings.numberFormat(), false, true);
+                formatNumber(low, number, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
                 m_tft.setTextColor(CHART_LOW_COLOR, TFT_BLACK);
             }
             number += m_settings.currencySymbol();
@@ -643,10 +643,10 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         }
 
         String numberFirst, numberLast, numberLow, numberHigh;
-        formatNumber(*beginIt, numberFirst, m_settings.numberFormat(), false, true);
-        formatNumber(prices->back(), numberLast, m_settings.numberFormat(), false, true);
-        formatNumber(low, numberLow, m_settings.numberFormat(), false, true);
-        formatNumber(high, numberHigh, m_settings.numberFormat(), false, true);
+        formatNumber(*beginIt, numberFirst, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+        formatNumber(prices->back(), numberLast, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+        formatNumber(low, numberLow, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+        formatNumber(high, numberHigh, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         numberHigh += m_settings.currencySymbol();
         numberLow += m_settings.currencySymbol();
         numberFirst += m_settings.currencySymbol();

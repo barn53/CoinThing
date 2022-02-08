@@ -66,6 +66,7 @@ public:
     Mode mode() const { return m_mode; }
     uint32_t numberCoins() const;
     NumberFormat numberFormat() const { return m_number_format; }
+    bool numberCompactZeroes() const { return m_number_compact_zeroes; }
     uint8_t chartPeriod() const { return m_chart_period; }
     Swap swapInterval() const { return m_swap_interval; }
     ChartStyle chartStyle() const { return m_chart_style; }
@@ -97,6 +98,7 @@ private:
     std::array<Currency, 2> m_currencies;
 
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
+    bool m_number_compact_zeroes { true };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };
     Swap m_swap_interval { Swap::INTERVAL_1 };
     ChartStyle m_chart_style { ChartStyle::SIMPLE };
