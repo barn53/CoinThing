@@ -5,7 +5,7 @@ int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
 
-void formatNumber(float n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces)
+void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
