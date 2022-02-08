@@ -80,7 +80,7 @@ enum class NumberFormat : uint8_t {
     THOUSAND_BLANK_DECIMAL_DOT, // 1 000.00
     DECIMAL_DOT // 1000.00
 };
-void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
+void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
 
 uint32_t millis_test();
 bool doInterval(uint32_t change, uint32_t interval);
