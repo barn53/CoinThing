@@ -5,7 +5,7 @@ int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
 
-void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, uint8_t forceDecimalPlaces)
+void formatNumber(float n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
@@ -57,55 +57,86 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
 
     bool hasDecSep(false);
-    if (format != NumberFormat::DECIMAL_DOT) { // no need to touch
-        int rev(0);
-        for (auto pos = strlen(buf); pos != 0; --pos, ++rev) {
-            char c = buf[pos - 1];
-            if (c == '.') {
-                hasDecSep = true;
-            }
-            buf2[rev] = c;
+    int rev(0);
+    for (auto pos = strlen(buf); pos > 0; --pos, ++rev) {
+        char c = buf[pos - 1];
+        if (c == '.') {
+            hasDecSep = true;
         }
-        buf2[rev] = 0; // buf2 holds number string in reverse order
+        buf2[rev] = c;
+    }
+    buf2[rev] = 0; // buf2 holds number string in reverse order
 
-        bool reachedDecSep(false);
-        uint8_t jj(sizeof(buf) - 1);
-        uint8_t group(0);
-
-        buf[jj] = 0;
-        --jj;
-
-        for (uint8_t ii = 0; buf2[ii] != 0 && jj != 0; ++ii) {
-            char c = buf2[ii];
-
-            if (!hasDecSep || reachedDecSep) {
-                ++group;
-            }
-
-            if (c == '.') {
-                c = decimalSeparator;
-                reachedDecSep = true;
-            }
-
-            buf[jj] = c;
-            --jj;
-
-            if (group > 0
-                && group % 3 == 0
-                && buf2[ii + 1] != 0
-                && buf2[ii + 1] != '+') {
-                if (thousandSeparator != '#') {
-                    buf[jj] = thousandSeparator;
-                    --jj;
-                }
-            }
-        }
-        s = &buf[jj + 1];
-    } else {
-        s = buf;
+    uint8_t numTrailingZeroes(0);
+    uint8_t posDecSep(0);
+    if (hasDecSep) {
+        for (; buf2[numTrailingZeroes] == '0'; ++numTrailingZeroes) { }
+        for (posDecSep = numTrailingZeroes; buf2[posDecSep] != '.'; ++posDecSep) { }
     }
 
-    s.replace(" ", "\u2006"); // Six-Per-Em Space U+2006
+    bool reachedDecSep(false);
+    uint8_t copyTo(sizeof(buf) - 1);
+    uint8_t group(0);
+
+    buf[copyTo] = 0;
+    --copyTo;
+
+    uint8_t copyFrom(0);
+    if (numTrailingZeroes > 0) {
+        // remove trailing zeroes (after the decimal separator)
+        //  but leave at least 2 digits
+        copyFrom = min<uint8_t>(numTrailingZeroes, posDecSep - 2);
+    }
+
+    // reverse copy the numeric string and apply some formatting
+    for (; buf2[copyFrom] != 0 && copyTo != 0; ++copyFrom) {
+        char c = buf2[copyFrom];
+
+        if (!hasDecSep || reachedDecSep) {
+            ++group;
+        }
+
+        if (c == '.') {
+            c = decimalSeparator;
+            reachedDecSep = true;
+        }
+
+        buf[copyTo] = c;
+        --copyTo;
+
+        if (group > 0
+            && group % 3 == 0
+            && buf2[copyFrom + 1] != 0
+            && buf2[copyFrom + 1] != '+') {
+            if (thousandSeparator != '#') {
+                buf[copyTo] = thousandSeparator;
+                --copyTo;
+            }
+        }
+    }
+    s = &buf[copyTo + 1];
+
+    if (compactZeroes) {
+        String pattern;
+        pattern = F("0");
+        pattern += decimalSeparator;
+        pattern += F("00");
+        uint8_t zeroesAfterDecSep(2);
+        bool zeroesNotation(false);
+        while (s.indexOf(pattern) != -1 && pattern.length() < s.length()) {
+            pattern += F("0");
+            ++zeroesAfterDecSep;
+            zeroesNotation = true;
+        }
+        if (zeroesNotation) {
+            String z(--zeroesAfterDecSep);
+            z += F("z");
+            pattern = pattern.substring(0, pattern.length() - 1);
+            s.replace(pattern, z);
+        }
+    }
+
+    s.replace(F(" "), F("\u2006")); // Six-Per-Em Space U+2006
     if (dash00) {
         String dotZero;
         dotZero = decimalSeparator;

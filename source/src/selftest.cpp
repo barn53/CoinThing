@@ -66,8 +66,8 @@ void selftest(Display& display)
             String price;
             String change;
 
-            formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true);
-            formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, 2);
+            formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true, true);
+            formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, false, 2);
 
             tft.setCursor(0, 140);
             msg = "  ";
