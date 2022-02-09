@@ -13,7 +13,7 @@ s={{$processEnv %FRITZ_SSID}}
 
 @cointhing_ip = localhost:3000
 
-@cointhing_ip = 192.168.178.60
+@cointhing_ip = 192.168.178.97
 
 
 ###  Settings - 10 coins
@@ -34,6 +34,10 @@ GET http://{{cointhing_ip}}/action/set?brightness=255 HTTP/1.1
 
 ###  Selftest
 GET http://{{cointhing_ip}}/action/selftest HTTP/1.1
+
+###  Colorset
+GET http://{{cointhing_ip}}/action/set?colorset=0 HTTP/1.1
+
 
 ###  Reset for delivery
 GET http://{{cointhing_ip}}/action/reset/all HTTP/1.1

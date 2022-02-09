@@ -118,18 +118,24 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
 
     if (compactZeroes) {
         String pattern;
-        pattern = F("0");
+        String sign;
+        if (s[0] == '+' || s[0] == '-') {
+            sign = s[0];
+            pattern = s[0];
+        }
+        pattern += F("0");
         pattern += decimalSeparator;
         pattern += F("00");
         uint8_t zeroesAfterDecSep(2);
         bool zeroesNotation(false);
-        while (s.indexOf(pattern) != -1 && pattern.length() < s.length()) {
+        while (s.indexOf(pattern) == 0 && pattern.length() < s.length()) {
             pattern += F("0");
             ++zeroesAfterDecSep;
             zeroesNotation = true;
         }
         if (zeroesNotation) {
-            String z(--zeroesAfterDecSep);
+            String z(sign);
+            z += (--zeroesAfterDecSep);
             z += F("z");
             pattern = pattern.substring(0, pattern.length() - 1);
             s.replace(pattern, z);
