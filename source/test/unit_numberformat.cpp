@@ -42,6 +42,9 @@ void compactZeroes()
 
     formatNumber(-0.0000258, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
     TEST_ASSERT_EQUAL_STRING("-4z258", s.c_str());
+
+    formatNumber(1230., s, NumberFormat::THOUSAND_DOT_DECIMAL_COMMA, false, false, true);
+    TEST_ASSERT_EQUAL_STRING("1.230,00", s.c_str());
 }
 
 void forceSign()
@@ -89,6 +92,37 @@ void formats()
     TEST_ASSERT_EQUAL_STRING("8.123.987,00", s.c_str());
 }
 
+void forceDecimmalPlaces()
+{
+    String s;
+    formatNumber(7., s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("7,00", s.c_str()); // remove trailing zeroes (after the decimal separator) but leave at least 2 digits
+
+    formatNumber(7.1, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("7,10", s.c_str()); // remove trailing zeroes (after the decimal separator) but leave at least 2 digits
+
+    formatNumber(7.11, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("7,11", s.c_str()); // remove trailing zeroes (after the decimal separator) but leave at least 2 digits
+
+    formatNumber(7.111, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("7,111", s.c_str());
+
+    formatNumber(7.1111, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("7,111", s.c_str());
+
+    formatNumber(0.00123, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("0,001", s.c_str());
+
+    formatNumber(0.000123, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("0,00", s.c_str());
+
+    formatNumber(-30000, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("-30000,00", s.c_str());
+
+    formatNumber(-30000.12399, s, NumberFormat::DECIMAL_COMMA, false, false, false, 3);
+    TEST_ASSERT_EQUAL_STRING("-30000,123", s.c_str());
+}
+
 void setup()
 {
     delay(2000);
@@ -97,6 +131,7 @@ void setup()
     RUN_TEST(compactZeroes);
     RUN_TEST(forceSign);
     RUN_TEST(formats);
+    RUN_TEST(forceDecimmalPlaces);
 
     UNITY_END();
 }
