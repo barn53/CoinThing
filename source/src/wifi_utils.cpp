@@ -64,12 +64,12 @@ void handleWifi(Display& display)
 {
     LOG_FUNC
 
+    bool successFromWiFiFile(false);
     if (SPIFFS.exists(WIFI_FILE)) {
         LOG_I_PRINTLN(F("WhaleTicker WiFi initialization from /wifi.json file"));
 
         File file;
         file = SPIFFS.open(WIFI_FILE, "r");
-        bool success(false);
         if (file) {
             DynamicJsonDocument doc(JSON_DOCUMENT_WIFI_SIZE);
             ReadBufferingStream bufferedFile { file, 64 };
@@ -78,15 +78,12 @@ void handleWifi(Display& display)
             if (!error) {
                 const char* ssid(doc[F("ssid")] | "");
                 const char* pwd(doc[F("pwd")] | "");
-                success = setupWiFi(ssid, pwd);
+                successFromWiFiFile = setupWiFi(ssid, pwd);
             } else {
                 LOG_I_PRINTLN(F("deserializeJson() failed: "));
                 LOG_I_PRINTLN(error.f_str());
             }
             file.close();
-        }
-        if (success) {
-            return;
         }
     }
 
@@ -141,7 +138,7 @@ void handleWifi(Display& display)
             LOG_I_PRINTLN(F("Not connected – restart"));
             ESP.restart();
         }
-    } else {
+    } else if (!successFromWiFiFile) {
         const char* menu[] = { "wifi" };
         wifiManager.setMenu(menu, 1);
 
