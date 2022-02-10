@@ -84,6 +84,7 @@ enum class NumberFormat : uint8_t {
     DECIMAL_DOT // 1000.00
 };
 void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
+void addCurrencySmbol(String& value, const String& symbol, bool leading);
 
 uint32_t millis_test();
 bool doInterval(uint32_t change, uint32_t interval);
