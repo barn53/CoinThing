@@ -11,22 +11,27 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     char buf2[21];
 
     uint8_t decimalPlaces(forceDecimalPlaces);
+    gecko_t absoluteValue((n < 0 ? n * -1. : n));
+
     if (forceDecimalPlaces == std::numeric_limits<uint8_t>::max()) {
-        if ((n < 0 ? n * -1. : n) < 0.000001) {
+        decimalPlaces = 4;
+        if (absoluteValue < 0.00000001) {
+            decimalPlaces = 12;
+        } else if (absoluteValue < 0.0000001) {
+            decimalPlaces = 11;
+        } else if (absoluteValue < 0.000001) {
+            decimalPlaces = 10;
+        } else if (absoluteValue < 0.00001) {
+            decimalPlaces = 9;
+        } else if (absoluteValue < 0.0001) {
             decimalPlaces = 8;
-        } else if ((n < 0 ? n * -1. : n) < 0.00001) {
-            decimalPlaces = 8;
-        } else if ((n < 0 ? n * -1. : n) < 0.0001) {
+        } else if (absoluteValue < 0.001) {
             decimalPlaces = 7;
-        } else if ((n < 0 ? n * -1. : n) < 0.001) {
+        } else if (absoluteValue < 0.01) {
             decimalPlaces = 6;
-        } else if ((n < 0 ? n * -1. : n) < 0.01) {
-            decimalPlaces = 6;
-        } else if ((n < 0 ? n * -1. : n) < 0.1) {
+        } else if (absoluteValue < 0.1) {
             decimalPlaces = 5;
-        } else if ((n < 0 ? n * -1. : n) < 1) {
-            decimalPlaces = 5;
-        } else {
+        } else if (absoluteValue > 99999.) {
             decimalPlaces = 2;
         }
     }
@@ -116,7 +121,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
     s = &buf[copyTo + 1];
 
-    if (compactZeroes && n != 0. && (n < 0 ? n * -1. : n) < 0.01) {
+    if (compactZeroes && n != 0. && absoluteValue < 0.01) {
         String pattern;
         String sign;
         if (s[0] == '+' || s[0] == '-') {
@@ -127,16 +132,20 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
         pattern += decimalSeparator;
         pattern += F("00");
         uint8_t zeroesAfterDecSep(2);
-        bool zeroesNotation(false);
+        bool compactNotation(false);
         while (s.indexOf(pattern) == 0 && pattern.length() < s.length()) {
             pattern += F("0");
             ++zeroesAfterDecSep;
-            zeroesNotation = true;
+            compactNotation = true;
         }
-        if (zeroesNotation) {
+        if (compactNotation) {
             String z(sign);
+            z += decimalSeparator;
             z += (--zeroesAfterDecSep);
             z += F("z");
+            if (thousandSeparator != '#') {
+                z += F(" ");
+            }
             pattern = pattern.substring(0, pattern.length() - 1);
             s.replace(pattern, z);
         }
@@ -144,8 +153,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
 
     s.replace(F(" "), F("\u2006")); // Six-Per-Em Space U+2006
     if (dash00) {
-        String dotZero;
-        dotZero = decimalSeparator;
+        String dotZero(decimalSeparator);
         dotZero += F("00");
         if (s.endsWith(dotZero)) {
             String repl;
