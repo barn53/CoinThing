@@ -31,7 +31,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             decimalPlaces = 6;
         } else if (absoluteValue < 0.1) {
             decimalPlaces = 5;
-        } else if (absoluteValue > 99999.) {
+        } else if (static_cast<uint32_t>(absoluteValue) > 99999) {
             decimalPlaces = 2;
         }
     }
@@ -148,6 +148,13 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             }
             pattern = pattern.substring(0, pattern.length() - 1);
             s.replace(pattern, z);
+
+            // s = "+.4z 123" --> "+.4z 1230"
+            // 4: fix number of digits after z
+            uint8_t rpad(4 - (s.length() - z.length()));
+            for (; rpad > 0; --rpad) {
+                s += '0';
+            }
         }
     }
 
@@ -161,6 +168,15 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             repl += F("\u2012"); // Figure Dash U+2012
             s.replace(dotZero, repl);
         }
+    }
+}
+
+void addCurrencySmbol(String& value, const String& symbol, bool leading)
+{
+    if (leading) {
+        value = symbol + value;
+    } else {
+        value += symbol;
     }
 }
 
