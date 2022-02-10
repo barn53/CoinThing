@@ -61,6 +61,8 @@ public:
     const String& currency2() const;
     const String& currency2Symbol() const;
 
+    bool currencySymbolLeading() const { return m_currency_symbol_leading; }
+
     Mode mode() const { return m_mode; }
     uint32_t numberCoins() const;
     NumberFormat numberFormat() const { return m_number_format; }
@@ -94,6 +96,7 @@ private:
 
     std::vector<Coin> m_coins;
     std::array<Currency, 2> m_currencies;
+    bool m_currency_symbol_leading { true };
 
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     bool m_number_compact_zeroes { true };

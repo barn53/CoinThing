@@ -286,7 +286,7 @@ void Display::renderCoin()
     m_tft.setTextColor(color, TFT_BLACK);
     m_tft.loadFont(F("NotoSans-Regular50"));
     formatNumber(price, msg, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
-    msg += m_settings.currencySymbol();
+    addCurrencySmbol(msg, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
 
     auto priceWidth(m_tft.textWidth(msg));
     if (priceWidth > DISPLAY_WIDTH) {
@@ -314,7 +314,8 @@ void Display::renderCoin()
     String msg2;
     formatNumber(price2, msg2, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
     formatNumber(change_pct, msg, m_settings.numberFormat(), true, false, false, 2);
-    msg2 += m_settings.currency2Symbol();
+    addCurrencySmbol(msg2, m_settings.currency2Symbol(), m_settings.currencySymbolLeading());
+
     msg += "%";
     m_tft.loadFont(F("NotoSans-Regular25"));
     auto usdWidth(m_tft.textWidth(msg2));
@@ -371,7 +372,7 @@ void Display::renderTwoCoins()
         m_tft.setTextColor(color, TFT_BLACK);
         m_tft.loadFont(F("NotoSans-Regular50"));
         formatNumber(price[coinIndex], msg, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
-        msg += m_settings.currencySymbol();
+        addCurrencySmbol(msg, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
 
         auto priceWidth(m_tft.textWidth(msg));
         if (priceWidth > DISPLAY_WIDTH) {
@@ -392,7 +393,8 @@ void Display::renderTwoCoins()
         String msg2;
         formatNumber(price2[coinIndex], msg2, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         formatNumber(change_pct[coinIndex], msg, m_settings.numberFormat(), true, false, false, 2);
-        msg2 += m_settings.currency2Symbol();
+        addCurrencySmbol(msg2, m_settings.currency2Symbol(), m_settings.currencySymbolLeading());
+
         msg += "%";
         m_tft.loadFont(F("NotoSans-Regular30"));
         auto usdWidth(m_tft.textWidth(msg2));
@@ -583,7 +585,8 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
                 formatNumber(low, number, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
                 m_tft.setTextColor(CHART_LOW_COLOR, TFT_BLACK);
             }
-            number += m_settings.currencySymbol();
+            addCurrencySmbol(number, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
+
             int16_t widthNumber(m_tft.textWidth(number));
 
             if (xAt < DISPLAY_WIDTH / 2) {
@@ -647,10 +650,11 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         formatNumber(prices->back(), numberLast, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         formatNumber(low, numberLow, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
         formatNumber(high, numberHigh, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
-        numberHigh += m_settings.currencySymbol();
-        numberLow += m_settings.currencySymbol();
-        numberFirst += m_settings.currencySymbol();
-        numberLast += m_settings.currencySymbol();
+        addCurrencySmbol(numberHigh, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
+        addCurrencySmbol(numberLow, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
+        addCurrencySmbol(numberFirst, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
+        addCurrencySmbol(numberLast, m_settings.currencySymbol(), m_settings.currencySymbolLeading());
+
         int16_t widthHigh(m_tft.textWidth(numberHigh));
         int16_t widthLow(m_tft.textWidth(numberLow));
         int16_t widthFirst(m_tft.textWidth(numberFirst));
