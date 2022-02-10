@@ -3,7 +3,6 @@
 #include "display.h"
 #include "pre.h"
 #include "utils.h"
-#include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 #include <StreamUtils.h>

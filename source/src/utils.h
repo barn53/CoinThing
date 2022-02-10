@@ -1,5 +1,8 @@
 #pragma once
 #include <Arduino.h>
+#include <ArduinoJson.h>
+
+#define ARDUINOJSON_USE_DOUBLE 1
 
 #if COIN_THING_SERIAL > 0 && !defined UNIT_TEST
 extern int callDepth;
@@ -70,7 +73,7 @@ struct Depth {
 #define LOG_I_PRINTF(...)
 #endif
 
-using gecko_t = float;
+using gecko_t = double;
 
 enum class NumberFormat : uint8_t {
     THOUSAND_DOT_DECIMAL_COMMA = 0, // 1.000,00

@@ -1,7 +1,6 @@
 #pragma once
 #include "settings.h"
 #include "utils.h"
-#include <Arduino.h>
 
 class HttpJson;
 
