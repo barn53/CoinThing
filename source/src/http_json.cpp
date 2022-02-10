@@ -1,6 +1,5 @@
 #include "http_json.h"
 #include "utils.h"
-#include <Arduino.h>
 #include <StreamUtils.h>
 
 HttpJson::HttpJson()

@@ -1,7 +1,5 @@
 #pragma once
 #include "utils.h"
-#include <Arduino.h>
-#include <ArduinoJson.h>
 
 #define SETTINGS_FILE "/settings.json"
 #define BRIGHTNESS_FILE "/brightness.json"

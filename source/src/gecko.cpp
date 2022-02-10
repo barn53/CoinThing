@@ -1,7 +1,6 @@
 #include "gecko.h"
 #include "http_json.h"
 #include "utils.h"
-#include <ArduinoJson.h>
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -223,7 +222,9 @@ bool Gecko::fetchTwoCoinsPriceChange()
 
         m_last_price_fetch = millis_test();
 
-        LOG_I_PRINTF("%.4f, %.4f, %.2f | %.4f, %.2f, %.2f \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
+        // LOG_I_PRINTF("%.4f, %.4f, %.2f | %.4f, %.4f, %.2f \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
+        LOG_I_PRINTF("%lf, %lf, %lf | %lf, %lf, %lf \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
+        LOG_I_PRINTF("%g, %g, %g | %g, %g, %g \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
 
         return m_price != std::numeric_limits<gecko_t>::infinity()
             && m_price_2 != std::numeric_limits<gecko_t>::infinity()

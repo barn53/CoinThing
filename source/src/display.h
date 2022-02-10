@@ -1,7 +1,6 @@
 #pragma once
 #include "settings.h"
 #include "utils.h"
-#include <Arduino.h>
 #include <TFT_eSPI.h>
 
 #define TFT_BL PIN_D2 // Backlight PWM
