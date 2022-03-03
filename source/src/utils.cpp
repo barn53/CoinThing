@@ -5,7 +5,7 @@ int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
 
-void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, bool compactZeroes, uint8_t forceDecimalPlaces)
+void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, SmallDecimalNumberFormat smallDecimalNumberFormat, uint8_t forceDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
@@ -121,7 +121,9 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
     s = &buf[copyTo + 1];
 
-    if (compactZeroes && n != 0. && absoluteValue < 0.01) {
+    if (smallDecimalNumberFormat == SmallDecimalNumberFormat::COMPACT
+        && n != 0.
+        && absoluteValue < 0.01) {
         String pattern;
         String sign;
         if (s[0] == '+' || s[0] == '-') {
@@ -171,9 +173,9 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
 }
 
-void addCurrencySmbol(String& value, const String& symbol, bool leading)
+void addCurrencySmbol(String& value, const String& symbol, CurrencySymbolPosition position)
 {
-    if (leading) {
+    if (position == CurrencySymbolPosition::LEADING) {
         value = symbol + value;
     } else {
         value += symbol;
