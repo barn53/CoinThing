@@ -110,7 +110,7 @@ bool Handler::handleGetPrice()
     m_gecko.price(0, price, price2, change_pct);
 
     String result;
-    formatNumber(price, result, m_settings.numberFormat(), false, true, m_settings.numberCompactZeroes());
+    formatNumber(price, result, m_settings.numberFormat(), false, true, m_settings.smallDecimalNumberFormat());
     String ret;
     ret = m_settings.symbol(0);
     ret += F(": ");

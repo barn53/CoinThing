@@ -1,0 +1,72 @@
+{
+    "mode": 3,
+    "coins": [
+        {
+            "id": "bitcoin",
+            "symbol": "BTC",
+            "name": "Bitcoin"
+        },
+        {
+            "id": "ethereum",
+            "symbol": "ETH",
+            "name": "Ethereum"
+        },
+        {
+            "id": "tether",
+            "symbol": "USDT",
+            "name": "Tether"
+        },
+        {
+            "id": "binancecoin",
+            "symbol": "BNB",
+            "name": "BNB"
+        },
+        {
+            "id": "usd-coin",
+            "symbol": "USDC",
+            "name": "USD Coin"
+        },
+        {
+            "id": "ripple",
+            "symbol": "XRP",
+            "name": "XRP"
+        },
+        {
+            "id": "terra-luna",
+            "symbol": "LUNA",
+            "name": "Terra"
+        },
+        {
+            "id": "solana",
+            "symbol": "SOL",
+            "name": "Solana"
+        },
+        {
+            "id": "cardano",
+            "symbol": "ADA",
+            "name": "Cardano"
+        },
+        {
+            "id": "polkadot",
+            "symbol": "DOT",
+            "name": "Polkadot"
+        }
+    ],
+    "currencies": [
+        {
+            "currency": "USD",
+            "symbol": "$"
+        },
+        {
+            "currency": "EUR",
+            "symbol": "€"
+        }
+    ],
+    "swap_interval": 1,
+    "chart_period": 4,
+    "chart_style": 1,
+    "number_format": 3,
+    "small_decimal_number": 1,
+    "currency_symbol_position": 1,
+    "heartbeat": true
+}
