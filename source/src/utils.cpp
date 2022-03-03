@@ -29,7 +29,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             decimalPlaces = 7;
         } else if (absoluteValue < 0.01) {
             decimalPlaces = 6;
-        } else if (absoluteValue < 0.1) {
+        } else if (absoluteValue < 1.) {
             decimalPlaces = 5;
         } else if (static_cast<uint32_t>(absoluteValue) > 99999) {
             decimalPlaces = 2;
