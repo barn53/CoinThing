@@ -93,6 +93,8 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
     }
 
     m_number_format = static_cast<NumberFormat>(doc[F("number_format")] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
+    m_small_decimal_number = static_cast<SmallDecimalNumberFormat>(doc[F("small_decimal_number")] | static_cast<uint8_t>(SmallDecimalNumberFormat::NORMAL));
+    m_currency_symbol_position = static_cast<CurrencySymbolPosition>(doc[F("currency_symbol_position")] | static_cast<uint8_t>(CurrencySymbolPosition::LEADING));
     m_chart_period = doc[F("chart_period")] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
     m_swap_interval = static_cast<Swap>(doc[F("swap_interval")] | static_cast<uint8_t>(Swap::INTERVAL_1));
     m_chart_style = static_cast<ChartStyle>(doc[F("chart_style")] | static_cast<uint8_t>(ChartStyle::SIMPLE));
@@ -110,36 +112,34 @@ void Settings::write() const
 
     File file = SPIFFS.open(SETTINGS_FILE, "w");
     if (file) {
-        file.printf(R"({"mode":%u,)", static_cast<uint8_t>(m_mode));
-        file.print(R"("coins":[)");
-        bool first(true);
-        for (const auto& c : m_coins) {
-            if (first) {
-                first = false;
-            } else {
-                file.print(R"(,)");
-            }
-            file.printf(R"({"id":"%s","symbol":"%s","name":"%s"})", c.id.c_str(), c.symbol.c_str(), c.name.c_str());
-        }
-        file.print(R"(],)");
+        DynamicJsonDocument doc(JSON_DOCUMENT_CONFIG_SIZE);
 
-        file.print(R"("currencies":[)");
-        first = true;
-        for (const auto& c : m_currencies) {
-            if (first) {
-                first = false;
-            } else {
-                file.print(R"(,)");
-            }
-            file.printf(R"({"currency":"%s","symbol":"%s"})", c.currency.c_str(), c.symbol.c_str());
+        doc[F("mode")] = static_cast<uint8_t>(m_mode);
+
+        JsonArray coins = doc.createNestedArray(F("coins"));
+        for (const auto& c : m_coins) {
+            JsonObject coin = coins.createNestedObject();
+            coin[F("id")] = c.id.c_str();
+            coin[F("symbol")] = c.symbol.c_str();
+            coin[F("name")] = c.name.c_str();
         }
-        file.print(R"(],)");
-        file.printf(R"("swap_interval":%u,)", static_cast<uint8_t>(m_swap_interval));
-        file.printf(R"("chart_period":%u,)", static_cast<uint8_t>(m_chart_period));
-        file.printf(R"("chart_style":%u,)", static_cast<uint8_t>(m_chart_style));
-        file.printf(R"("number_format":%u,)", static_cast<uint8_t>(m_number_format));
-        file.printf(R"("heartbeat":%s)", m_heartbeat ? "true" : "false");
-        file.print(R"(})");
+
+        JsonArray currencies = doc.createNestedArray("currencies");
+        for (const auto& c : m_currencies) {
+            JsonObject currency = currencies.createNestedObject();
+            currency[F("currency")] = c.currency.c_str();
+            currency[F("symbol")] = c.symbol.c_str();
+        }
+
+        doc[F("swap_interval")] = static_cast<uint8_t>(m_swap_interval);
+        doc[F("chart_period")] = static_cast<uint8_t>(m_chart_period);
+        doc[F("chart_style")] = static_cast<uint8_t>(m_chart_style);
+        doc[F("number_format")] = static_cast<uint8_t>(m_number_format);
+        doc[F("small_decimal_number")] = static_cast<uint8_t>(m_small_decimal_number);
+        doc[F("currency_symbol_position")] = static_cast<uint8_t>(m_currency_symbol_position);
+        doc[F("heartbeat")] = m_heartbeat;
+
+        serializeJson(doc, file);
         file.close();
     }
 }
@@ -163,13 +163,15 @@ void Settings::trace() const
     for (const auto& c : m_coins) {
         LOG_I_PRINTF("id: >%s<, name: >%s<, symbol: >%s<, \n", c.id.c_str(), c.name.c_str(), c.symbol.c_str())
     }
-    LOG_I_PRINTF("Currency:       >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str())
-    LOG_I_PRINTF("Currency 2:     >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str())
-    LOG_I_PRINTF("Number format:  >%u<\n", m_number_format)
-    LOG_I_PRINTF("Chart period:   >%u<\n", m_chart_period)
-    LOG_I_PRINTF("Swap interval:  >%u<\n", m_swap_interval)
-    LOG_I_PRINTF("Chart style:    >%u<\n", m_chart_style)
-    LOG_I_PRINTF("Heart beat:     >%s<\n", (m_heartbeat ? "true" : "false"))
+    LOG_I_PRINTF("Currency:                 >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str())
+    LOG_I_PRINTF("Currency 2:               >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str())
+    LOG_I_PRINTF("Number format:            >%u<\n", m_number_format)
+    LOG_I_PRINTF("Small decimal number:     >%u<\n", m_small_decimal_number)
+    LOG_I_PRINTF("Currency Symbol position: >%u<\n", m_currency_symbol_position)
+    LOG_I_PRINTF("Chart period:             >%u<\n", m_chart_period)
+    LOG_I_PRINTF("Swap interval:            >%u<\n", m_swap_interval)
+    LOG_I_PRINTF("Chart style:              >%u<\n", m_chart_style)
+    LOG_I_PRINTF("Heart beat:               >%s<\n", (m_heartbeat ? "true" : "false"))
 #endif
 }
 

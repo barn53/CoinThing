@@ -375,6 +375,33 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label><b>Small Decimal Number</b></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sd" id="sd_0" value="0">
+                                <label class="form-check-label" for="sd_0">0.000001234</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sd" id="sd_1" value="1">
+                                <label class="form-check-label" for="sd_1">.5z&#x2006;1234</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><b>Currency Symbol Position</b></label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sp" id="sp_0" value="0">
+                                <label class="form-check-label" for="sp_0">$100.00</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sp" id="sp_1" value="1">
+                                <label class="form-check-label" for="sp_1">100.00$</label>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <label><b>Heartbeat</b></label>
@@ -511,10 +538,20 @@
             }
 
             number_format = settings.number_format || 0
+            small_decimal_number = settings.small_decimal_number || 0
+            currency_symbol_position = settings.currency_symbol_position || 0
             heartbeat = settings.heartbeat || 0
 
             try {
                 $("#nf_" + number_format)[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#sd_" + small_decimal_number)[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#sp_" + currency_symbol_position)[0].checked = true
             } catch (error) { }
 
             $("#heartbeat")[0].checked = (heartbeat !== 0)
@@ -603,7 +640,7 @@
             if (myCurrency) {
                 return true
             }
-            showError(": Currency value '" + currency + "' is invalid!")
+            showError(": Currency name '" + currency + "' is invalid!")
             return false
         }
 
@@ -684,7 +721,7 @@
                     settings.chart_period += 8
                 }
                 if (settings.chart_period === 0) {
-                    showError(": No chart period selected!")
+                    showError(": No Chart Period selected!")
                     return
                 }
 
@@ -699,7 +736,7 @@
                     settings.swap_interval = 3
                 }
                 if (settings.swap_interval === -1) {
-                    showError(": No chart swap interval selected!")
+                    showError(": No Chart Swap Interval selected!")
                     return
                 }
 
@@ -712,7 +749,7 @@
                     settings.chart_style = 2
                 }
                 if (settings.chart_style === -1) {
-                    showError(": No chart style selected!")
+                    showError(": No Chart Style selected!")
                     return
                 }
             }
@@ -782,7 +819,7 @@
                     settings.swap_interval = 3
                 }
                 if (settings.swap_interval === -1) {
-                    showError(": No coin swap interval selected!")
+                    showError(": No Coin Swap Interval selected!")
                     return
                 }
 
@@ -797,7 +834,7 @@
                     settings.chart_period = 8
                 }
                 if (settings.chart_period === 0) {
-                    showError(": No chart period selected!")
+                    showError(": No Chart Period selected!")
                     return
                 }
 
@@ -810,7 +847,7 @@
                     settings.chart_style = 2
                 }
                 if (settings.chart_style === -1) {
-                    showError(": No chart style selected!")
+                    showError(": No Chart Style selected!")
                     return
                 }
             }
@@ -830,7 +867,29 @@
                 settings.number_format = 5
             }
             if (settings.number_format === -1) {
-                showError(": Number format not selected!")
+                showError(": Number Format not selected!")
+                return
+            }
+
+            settings.small_decimal_number = -1
+            if ($("#sd_0")[0].checked) {
+                settings.small_decimal_number = 0
+            } else if ($("#sd_1")[0].checked) {
+                settings.small_decimal_number = 1
+            }
+            if (settings.small_decimal_number === -1) {
+                showError(": Small Decimal Number format not selected!")
+                return
+            }
+
+            settings.currency_symbol_position = -1
+            if ($("#sp_0")[0].checked) {
+                settings.currency_symbol_position = 0
+            } else if ($("#sp_1")[0].checked) {
+                settings.currency_symbol_position = 1
+            }
+            if (settings.currency_symbol_position === -1) {
+                showError(": Currency Symbol Position not selected!")
                 return
             }
 
@@ -950,6 +1009,14 @@
 
             try {
                 $("#nf_3")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#sd_0")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#sp_0")[0].checked = true
             } catch (error) { }
 
             $("#heartbeat")[0].checked = true
