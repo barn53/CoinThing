@@ -121,11 +121,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
     s = &buf[copyTo + 1];
 
-<<<<<<< HEAD
     if (compactZeroes && n != 0. && absoluteValue < 0.01) {
-=======
-    if (compactZeroes && n != 0. && (n < 0 ? n * -1. : n) < 0.01) {
->>>>>>> 694844b (further improved compactZeroes)
         String pattern;
         String sign;
         if (s[0] == '+' || s[0] == '-') {
