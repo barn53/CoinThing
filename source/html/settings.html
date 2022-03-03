@@ -916,6 +916,9 @@
         function getAllCoins() {
             $.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false", function (data) {
                 allCoins = data
+                allCoins = allCoins.filter(c => (c.id.length > 0))
+                allCoins = allCoins.filter(c => (c.name.length > 0))
+                allCoins = allCoins.filter(c => (c.symbol.length > 0))
                 allCoins.sort(function (a, b) { return a.name.length - b.name.length })
                 $("#coingeckoready").css("display", "none")
             }).fail((jqXHR) => {
