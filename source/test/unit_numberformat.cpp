@@ -125,8 +125,11 @@ void formats()
     formatNumber(0.1, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
     TEST_ASSERT_EQUAL_STRING("0,10", s.c_str());
 
-    formatNumber(0.10002, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
+    formatNumber(0.100002, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
     TEST_ASSERT_EQUAL_STRING("0,10", s.c_str());
+
+    formatNumber(0.10002, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
+    TEST_ASSERT_EQUAL_STRING("0,10002", s.c_str());
 
     formatNumber(0.1002, s, NumberFormat::THOUSAND_BLANK_DECIMAL_COMMA, false, true, true);
     TEST_ASSERT_EQUAL_STRING("0,1002", s.c_str());
