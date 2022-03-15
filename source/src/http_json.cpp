@@ -22,27 +22,32 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
     LOG_FUNC
     LOG_I_PRINTF("read from URL: %s\n", url);
 
-    m_http.begin(m_client, url);
-    m_last_http_code = m_http.GET();
-    ++m_http_read_count;
-    if (m_last_http_code > 0) {
-        LOG_I_PRINTF("[HTTP] GET... code: %d\n", m_last_http_code);
-        if (m_last_http_code == HTTP_CODE_OK) {
-            ReadBufferingClient bufferedClient { m_client, 64 };
+    if (WiFi.isConnected()) {
+        m_http.begin(m_client, url);
+        m_last_http_code = m_http.GET();
+        ++m_http_read_count;
+        if (m_last_http_code > 0) {
+            LOG_I_PRINTF("[HTTP] GET... code: %d\n", m_last_http_code);
+            if (m_last_http_code == HTTP_CODE_OK) {
+                ReadBufferingClient bufferedClient { m_client, 64 };
 
 #if COIN_THING_SERIAL > 1
-            ReadLoggingStream loggingStream(bufferedClient, Serial);
-            deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
-            Serial.println();
+                ReadLoggingStream loggingStream(bufferedClient, Serial);
+                deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
+                Serial.println();
 #else
-            deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
+                deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
-            m_http.end();
-            return true;
+                m_http.end();
+                return true;
+            }
+        } else {
+            LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
         }
+        m_http.end();
     } else {
-        LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
+        m_last_http_code = -1;
+        LOG_I_PRINTLN("[HTTP] not connected");
     }
-    m_http.end();
     return false;
 }

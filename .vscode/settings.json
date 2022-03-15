@@ -41,5 +41,25 @@
         "set": "cpp",
         "random": "cpp"
     },
-    "python.pythonPath": "C:\\Users\\gerdm\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
+    "python.pythonPath": "C:\\Users\\gerdm\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#33ff85",
+        "activityBar.activeBorder": "#b380ff",
+        "activityBar.background": "#33ff85",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#b380ff",
+        "activityBarBadge.foreground": "#15202b",
+        "sash.hoverBorder": "#33ff85",
+        "statusBar.background": "#00ff66",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#00cc52",
+        "statusBarItem.remoteBackground": "#00ff66",
+        "statusBarItem.remoteForeground": "#15202b",
+        "titleBar.activeBackground": "#00ff66",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#00ff6699",
+        "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.color": "#00ff66"
 }

@@ -182,6 +182,7 @@ void Display::renderTitle()
     String currency;
 
     m_tft.fillScreen(TFT_BLACK);
+    m_shows_wifi_not_connected = false;
 
     if (m_settings.mode() != Settings::Mode::TWO_COINS) {
         name = m_settings.name(m_current_coin_index);
@@ -809,7 +810,6 @@ void Display::showCoin()
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
-        m_shows_wifi_not_connected = false;
         rewrite = true;
     }
 
@@ -860,7 +860,6 @@ void Display::showTwoCoins()
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
         m_last_seen_settings = m_settings.lastChange();
-        m_shows_wifi_not_connected = false;
         rewrite = true;
     }
 
@@ -900,7 +899,6 @@ void Display::showMultipleCoins()
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = std::numeric_limits<uint32_t>::max();
         m_last_seen_settings = m_settings.lastChange();
-        m_shows_wifi_not_connected = false;
         LOG_I_PRINTLN("rewrite")
         rewrite = true;
     }
