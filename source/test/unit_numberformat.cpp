@@ -182,6 +182,21 @@ void forceDecimalPlaces()
     TEST_ASSERT_EQUAL_STRING("-30000,124", s.c_str());
 }
 
+void uglyRounding()
+{
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, R"({"values":[2503.67, 2503.68, 2503.69, 2503.66, 2504.1, 2511.13]})");
+    const char* expected[] = { "2503,67", "2503,68", "2503,69", "2503,66", "2504,10", "2511,13" };
+    // with ArduinoJson version 6.18 it was (using float as default): "2503,6699", "2503,6799", "2503,6899", "2503,6599", "2504,1001", "2511,1299" };
+    String s;
+    JsonArray values = doc["values"];
+    for (size_t ii = 0; ii < values.size(); ++ii) {
+        gecko_t value = values[ii];
+        formatNumber(value, s, NumberFormat::DECIMAL_COMMA, false, true, SmallDecimalNumberFormat::NORMAL);
+        TEST_ASSERT_EQUAL_STRING(expected[ii], s.c_str());
+    }
+}
+
 void setup()
 {
     delay(2000);
@@ -191,6 +206,7 @@ void setup()
     RUN_TEST(forceSign);
     RUN_TEST(formats);
     RUN_TEST(forceDecimalPlaces);
+    RUN_TEST(uglyRounding);
 
     UNITY_END();
 }
