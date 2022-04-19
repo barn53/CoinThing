@@ -256,8 +256,18 @@ void Display::renderTitle()
 
         if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
             uint32_t count(0);
-            for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx = xx + 13) {
-                m_tft.fillCircle(xx, 60, 2, count == m_current_coin_index ? CURRENT_COIN_DOT_COLOR : GREY_LEVEL2);
+            uint16_t color(GREY_LEVEL2);
+            for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx += 13) {
+                if (count == m_current_coin_index) {
+                    color = CURRENT_COIN_DOT_COLOR;
+                    for (uint8_t rr = 0; rr < 3; ++rr) {
+                        m_tft.fillCircle(xx, 60, 2, color);
+                        xx += 2;
+                    }
+                } else {
+                    color = GREY_LEVEL2;
+                }
+                m_tft.fillCircle(xx, 60, 2, color);
             }
         }
     } else { // Settings::Mode::TWO_COINS
