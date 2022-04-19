@@ -33,8 +33,11 @@ f = open(env["PROJECT_SRC_DIR"] + "/pre.h", "w")
 letters = string.ascii_lowercase
 
 f.write('#pragma once\n')
-f.write('#define SECRET_AP_PASSWORD F("%s")\n' %
-        (''.join(random.choice(letters) for i in range(8))))
+# f.write('#define SECRET_AP_PASSWORD F("%s")\n' %
+#        (''.join(random.choice(letters) for i in range(8))))
+
+f.write('#define SECRET_AP_PASSWORD F("")\n')
+
 f.write('#define VERSION F("%s")\n' % (version))
 f.close()
 
