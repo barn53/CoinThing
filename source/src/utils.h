@@ -75,6 +75,12 @@ struct Depth {
 
 using gecko_t = double;
 
+class Settings;
+
+uint8_t handleStartSequenceForResetBegin();
+void handleStartSequenceForResetEnd();
+void handleStartSequenceForResetEnd(uint8_t startupSequenceCounter, Settings& settings);
+
 enum class NumberFormat : uint8_t {
     THOUSAND_DOT_DECIMAL_COMMA = 0, // 1.000,00
     THOUSAND_BLANK_DECIMAL_COMMA, // 1 000,00

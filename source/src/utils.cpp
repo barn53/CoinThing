@@ -1,9 +1,49 @@
 #include "utils.h"
+#include "common.h"
+#include "settings.h"
+#include <ESP8266WiFi.h>
 
 #if COIN_THING_SERIAL > 0
 int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
+
+uint8_t handleStartSequenceForResetBegin()
+{
+    uint8_t counter(0);
+    if (SPIFFS.exists(START_SEQUENCE_COUNTER_FILE)) {
+        File f = SPIFFS.open(START_SEQUENCE_COUNTER_FILE, "r");
+        counter = f.readString().toInt();
+        f.close();
+        SPIFFS.remove(START_SEQUENCE_COUNTER_FILE);
+    }
+    ++counter;
+    File f = SPIFFS.open(START_SEQUENCE_COUNTER_FILE, "w");
+    f.print(counter);
+    f.close();
+    Serial.printf("startup sequence counter: %u\n", counter);
+    return counter;
+}
+
+void handleStartSequenceForResetEnd()
+{
+    SPIFFS.remove(START_SEQUENCE_COUNTER_FILE);
+}
+
+void handleStartSequenceForResetEnd(uint8_t startupSequenceCounter, Settings& settings)
+{
+    handleStartSequenceForResetEnd();
+
+    if (startupSequenceCounter >= START_SEQUENCE_COUNT_TO_RESET) {
+        settings.deleteFile();
+        SPIFFS.remove(WIFI_FILE);
+        SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
+        // keep COLOR_SET_FILE
+        WiFi.disconnect();
+        delay(2000);
+        ESP.restart();
+    }
+}
 
 void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, SmallDecimalNumberFormat smallDecimalNumberFormat, uint8_t forceDecimalPlaces)
 {
