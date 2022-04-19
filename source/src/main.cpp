@@ -42,7 +42,8 @@ void setup(void)
     Serial.printf("\n---------------------\n");
 #endif
 
-    display.begin();
+    uint8_t counter(handleStartSequenceForResetBegin());
+    display.begin(counter);
 
     handleWifi(display);
 
@@ -65,6 +66,12 @@ void setup(void)
     Serial.println(F("\nInitialisation done."));
     Serial.print(F("IP: "));
     Serial.println(WiFi.localIP().toString());
+
+    if (millis_test() < 5000) {
+        // ensure startup duration is at least 5 seconds
+        delay(5500 - millis_test());
+    }
+    handleStartSequenceForResetEnd(counter, settings);
 }
 
 void loop()
