@@ -992,8 +992,11 @@ void Display::showAPQR()
         msg += HostName;
         m_tft.setCursor(5, 5);
         m_tft.print(msg);
-        msg = F("Password: ");
-        msg += SECRET_AP_PASSWORD;
+
+        // msg = F("Password: ");
+        // msg += SECRET_AP_PASSWORD;
+
+        msg = F("No Password");
         m_tft.setCursor(5, 25);
         m_tft.print(msg);
         m_tft.unloadFont();
