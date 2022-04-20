@@ -85,11 +85,8 @@ void Display::begin(uint8_t startupSequenceCounter)
     m_tft.fillScreen(TFT_BLACK);
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
-    m_tft.print(msg);
-
+    String msg;
+    showCoinThing(msg, 30, false);
     if (startupSequenceCounter >= START_SEQUENCE_COUNT_TO_RESET) {
         m_tft.setTextColor(TFT_RED, TFT_BLACK);
         msg = F("Reset");
@@ -1054,6 +1051,38 @@ void Display::showSettingsQR()
     }
 }
 
+void Display::showCoinThing(String& msg, uint16_t y, bool unloadFont)
+{
+    m_tft.loadFont(F("NotoSans-Regular50"));
+    msg = F("CoinThing");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, y);
+    m_tft.print(msg);
+    if (unloadFont) {
+        m_tft.unloadFont();
+    }
+}
+
+void Display::showAPIInfo(String& msg)
+{
+    m_tft.loadFont(F("NotoSans-Regular20"));
+    if (m_settings.isFakeGeckoServer()) {
+        msg = m_settings.getGeckoServer();
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);
+        m_tft.print(msg);
+    }
+
+    msg = VERSION;
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
+    m_tft.print(msg);
+
+    msg = F("http://");
+    msg += WiFi.localIP().toString().c_str();
+    msg += "/";
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 210);
+    m_tft.print(msg);
+    m_tft.unloadFont();
+}
+
 void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
@@ -1061,11 +1090,7 @@ void Display::showAPIOK()
         m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x30, 0x90));
 
         String msg;
-        m_tft.loadFont(F("NotoSans-Regular50"));
-        msg = F("CoinThing");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
-        m_tft.print(msg);
-        m_tft.unloadFont();
+        showCoinThing(msg);
 
         m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("To The Moon!");
@@ -1073,23 +1098,7 @@ void Display::showAPIOK()
         m_tft.print(msg);
         m_tft.unloadFont();
 
-        m_tft.loadFont(F("NotoSans-Regular20"));
-        if (m_settings.isFakeGeckoServer()) {
-            msg = m_settings.getGeckoServer();
-            m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);
-            m_tft.print(msg);
-        }
-
-        msg = VERSION;
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
-        m_tft.print(msg);
-
-        msg = F("http://");
-        msg += WiFi.localIP().toString().c_str();
-        msg += "/";
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 210);
-        m_tft.print(msg);
-        m_tft.unloadFont();
+        showAPIInfo(msg);
 
         m_last_screen = Screen::API_OK;
     }
@@ -1101,11 +1110,16 @@ void Display::showAPIFailed()
         m_tft.fillScreen(TFT_RED);
         m_tft.setTextColor(TFT_BLACK, TFT_RED);
 
+        String msg;
+        showCoinThing(msg);
+
         m_tft.loadFont(F("NotoSans-Regular30"));
-        String msg = F("Gecko API failed!");
+        msg = F("Gecko API failed!");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
         m_tft.print(msg);
         m_tft.unloadFont();
+
+        showAPIInfo(msg);
 
         m_last_screen = Screen::API_FAILED;
     }
@@ -1121,11 +1135,8 @@ void Display::showPrepareUpdate(bool failed)
         m_tft.setTextColor(TFT_WHITE, TFT_DARKGREEN);
     }
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
-    m_tft.print(msg);
-    m_tft.unloadFont();
+    String msg;
+    showCoinThing(msg, 50);
 
     m_tft.loadFont(F("NotoSans-Regular30"));
     msg = F("Prepare Update");
@@ -1155,11 +1166,8 @@ void Display::showUpdated()
     m_tft.fillScreen(RGB(0x0, 0x80, 0x30));
     m_tft.setTextColor(TFT_WHITE, RGB(0x0, 0x80, 0x30));
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
-    m_tft.print(msg);
-    m_tft.unloadFont();
+    String msg;
+    showCoinThing(msg, 50);
 
     m_tft.loadFont(F("NotoSans-Regular20"));
     msg = F("Updated To Version");
@@ -1177,11 +1185,8 @@ void Display::showNotUpdated()
     m_tft.fillScreen(RGB(0x80, 0x30, 0x0));
     m_tft.setTextColor(TFT_WHITE, RGB(0x80, 0x30, 0x0));
 
-    m_tft.loadFont(F("NotoSans-Regular50"));
-    String msg = F("CoinThing");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
-    m_tft.print(msg);
-    m_tft.unloadFont();
+    String msg;
+    showCoinThing(msg, 50);
 
     m_tft.loadFont(F("NotoSans-Regular30"));
     msg = F("Not Updated");
