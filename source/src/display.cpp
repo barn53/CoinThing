@@ -20,6 +20,7 @@
 #define CHART_HEIGHT (DISPLAY_HEIGHT - CHART_Y_START)
 #define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
+#define POWERUP_SEQUENCE_INDICATOR_Y 150
 
 #define API_OK_SHOW_TIME (8 * 1000)
 #define CHECK_INFO_SHOW_TIME (4 * 1000)
@@ -93,7 +94,7 @@ void Display::begin(uint8_t powerupSequenceCounter)
         m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.setTextColor(TFT_RED, TFT_BLACK);
         msg = F("Factory reset");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 200);
         m_tft.print(msg);
         m_tft.unloadFont();
     }
@@ -105,20 +106,20 @@ void Display::begin(uint8_t powerupSequenceCounter)
                 if (ii <= powerupSequenceCounter) {
                     color = TFT_RED;
                 }
-                m_tft.fillCircle(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20)), 120, 5, color);
+                m_tft.fillCircle(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20)), POWERUP_SEQUENCE_INDICATOR_Y, 5, color);
             } else {
                 if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
                     color = TFT_RED;
                 }
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 126, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 126, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), POWERUP_SEQUENCE_INDICATOR_Y - 5, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), POWERUP_SEQUENCE_INDICATOR_Y + 5, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), POWERUP_SEQUENCE_INDICATOR_Y - 5, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), POWERUP_SEQUENCE_INDICATOR_Y + 5, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), POWERUP_SEQUENCE_INDICATOR_Y - 4, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), POWERUP_SEQUENCE_INDICATOR_Y + 6, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), POWERUP_SEQUENCE_INDICATOR_Y - 4, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), POWERUP_SEQUENCE_INDICATOR_Y + 6, color);
 
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 126, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 126, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), POWERUP_SEQUENCE_INDICATOR_Y - 5, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), POWERUP_SEQUENCE_INDICATOR_Y + 5, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), POWERUP_SEQUENCE_INDICATOR_Y - 5, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), POWERUP_SEQUENCE_INDICATOR_Y + 5, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), POWERUP_SEQUENCE_INDICATOR_Y - 4, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), POWERUP_SEQUENCE_INDICATOR_Y + 6, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), POWERUP_SEQUENCE_INDICATOR_Y - 4, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), POWERUP_SEQUENCE_INDICATOR_Y + 6, color);
             }
         }
     }
