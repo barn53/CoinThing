@@ -115,6 +115,7 @@ void handleWifi(Display& display)
             File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "w");
             f.print(VERSION);
             f.close();
+            Settings::handlePowerupSequenceForResetEnd();
             display.showUpdateQR();
         });
 
