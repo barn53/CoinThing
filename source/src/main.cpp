@@ -36,13 +36,13 @@ void setup(void)
 
 #if COIN_THING_SERIAL > 0
     rst_info* ri(ESP.getResetInfoPtr());
-    Serial.printf("\n---------------------\n");
-    Serial.printf("Reset Info reason:   %u\n", ri->reason);
-    Serial.printf("Reset Info exccause: %u", ri->exccause);
-    Serial.printf("\n---------------------\n");
+    LOG_PRINTF("\n---------------------\n");
+    LOG_PRINTF("Reset Info reason:   %u\n", ri->reason);
+    LOG_PRINTF("Reset Info exccause: %u", ri->exccause);
+    LOG_PRINTF("\n---------------------\n");
 #endif
 
-    uint8_t counter(handleStartSequenceForResetBegin());
+    uint8_t counter(settings.handlePowerupSequenceForResetBegin());
     display.begin(counter);
 
     handleWifi(display);
@@ -68,10 +68,10 @@ void setup(void)
     Serial.println(WiFi.localIP().toString());
 
     if (millis_test() < 5000) {
-        // ensure startup duration is at least 5 seconds
+        // ensure setup duration is at least 5 seconds
         delay(5500 - millis_test());
     }
-    handleStartSequenceForResetEnd(counter, settings);
+    settings.handlePowerupSequenceForResetEnd(counter);
 }
 
 void loop()

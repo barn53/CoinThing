@@ -1,6 +1,7 @@
 #include "common.h"
 #include "gecko.h"
 #include "utils.h"
+#include <ESP8266WiFi.h>
 #include <StreamUtils.h>
 
 #define MIN_BRIGHTNESS 10
@@ -27,8 +28,8 @@ void Settings::set(const char* json)
     if (!error) {
         set(doc, true);
     } else {
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error.f_str());
+        LOG_I_PRINT(F("deserializeJson() failed: "));
+        LOG_I_PRINTLN(error.f_str());
     }
 }
 
@@ -54,8 +55,8 @@ void Settings::read()
             if (!error) {
                 set(doc, false);
             } else {
-                Serial.print(F("deserializeJson() failed: "));
-                Serial.println(error.f_str());
+                LOG_I_PRINT(F("deserializeJson() failed: "));
+                LOG_I_PRINTLN(error.f_str());
             }
             // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
@@ -311,4 +312,43 @@ String Settings::getGeckoServer()
         return fakeGeckoServer;
     }
     return F("https://api.coingecko.com");
+}
+
+uint8_t Settings::handlePowerupSequenceForResetBegin()
+{
+    LOG_FUNC
+
+    uint8_t counter(0);
+    if (SPIFFS.exists(POWERUP_SEQUENCE_COUNTER_FILE)) {
+        File f = SPIFFS.open(POWERUP_SEQUENCE_COUNTER_FILE, "r");
+        counter = f.readString().toInt();
+        f.close();
+        SPIFFS.remove(POWERUP_SEQUENCE_COUNTER_FILE);
+    }
+    ++counter;
+    File f = SPIFFS.open(POWERUP_SEQUENCE_COUNTER_FILE, "w");
+    f.print(counter);
+    f.close();
+    LOG_I_PRINTF("powerup sequence counter: %u\n", counter);
+    return counter;
+}
+
+void Settings::handlePowerupSequenceForResetEnd()
+{
+    SPIFFS.remove(POWERUP_SEQUENCE_COUNTER_FILE);
+}
+
+void Settings::handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter)
+{
+    handlePowerupSequenceForResetEnd();
+
+    if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
+        deleteFile();
+        SPIFFS.remove(WIFI_FILE);
+        SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
+        // keep COLOR_SET_FILE
+        WiFi.disconnect();
+        delay(3000);
+        ESP.restart();
+    }
 }
