@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "common.h"
 
 #if COIN_THING_SERIAL > 0
 int callDepth { 0 };
