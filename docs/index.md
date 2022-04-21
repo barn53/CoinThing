@@ -135,12 +135,19 @@ python -m esptool erase_flash
 - Format for small decimal numbers
 - Leading or trailing currency symbol
 - Minor fixes (lost WiFi and others)
+- Power-up sequence to reset device
 
 For an update from version 1.5 or below to version 1.6 you need to upload the file **spiffs_v1.6.0.bin** and one of the **cointhing_v1.6.*.bin** files as described above.
 
 [spiffs_v1.6.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.6.0/spiffs_v1.6.0.bin)
 
 When your CoinThing is already on Version 1.6.*, you can update via the browser update method.
+
+### Version 1.6.1:
+- Power-up sequence to reset device
+- Connection info available on fail screen
+
+[cointhing_v1.6.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.6.1/cointhing_v1.6.1.bin)
 
 ### Version 1.6.0:
 - Format for small decimal numbers
@@ -163,7 +170,7 @@ For an update from version 1.4 or below to version 1.5 you need to upload the fi
 When your CoinThing is already on Version 1.5.*, you can update via the browser update method.
 
 ### Version 1.5.1:
-- Internal.
+- Internal
 
 [cointhing_v1.5.1.bin](https://github.com/barn53/CoinThing/releases/download/v1.5.1/cointhing_v1.5.1.bin)
 
