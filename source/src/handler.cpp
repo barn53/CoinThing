@@ -124,7 +124,7 @@ bool Handler::handleForUpdate() const
 {
     server.send(200, F("text/plain"), "1");
 
-    // if file exists on startup, ESP goes into update mode
+    // if file exists on powerup, ESP goes into update mode
     File f = SPIFFS.open(FOR_UPDATE_FILE, "w");
     f.close();
 
@@ -137,7 +137,7 @@ bool Handler::handleSelftest() const
 {
     server.send(200, F("text/plain"), "1");
 
-    // if file exists on startup, ESP starts selftest
+    // if file exists on powerup, ESP starts selftest
     File f = SPIFFS.open(SELFTEST_FILE, "w");
     f.close();
 

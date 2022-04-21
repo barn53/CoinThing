@@ -11,7 +11,7 @@ class Display {
 public:
     Display(Gecko& gecko, const Settings& settings);
 
-    void begin(uint8_t startupSequenceCounter);
+    void begin(uint8_t powerupSequenceCounter);
     void loop();
 
     void showAPQR();
