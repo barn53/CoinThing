@@ -34,7 +34,7 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
 #if COIN_THING_SERIAL > 1
                 ReadLoggingStream loggingStream(bufferedClient, Serial);
                 deserializeJson(jsonDoc, loggingStream, DeserializationOption::Filter(jsonFilter));
-                Serial.println();
+                LOG_I_PRINTLN();
 #else
                 deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif

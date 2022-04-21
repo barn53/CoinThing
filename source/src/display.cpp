@@ -21,7 +21,7 @@
 #define CHART_MIDDLE (CHART_Y_START + (CHART_HEIGHT / 2))
 #define DISTANCE_CHART_VALUE 3
 
-#define API_OK_SHOW_TIME (10 * 1000)
+#define API_OK_SHOW_TIME (8 * 1000)
 #define CHECK_INFO_SHOW_TIME (4 * 1000)
 
 extern String HostName;
@@ -58,7 +58,7 @@ Display::Display(Gecko& gecko, const Settings& settings)
     CHART_BOX_MARGIN_COLOR = RGB(0x20, 0x20, 0x20);
 }
 
-void Display::begin(uint8_t startupSequenceCounter)
+void Display::begin(uint8_t powerupSequenceCounter)
 {
     analogWriteRange(std::numeric_limits<uint8_t>::max());
     pinMode(TFT_BL, OUTPUT);
@@ -89,36 +89,36 @@ void Display::begin(uint8_t startupSequenceCounter)
     drawWhale();
 
     String msg;
-    if (startupSequenceCounter >= START_SEQUENCE_COUNT_TO_RESET) {
+    if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
         m_tft.loadFont(F("NotoSans-Regular30"));
         m_tft.setTextColor(TFT_RED, TFT_BLACK);
-        msg = F("Reset");
+        msg = F("Factory reset");
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 180);
         m_tft.print(msg);
         m_tft.unloadFont();
     }
 
-    if (startupSequenceCounter > 1) {
-        for (uint8_t ii = 1; ii <= START_SEQUENCE_COUNT_TO_RESET; ++ii) {
+    if (powerupSequenceCounter > 1) {
+        for (uint8_t ii = 1; ii <= POWERUP_SEQUENCE_COUNT_TO_RESET; ++ii) {
             uint16_t color(GREY_LEVEL2);
-            if (ii < START_SEQUENCE_COUNT_TO_RESET) {
-                if (ii <= startupSequenceCounter) {
-                    color = TFT_YELLOW;
-                }
-                m_tft.fillCircle(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20)), 120, 5, color);
-            } else {
-                if (startupSequenceCounter >= START_SEQUENCE_COUNT_TO_RESET) {
+            if (ii < POWERUP_SEQUENCE_COUNT_TO_RESET) {
+                if (ii <= powerupSequenceCounter) {
                     color = TFT_RED;
                 }
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 115, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 115, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 116, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 126, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 116, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 126, color);
+                m_tft.fillCircle(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20)), 120, 5, color);
+            } else {
+                if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
+                    color = TFT_RED;
+                }
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 125, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 125, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 126, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 126, color);
 
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 115, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 115, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 125, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 116, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 126, color);
-                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 116, ((DISPLAY_WIDTH / 2) - (START_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 126, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 125, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 115, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 125, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 5), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 5), 126, color);
+                m_tft.drawLine(((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) + 6), 116, ((DISPLAY_WIDTH / 2) - (POWERUP_SEQUENCE_COUNT_TO_RESET * 20 / 2) + (ii * 20) - 4), 126, color);
             }
         }
     }
@@ -271,9 +271,9 @@ void Display::renderTitle()
             for (uint32_t xx = x_name + 4; count < m_settings.numberCoins(); ++count, xx += 13) {
                 if (count == m_current_coin_index) {
                     color = CURRENT_COIN_DOT_COLOR;
-                    for (uint8_t rr = 0; rr < 3; ++rr) {
+                    for (uint8_t rr = 0; rr < 2; ++rr) {
                         m_tft.fillCircle(xx, 60, 2, color);
-                        xx += 2;
+                        xx += 3;
                     }
                 } else {
                     color = GREY_LEVEL2;
@@ -1002,11 +1002,8 @@ void Display::showAPQR()
         msg += HostName;
         m_tft.setCursor(5, 5);
         m_tft.print(msg);
-
-        // msg = F("Password: ");
-        // msg += SECRET_AP_PASSWORD;
-
-        msg = F("No Password");
+        msg = F("Password: ");
+        msg += SECRET_AP_PASSWORD;
         m_tft.setCursor(5, 25);
         m_tft.print(msg);
         m_tft.unloadFont();
@@ -1104,6 +1101,7 @@ void Display::showAPIOK()
 {
     if (m_last_screen != Screen::API_OK) {
         m_tft.fillScreen(TFT_BLACK);
+        m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
         drawWhale();
 
         String msg;
@@ -1160,7 +1158,7 @@ void Display::showAPIFailed()
 
         m_tft.loadFont(F("NotoSans-Regular30"));
         msg = F("Gecko API failed!");
-        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 95);
+        m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 115);
         m_tft.print(msg);
         m_tft.unloadFont();
 

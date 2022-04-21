@@ -146,7 +146,7 @@ void handleWifi(Display& display)
 
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
             LOG_I_PRINTLN(F("AP Callback For WiFi Config"));
-            handleStartSequenceForResetEnd();
+            Settings::handlePowerupSequenceForResetEnd();
             display.showAPQR();
         });
 

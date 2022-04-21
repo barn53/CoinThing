@@ -86,6 +86,10 @@ public:
     static bool isFakeGeckoServer();
     static String getGeckoServer();
 
+    static uint8_t handlePowerupSequenceForResetBegin();
+    static void handlePowerupSequenceForResetEnd();
+    void handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter);
+
 private:
     void set(DynamicJsonDocument& doc, bool toFile);
     void trace() const;
