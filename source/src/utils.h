@@ -44,7 +44,7 @@ struct Depth {
 #define LOG_PRINTLN(x) \
     Serial.println(x);
 #define LOG_PRINTF(f, ...) \
-    Serial.printf(f, __VA_ARGS__);
+    Serial.printf(f, ##__VA_ARGS__);
 
 #define LOG_I_PRINT(x) \
     LOG_INDENT         \
