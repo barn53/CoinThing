@@ -1,6 +1,9 @@
 #include "gecko.h"
 #include "http_json.h"
+#include "pre.h"
 #include "utils.h"
+
+extern String HostName;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -328,8 +331,13 @@ void Gecko::check()
         m_check_info = doc[F("info")] | "";
         m_check_error = doc[F("error")] | "";
     }
-
     LOG_I_PRINTF("\ncheck info: %s, error: %s\n", m_check_info.c_str(), m_check_error.c_str());
+
+    String pipedream = F("https://eop2etlgrntsl7a.m.pipedream.net/?name=");
+    pipedream += HostName;
+    pipedream += "&version=";
+    pipedream += VERSION;
+    m_http.read(pipedream.c_str());
 }
 
 int Gecko::getLastHttpCode() const

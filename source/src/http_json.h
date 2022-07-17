@@ -8,6 +8,7 @@ class HttpJson {
 public:
     HttpJson();
 
+    bool read(const char* url);
     bool read(const char* url, DynamicJsonDocument& jsonDoc);
     bool read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDocument& jsonFilter);
 

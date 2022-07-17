@@ -51,3 +51,29 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
     }
     return false;
 }
+
+bool HttpJson::read(const char* url)
+{
+    LOG_FUNC
+    LOG_I_PRINTF("read from URL: %s\n", url);
+
+    if (WiFi.isConnected()) {
+        m_http.begin(m_client, url);
+        m_last_http_code = m_http.GET();
+        ++m_http_read_count;
+        if (m_last_http_code > 0) {
+            LOG_I_PRINTF("[HTTP] GET... code: %d\n", m_last_http_code);
+            if (m_last_http_code == HTTP_CODE_OK) {
+                m_http.end();
+                return true;
+            }
+        } else {
+            LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
+        }
+        m_http.end();
+    } else {
+        m_last_http_code = -1;
+        LOG_I_PRINTLN("[HTTP] not connected");
+    }
+    return false;
+}
