@@ -17,6 +17,10 @@ GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_curren
 
 ###
 
+GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur,usd&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true HTTP/1.0
+
+###
+
 GET https://api.coingecko.com/api/v3/simple/price?ids=baby-doge-coin,shiba-inu,matic-network&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
 
 ###

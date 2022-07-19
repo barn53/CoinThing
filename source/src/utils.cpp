@@ -204,6 +204,9 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
 }
 
+// format large numbers:
+//   https://www.antidote.info/en/blog/reports/millions-billions-and-other-large-numbers
+
 void addCurrencySmbol(String& value, const String& symbol, CurrencySymbolPosition position)
 {
     if (position == CurrencySymbolPosition::LEADING) {
