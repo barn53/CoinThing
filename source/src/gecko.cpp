@@ -327,7 +327,7 @@ void Gecko::check()
     filter["info"] = true;
     filter["error"] = true;
 
-    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/assets/wt/check.json")).c_str(), doc, filter)) {
+    if (m_http.read(String(F("https://raw.githubusercontent.com/barn53/assets/wt_v2/check.json")).c_str(), doc, filter)) {
         m_check_info = doc[F("info")] | "";
         m_check_error = doc[F("error")] | "";
     }
