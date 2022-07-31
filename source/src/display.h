@@ -32,6 +32,7 @@ public:
 private:
     void wifiConnect();
     void renderTitle();
+    void showRecover(uint8_t pct);
     void heartbeat();
     void showCoin();
     void showTwoCoins();
@@ -75,6 +76,7 @@ private:
     uint32_t m_last_coin_swap { 0 };
 
     bool m_shows_wifi_not_connected { false };
+    bool m_shows_recover { false };
 
     static uint16_t RED565;
     static uint16_t GREEN565;

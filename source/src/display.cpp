@@ -142,12 +142,18 @@ void Display::loop()
             }
         } else {
             if (m_settings.valid()) {
-                if (m_settings.mode() == Settings::Mode::ONE_COIN) {
-                    showCoin();
-                } else if (m_settings.mode() == Settings::Mode::TWO_COINS) {
-                    showTwoCoins();
-                } else if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
-                    showMultipleCoins();
+                uint8_t pct(m_gecko.recoverFromHTTP429());
+                if (pct < 100) {
+                    showRecover(pct);
+                } else {
+                    if (m_settings.mode() == Settings::Mode::ONE_COIN) {
+                        showCoin();
+                    } else if (m_settings.mode() == Settings::Mode::TWO_COINS) {
+                        showTwoCoins();
+                    } else if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+                        showMultipleCoins();
+                    }
+                    m_shows_recover = false;
                 }
             } else {
                 showSettingsQR();
@@ -176,6 +182,17 @@ void Display::wifiConnect()
             m_shows_wifi_not_connected = true;
         }
     }
+}
+
+void Display::showRecover(uint8_t pct)
+{
+    if (!m_shows_recover) {
+        m_tft.fillRect(210, 0, 30, 28, TFT_BLACK);
+        drawBmp(F("/recover.bmp"), m_tft, 220, 0);
+        m_tft.fillRect(220, 25, 20, 3, CURRENT_COIN_DOT_COLOR);
+    }
+    m_tft.fillRect(220, 25, (2000 / 100 * pct) / 100, 3, TFT_BLACK);
+    m_shows_recover = true;
 }
 
 void Display::heartbeat()
@@ -763,16 +780,17 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
 
 void Display::chartFailed()
 {
-    LOG_I_PRINTLN(F("Chart update failed!"))
+    if (m_gecko.getLastHttpCode() != HTTP_CODE_TOO_MANY_REQUESTS) {
+        LOG_I_PRINTLN(F("Chart update failed!"))
+        m_tft.loadFont(F("NotoSans-Regular20"));
+        m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+        m_tft.setCursor(10, 175);
+        m_tft.print(F("Chart update failed!"));
 
-    m_tft.loadFont(F("NotoSans-Regular20"));
-    m_tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-    m_tft.setCursor(10, 175);
-    m_tft.print(F("Chart update failed!"));
-
-    m_tft.setCursor(10, 200);
-    m_tft.printf("( %d / %u )     ", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
-    m_tft.unloadFont();
+        m_tft.setCursor(10, 200);
+        m_tft.printf("( %d / %u )     ", m_gecko.getLastHttpCode(), m_gecko.getHttpCount());
+        m_tft.unloadFont();
+    }
 }
 
 Settings::ChartPeriod Display::nextChartPeriod() const
