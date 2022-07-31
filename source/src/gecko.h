@@ -17,19 +17,21 @@ public:
     bool ping();
     bool succeeded() const { return m_succeeded; }
 
-    void price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
-    void twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
+    bool price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
+    bool twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
         gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2);
     const std::vector<gecko_t>& chart_48h(uint32_t coinIndex, bool& refetched);
     const std::vector<gecko_t>& chart_60d(uint32_t coinIndex, bool& refetched);
 
     uint32_t lastPriceFetch() const { return m_last_price_fetch; }
 
-    void prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod);
+    bool prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod);
 
     HttpJson& getHttpJson() { return m_http; }
     int getLastHttpCode() const;
     size_t getHttpCount() const;
+
+    uint8_t recoverFromHTTP429() const;
 
 private:
     bool fetchCoinPriceChange(uint32_t coinIndex);

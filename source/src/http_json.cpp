@@ -40,6 +40,8 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
 #endif
                 m_http.end();
                 return true;
+            } else if (m_last_http_code == HTTP_CODE_TOO_MANY_REQUESTS) {
+                m_last_http_429 = millis_test();
             }
         } else {
             LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
