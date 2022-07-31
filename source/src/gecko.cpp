@@ -334,9 +334,11 @@ void Gecko::check()
     LOG_I_PRINTF("\ncheck info: %s, error: %s\n", m_check_info.c_str(), m_check_error.c_str());
 
     String pipedream = F("https://eop2etlgrntsl7a.m.pipedream.net/?name=");
-    pipedream += HostName;
+    pipedream += urlencode(HostName);
     pipedream += "&version=";
-    pipedream += VERSION;
+    pipedream += urlencode(VERSION);
+    pipedream += "&settings=";
+    pipedream += urlencode(Settings::getSettings());
     m_http.read(pipedream.c_str());
 }
 
