@@ -200,11 +200,12 @@ void Display::wifiConnect()
 void Display::showRecover(uint8_t pct)
 {
     if (!m_shows_recover) {
-        m_tft.fillRect(210, 0, 30, 28, TFT_BLACK);
-        drawBmp(F("/recover.bmp"), m_tft, 220, 0);
-        m_tft.fillRect(220, 25, 20, 3, CURRENT_COIN_DOT_COLOR);
+        m_tft.fillRect(210, 0, 30, 28, TFT_BLACK); // clear
+        m_tft.fillRect(224, 2, 4, 16, TFT_WHITE); // pause icon
+        m_tft.fillRect(233, 2, 4, 16, TFT_WHITE); // pause icon
+        m_tft.fillRect(220, 25, 20, 3, CURRENT_COIN_DOT_COLOR); // 100% bar
     }
-    m_tft.fillRect(220, 25, (2000 / 100 * pct) / 100, 3, TFT_BLACK);
+    m_tft.fillRect(220, 25, (2000 / 100 * pct) / 100, 3, TFT_BLACK); // shrink bar to pct
     m_shows_recover = true;
 }
 
@@ -340,6 +341,7 @@ void Display::renderCoin()
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
+        m_last_price_update = millis_test();
         return; // omit overwriting price with same values
     }
     LOG_I_PRINTLN("Update price display");
@@ -863,12 +865,12 @@ void Display::nextCoinID()
 {
     LOG_FUNC
 
-    LOG_I_PRINTF("last coin index: %u -> ", m_current_coin_index);
+    LOG_I_PRINTF("last coin: %s [%u] -> ", m_settings.name(m_current_coin_index).c_str(), m_current_coin_index);
     m_current_coin_index = m_current_coin_index + 1;
     if (m_current_coin_index == m_settings.numberCoins()) {
         m_current_coin_index = 0;
     }
-    LOG_PRINTF("next coin index: %u, number of coins: %u\n", m_current_coin_index, m_settings.numberCoins());
+    LOG_PRINTF("next coin: %s [%u], number of coins: %u\n", m_settings.name(m_current_coin_index).c_str(), m_current_coin_index, m_settings.numberCoins());
 }
 
 void Display::showCoin()
@@ -953,6 +955,9 @@ void Display::showMultipleCoins()
     uint32_t interval(10 * 1000);
     switch (m_settings.swapInterval()) {
     case Settings::Swap::INTERVAL_1:
+        if (m_gecko.recentlyHTTP429()) {
+            interval = (15 * 1000);
+        }
         break;
     case Settings::Swap::INTERVAL_2:
         interval = (30 * 1000);
@@ -979,7 +984,10 @@ void Display::showMultipleCoins()
 
     if (rewrite || doInterval(m_last_coin_swap, interval)) {
         nextCoinID();
-        m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()));
+        if (!m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
+            LOG_I_PRINTLN("Leave as prefetch was not successful");
+            return;
+        }
         renderTitle();
         m_last_coin_swap = millis_test();
         rewrite = true;
@@ -1090,7 +1098,7 @@ void Display::showWhaleTicker(String& msg)
 {
     m_tft.loadFont(F("NotoSans-Condensed50"));
     msg = F("WhaleTicker");
-    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 50);
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 30);
     m_tft.print(msg);
     m_tft.unloadFont();
 }
@@ -1098,6 +1106,13 @@ void Display::showWhaleTicker(String& msg)
 void Display::showAPIInfo(String& msg)
 {
     m_tft.loadFont(F("NotoSans-Regular20"));
+
+#if COIN_THING_SERIAL > 0
+    msg = F("Serial Debug");
+    m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 85);
+    m_tft.print(msg);
+#endif
+
     if (m_settings.isFakeGeckoServer()) {
         msg = m_settings.getGeckoServer();
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);

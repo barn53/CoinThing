@@ -34,6 +34,7 @@ public:
     int getLastHttpCode() const;
     size_t getHttpCount() const;
 
+    bool recentlyHTTP429() const;
     uint8_t recoverFromHTTP429() const;
 
 private:
