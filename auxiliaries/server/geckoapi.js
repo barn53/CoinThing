@@ -18,9 +18,12 @@ function fileToJSON(filename) {
     return JSON.parse(fs.readFileSync(__dirname + filename))
 }
 
-
 var server = https.createServer(options, app)
 var port = 3443
+
+var requestCounter = 0
+var lastDate = new Date()
+var thisDate = new Date()
 
 server.listen(port, function () {
     console.log('Gecko API server address: https://%s:%d', ip.address(), port);
@@ -28,34 +31,54 @@ server.listen(port, function () {
 })
 
 app.get('/*', function (req, res, next) {
+    ++requestCounter
+
+    lastDate = thisDate
+    thisDate = new Date()
+
+    console.log('')
+    console.log(thisDate.toLocaleTimeString() + ", seconds: " + ((thisDate - lastDate) / 1000))
+    console.log('request counter: ' + requestCounter)
+    console.log(req.path)
+    console.log(req.query)
     console.log('user-agent: ' + req.get('user-agent'))
+
+    /** /
+    res.status(404).send('Sorry, cant find that');
+    return
+    /**/
+
+    /**/
+    if (requestCounter % 10 == 0) {
+        res.status(429)
+        res.header({
+            'Retry-After': 120
+        })
+        console.log('Simulate rate limit exceeded')
+        res.send('Rate Limit Exceeded!');
+        return
+    }
+    /**/
+
     next()
 })
 
 
 app.get('/api/v3/simple/price', function (req, res) {
-    console.log(req.path)
-    console.log(req.query)
     console.log('coin ids: ' + req.query.ids)
 
     priceCoin = fileToJSON('/geckofakedata/price_coin.json')
     price = { [req.query.ids]: priceCoin }  // [req.query.ids] notation puts the variable contents as key name
-    console.log('result: ' + JSON.stringify(price))
+    // console.log('result: ' + JSON.stringify(price))
     res.send(JSON.stringify(price))
 })
 
 
 app.get('/api/v3/coins/(*)/market_chart', function (req, res) {
-
-    //res.status(404).send('Sorry, cant find that');
-    //return
-
-    console.log(req.path)
-    console.log(req.query)
     console.log('coin id: ' + req.params[0])
 
     marketChart = fileToJSON('/geckofakedata/market_chart.json')
-    console.log('result: ' + JSON.stringify(marketChart))
+    // console.log('result: ' + JSON.stringify(marketChart))
     res.send(JSON.stringify(marketChart))
 })
 
