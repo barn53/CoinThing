@@ -24,7 +24,7 @@ var port = 3443
 
 server.listen(port, function () {
     console.log('Gecko API server address: https://%s:%d', ip.address(), port);
-    console.log('Set Gecko Fake API on CoinThing: http://192.168.178.0/action/set?fakegeckoserver=%s:%d', ip.address(), port);
+    console.log('Set Gecko Fake API on CoinThing: http://192.168.178.0/action/set?fakegeckoserver=https://%s:%d', ip.address(), port);
 })
 
 app.get('/*', function (req, res, next) {
