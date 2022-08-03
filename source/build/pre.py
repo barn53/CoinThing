@@ -22,6 +22,7 @@ print(env)
 version = subprocess.check_output(
     ["git", "describe", "--tags", "--always"]).strip()
 version = version.decode('utf-8')
+version = version.replace("-whale", "") # remove the -whale from the tag
 changes = subprocess.check_output(["git", "status", "--porcelain"]).strip()
 changes = changes.decode('utf-8')
 
