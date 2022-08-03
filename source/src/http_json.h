@@ -13,7 +13,9 @@ public:
 
     int getLastHttpCode() const { return m_last_http_code; }
     size_t getHttpCount() const { return m_http_read_count; }
+
     uint32_t getLastHTTP429() const { return m_last_http_429; }
+    bool recentlyHTTP429() const;
 
 private:
     WiFiClientSecure m_client;
