@@ -22,6 +22,7 @@ var server = https.createServer(options, app)
 var port = 3443
 
 var requestCounter = 0
+var startDate = new Date()
 var lastDate = new Date()
 var thisDate = new Date()
 
@@ -37,19 +38,37 @@ app.get('/*', function (req, res, next) {
     thisDate = new Date()
 
     console.log('')
-    console.log(thisDate.toLocaleTimeString() + ", seconds: " + ((thisDate - lastDate) / 1000))
+    console.log('')
+    console.log('---------------------------------------------------')
     console.log('request counter: ' + requestCounter)
+    seconds = ((thisDate - lastDate) / 1000)
+    minutes = ((thisDate - startDate) / 1000 / 60)
+    console.log(thisDate.toLocaleTimeString() + ", seconds: " + seconds + ", reqs/min: " + requestCounter / minutes)
     console.log(req.path)
-    console.log(req.query)
-    console.log('user-agent: ' + req.get('user-agent'))
+    console.log(JSON.stringify(req.query))
+    // console.log('user-agent: ' + req.get('user-agent'))
+    proAPI = false
+    if (req.query['x_cg_pro_api_key']) {
+        console.log('Pro API request key: ' + req.query['x_cg_pro_api_key'])
+        proAPI = true
+    }
 
     /** /
     res.status(404).send('Sorry, cant find that');
     return
     /**/
 
+    /** /
+    if (proAPI) {
+        res.status(401)
+        console.log('Simulate unauthorized')
+        res.send('Unauthorized');
+        return
+    }
     /**/
-    if (requestCounter % 10 == 0) {
+
+    /** /
+    if ((false || !proAPI) && requestCounter % 10 == 0) {
         res.status(429)
         res.header({
             'Retry-After': 120
@@ -65,8 +84,6 @@ app.get('/*', function (req, res, next) {
 
 
 app.get('/api/v3/simple/price', function (req, res) {
-    console.log('coin ids: ' + req.query.ids)
-
     priceCoin = fileToJSON('/geckofakedata/price_coin.json')
     price = { [req.query.ids]: priceCoin }  // [req.query.ids] notation puts the variable contents as key name
     // console.log('result: ' + JSON.stringify(price))
@@ -75,8 +92,6 @@ app.get('/api/v3/simple/price', function (req, res) {
 
 
 app.get('/api/v3/coins/(*)/market_chart', function (req, res) {
-    console.log('coin id: ' + req.params[0])
-
     marketChart = fileToJSON('/geckofakedata/market_chart.json')
     // console.log('result: ' + JSON.stringify(marketChart))
     res.send(JSON.stringify(marketChart))
