@@ -36,7 +36,7 @@ private:
     void showMultipleCoins();
     void showCoinThing(String& msg, uint16_t y = 30, bool unloadFont = true);
     void showAPIInfo(String& msg);
-    void renderCoin();
+    void renderCoin(bool fetchPrice = true);
     void renderTwoCoins();
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();

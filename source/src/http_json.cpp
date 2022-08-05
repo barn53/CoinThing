@@ -2,8 +2,6 @@
 #include "utils.h"
 #include <StreamUtils.h>
 
-#define HTTP_429_RESET_INTERVAL (60 * 60 * 1000)
-
 HttpJson::HttpJson()
 {
     m_client.setInsecure();
@@ -41,14 +39,7 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
                 deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
                 m_http.end();
-
-                if (m_last_http_429 > 0 && (millis_test() - m_last_http_429) > HTTP_429_RESET_INTERVAL) {
-                    // reset last 429 timestamp, when it is more than an hour ago
-                    m_last_http_429 = 0;
-                }
                 return true;
-            } else if (m_last_http_code == HTTP_CODE_TOO_MANY_REQUESTS) {
-                m_last_http_429 = millis_test();
             }
         } else {
             LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
@@ -85,9 +76,4 @@ bool HttpJson::read(const char* url)
         LOG_I_PRINTLN("[HTTP] not connected");
     }
     return false;
-}
-
-bool HttpJson::recentlyHTTP429() const
-{
-    return m_last_http_429 > 0;
 }

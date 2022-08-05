@@ -84,7 +84,7 @@ public:
 
     static void setFakeGeckoServer(String address);
     static bool isFakeGeckoServer();
-    static String getGeckoServer();
+    static String getGeckoServer(bool useProAPI);
     static String getSettings();
 
     static uint8_t handlePowerupSequenceForResetBegin();

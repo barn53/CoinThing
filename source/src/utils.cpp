@@ -1,9 +1,17 @@
 #include "utils.h"
+#include "common.h"
+
+#include "AES.h"
+#include "Base64.h"
 
 #if COIN_THING_SERIAL > 0
 int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
+
+#define AES_KEY_SIZE 16
+#define AES_BLOCK_SIZE 16
+#define AES_VALUE_SIZE 32
 
 String urlencode(const String& url)
 {
@@ -34,6 +42,103 @@ String urlencode(const String& url)
         yield();
     }
     return encoded;
+}
+
+void hex(const uint8_t* buffer, size_t length)
+{
+    Serial.println("\n--------------------------------------------------------------------------");
+    Serial.printf("[HEXDUMP] Address: %p len: 0x%X (%d)\n", buffer, length, length);
+    for (size_t row = 0; row * 8 < length; ++row) {
+        for (size_t col = 0; col < 8; ++col) {
+            size_t idx(row * 8 + col);
+            Serial.printf("%02x", buffer[idx]);
+            if (idx == length - 1) {
+                Serial.print(" | ");
+            } else {
+                Serial.print("   ");
+            }
+        }
+
+        Serial.print("    ");
+        for (size_t col = 0; col < 8; ++col) {
+            size_t idx(row * 8 + col);
+            uint8_t c = buffer[idx];
+            if (c == 0x0a || c == 0x0d) {
+                c = ' ';
+            }
+            Serial.printf("%c", c);
+            if (idx == length - 1) {
+                Serial.print(" | ");
+            } else {
+                Serial.print("   ");
+            }
+        }
+        Serial.println();
+    }
+    Serial.println("--------------------------------------------------------------------------");
+}
+
+void copyStringToSizedBuffer(uint8_t* buffer, const String& s, size_t length)
+{
+    memset(buffer, 0, length);
+    for (size_t ii = 0; ii < s.length() && ii < length; ++ii) {
+        buffer[ii] = s.charAt(ii);
+    }
+}
+
+void getAes128Key(uint8_t* key)
+{
+    String s;
+    if (SPIFFS.exists(AES128_KEY_FILE)) {
+        File f = SPIFFS.open(AES128_KEY_FILE, "r");
+        s = f.readString();
+        f.close();
+    }
+    copyStringToSizedBuffer(key, s, AES_KEY_SIZE);
+}
+
+String encryptEncode(const String& value)
+{
+    uint8_t key[AES_KEY_SIZE];
+    getAes128Key(key);
+
+    AES128 aes128;
+    aes128.setKey(key, AES_KEY_SIZE);
+
+    uint8_t val32[AES_VALUE_SIZE];
+    copyStringToSizedBuffer(val32, value, AES_VALUE_SIZE);
+
+    uint8_t cypher32[AES_VALUE_SIZE];
+    aes128.encryptBlock(&cypher32[0], &(val32[0]));
+    aes128.encryptBlock(&cypher32[AES_BLOCK_SIZE], &(val32[AES_BLOCK_SIZE]));
+
+    int encodedLength = Base64.encodedLength(AES_VALUE_SIZE);
+    char encoded[encodedLength];
+    Base64.encode(encoded, reinterpret_cast<char*>(cypher32), AES_VALUE_SIZE);
+
+    return encoded;
+}
+
+String decodeDecrypt(const String& value)
+{
+    int decodedLength = Base64.decodedLength(const_cast<char*>(value.c_str()), value.length());
+    char decoded[decodedLength];
+    Base64.decode(decoded, const_cast<char*>(value.c_str()), value.length());
+
+    uint8_t key[AES_KEY_SIZE];
+    getAes128Key(key);
+
+    AES128 aes128;
+    aes128.setKey(key, AES_KEY_SIZE);
+
+    uint8_t cypher32[AES_VALUE_SIZE];
+    copyStringToSizedBuffer(cypher32, decoded, AES_VALUE_SIZE);
+
+    uint8_t decrypted32[AES_VALUE_SIZE];
+    aes128.decryptBlock(&decrypted32[0], &(cypher32[0]));
+    aes128.decryptBlock(&decrypted32[AES_BLOCK_SIZE], &(cypher32[AES_BLOCK_SIZE]));
+
+    return String(reinterpret_cast<char*>(decrypted32));
 }
 
 void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, SmallDecimalNumberFormat smallDecimalNumberFormat, uint8_t forceDecimalPlaces)

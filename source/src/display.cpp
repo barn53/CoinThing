@@ -217,6 +217,35 @@ void Display::heartbeat()
         return;
     }
 
+    ////////////////////////////////////////////////////////
+    ///// On-screen debugging
+#if 0
+    m_tft.loadFont(F("NotoSans-Regular15"));
+    if (m_gecko.recentlyHTTP429()) {
+        m_tft.setTextColor(TFT_MAGENTA, TFT_BLACK);
+    } else {
+        m_tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
+    }
+    m_tft.setCursor(200, 30);
+    if (m_gecko.useProAPI()) {
+        m_tft.print("+");
+    } else {
+        m_tft.print("-");
+    }
+    if (m_gecko.increaseIntervalDueToHTTP429()) {
+        m_tft.print(" *");
+    }
+    if (m_gecko.hadProblemsWithProApi()) {
+        m_tft.print(" !");
+    }
+    m_tft.setCursor(150, 45);
+    m_tft.print(m_gecko.switchToProCount());
+    m_tft.print("/");
+    m_tft.print(m_gecko.http429PauseCount());
+#endif
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+
     if (m_last_screen == Screen::COIN
         && (((millis_test() - m_last_heartbeat) > 300
                 && (m_heart_beat_count == 0
@@ -330,14 +359,20 @@ void Display::renderTitle()
     }
 }
 
-void Display::renderCoin()
+void Display::renderCoin(bool fetchPrice)
 {
     LOG_FUNC
 
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
-    m_gecko.price(m_current_coin_index, price, price2, change_pct);
+
+    if (fetchPrice) {
+        m_gecko.price(m_current_coin_index, price, price2, change_pct);
+    } else {
+        // already obtained by prefetch()
+        m_gecko.recentPrice(price, price2, change_pct);
+    }
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
@@ -955,7 +990,7 @@ void Display::showMultipleCoins()
     uint32_t interval(10 * 1000);
     switch (m_settings.swapInterval()) {
     case Settings::Swap::INTERVAL_1:
-        if (m_gecko.recentlyHTTP429()) {
+        if (m_gecko.increaseIntervalDueToHTTP429()) {
             interval = (15 * 1000);
         }
         break;
@@ -997,7 +1032,7 @@ void Display::showMultipleCoins()
 
     heartbeat();
     wifiConnect();
-    renderCoin();
+    renderCoin(false);
 
     if (rewrite || doInterval(m_last_chart_update, interval)) {
         if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
@@ -1114,7 +1149,7 @@ void Display::showAPIInfo(String& msg)
 #endif
 
     if (m_settings.isFakeGeckoServer()) {
-        msg = m_settings.getGeckoServer();
+        msg = m_settings.getGeckoServer(false);
         m_tft.setCursor((DISPLAY_WIDTH - m_tft.textWidth(msg)) / 2, 150);
         m_tft.print(msg);
     }

@@ -4,4 +4,5 @@ pre.h
 
 data/version.spiffs
 data/wifi.json
+data/aes128.key
 data/*.gz

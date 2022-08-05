@@ -23,6 +23,8 @@ private:
     bool handleGetVersion() const;
     bool handleGetName() const;
     bool handleGetPrice();
+    bool handleEncrypt();
+    bool handleDecrypt();
 
     bool handleForUpdate() const;
     bool handleSelftest() const;

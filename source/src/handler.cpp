@@ -120,6 +120,32 @@ bool Handler::handleGetPrice()
     return true;
 }
 
+bool Handler::handleEncrypt()
+{
+    if (server.hasArg(F("value"))) {
+        String encrypted(encryptEncode(server.arg(F("value"))));
+        String ret;
+        ret = encrypted;
+        ret += "\n";
+        ret += decodeDecrypt(encrypted);
+        server.send(200, F("text/plain"), ret);
+    }
+    return true;
+}
+
+bool Handler::handleDecrypt()
+{
+    if (server.hasArg(F("value"))) {
+        String decrypted(decodeDecrypt(server.arg(F("value"))));
+        String ret;
+        ret = decrypted;
+        ret += "\n";
+        ret += encryptEncode(decrypted);
+        server.send(200, F("text/plain"), ret);
+    }
+    return true;
+}
+
 bool Handler::handleForUpdate() const
 {
     server.send(200, F("text/plain"), "1");
@@ -237,6 +263,10 @@ bool Handler::handleAction()
         return handleGetName();
     } else if (path == F("/action/get/price")) {
         return handleGetPrice();
+    } else if (path == F("/action/encrypt")) {
+        return handleEncrypt();
+    } else if (path == F("/action/decrypt")) {
+        return handleDecrypt();
     }
     return false;
 }

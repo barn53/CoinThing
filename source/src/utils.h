@@ -75,6 +75,9 @@ struct Depth {
 
 String urlencode(const String& url);
 
+String encryptEncode(const String& value);
+String decodeDecrypt(const String& value);
+
 using gecko_t = double;
 
 enum class NumberFormat : uint8_t {
