@@ -81,6 +81,7 @@ private:
     uint32_t m_show_check_info_start { 0 };
     bool m_show_api_ok { true };
     bool m_show_check_info { true };
+    bool m_previous_prefetch_failed { false };
 
     uint32_t m_current_coin_index { std::numeric_limits<uint32_t>::max() };
     uint32_t m_last_coin_swap { 0 };

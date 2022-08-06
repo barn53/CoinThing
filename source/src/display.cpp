@@ -219,7 +219,7 @@ void Display::heartbeat()
 
     ////////////////////////////////////////////////////////
     ///// On-screen debugging
-#if 0
+#if 1
     m_tft.loadFont(F("NotoSans-Regular15"));
     if (m_gecko.recentlyHTTP429()) {
         m_tft.setTextColor(TFT_MAGENTA, TFT_BLACK);
@@ -367,12 +367,7 @@ void Display::renderCoin(bool fetchPrice)
     gecko_t price2;
     gecko_t change_pct;
 
-    if (fetchPrice) {
-        m_gecko.price(m_current_coin_index, price, price2, change_pct);
-    } else {
-        // already obtained by prefetch()
-        m_gecko.recentPrice(price, price2, change_pct);
-    }
+    m_gecko.price(m_current_coin_index, price, price2, change_pct, fetchPrice);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
@@ -1017,22 +1012,38 @@ void Display::showMultipleCoins()
 
     LOG_I_PRINTF("m_last_coin_swap: [%d] \n", (m_last_coin_swap / 1000));
 
+    // This logic here differs from CoinThing due to the fact that
+    // Whale Ticker falls back to pro API when prefetch was not successful
+    // CoinThing does not utilize the pro API
+
     if (rewrite || doInterval(m_last_coin_swap, interval)) {
         nextCoinID();
+        m_last_coin_swap = millis_test();
         if (!m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
-            LOG_I_PRINTLN("Leave as prefetch was not successful");
+            LOG_I_PRINTLN("Leave, since prefetch was not successful");
+            m_previous_prefetch_failed = true;
             return;
         }
         renderTitle();
-        m_last_coin_swap = millis_test();
+        m_previous_prefetch_failed = false;
         rewrite = true;
+    }
+
+    // This condition is only necessary when
+    // swap interval was not reached by recoverFromHTTP429
+    if (m_previous_prefetch_failed) {
+        m_previous_prefetch_failed = false;
+        LOG_I_PRINTLN("m_previous_prefetch_failed: true");
+        renderTitle();
+        renderCoin(true);
+    } else {
+        renderCoin(false);
     }
 
     LOG_I_PRINTF("m_last_price_update: [%d], m_last_chart_update: [%d] \n", (m_last_price_update / 1000), (m_last_chart_update / 1000));
 
     heartbeat();
     wifiConnect();
-    renderCoin(false);
 
     if (rewrite || doInterval(m_last_chart_update, interval)) {
         if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
