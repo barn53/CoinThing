@@ -21,7 +21,6 @@ public:
     const String& getCheckError() const { return m_check_error; }
 
     bool price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
-    bool recentPrice(gecko_t& price, gecko_t& price2, gecko_t& change_pct);
     bool twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
         gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2);
     const std::vector<gecko_t>& chart_48h(uint32_t coinIndex, bool& refetched);

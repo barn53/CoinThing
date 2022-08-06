@@ -102,17 +102,6 @@ bool Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& 
     return ret;
 }
 
-bool Gecko::recentPrice(gecko_t& price, gecko_t& price2, gecko_t& change_pct)
-{
-    LOG_FUNC
-    LOG_I_PRINTF("m_last_price_fetch: [%d] \n", (m_last_price_fetch / 1000));
-
-    price = m_price;
-    price2 = m_price2;
-    change_pct = m_change_pct;
-    return true;
-}
-
 bool Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
     gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2)
 {
@@ -415,13 +404,13 @@ void Gecko::handleFetchIssue()
             ++m_http_429_pause_count;
             m_increase_interval_due_to_http_429 = true;
         }
-    }
-
-    if (getLastHttpCode() == HTTP_CODE_UNAUTHORIZED
-        && m_use_pro_api) {
-        m_had_problems_with_pro_api = true;
-        m_use_pro_api = false;
-        m_gecko_server = m_settings.getGeckoServer(false);
+    } else if (getLastHttpCode() == HTTP_CODE_UNAUTHORIZED
+        || getLastHttpCode() == HTTP_CODE_BAD_REQUEST) {
+        if (m_use_pro_api) {
+            m_had_problems_with_pro_api = true;
+            m_use_pro_api = false;
+            m_gecko_server = m_settings.getGeckoServer(false);
+        }
     }
 }
 

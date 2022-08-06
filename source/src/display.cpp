@@ -158,6 +158,7 @@ void Display::loop()
                 uint8_t pct(m_gecko.recoverFromHTTP429());
                 if (pct < 100) {
                     showRecover(pct);
+                    m_previous_prefetch_failed = false;
                 } else {
                     if (m_settings.mode() == Settings::Mode::ONE_COIN) {
                         showCoin();
@@ -1012,14 +1013,18 @@ void Display::showMultipleCoins()
 
     LOG_I_PRINTF("m_last_coin_swap: [%d] \n", (m_last_coin_swap / 1000));
 
-    if (rewrite || doInterval(m_last_coin_swap, interval)) {
-        nextCoinID();
+    if (rewrite || m_previous_prefetch_failed || doInterval(m_last_coin_swap, interval)) {
+        if (!m_previous_prefetch_failed) {
+            nextCoinID();
+            m_last_coin_swap = millis_test();
+        }
         if (!m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
-            LOG_I_PRINTLN("Leave as prefetch was not successful");
+            LOG_I_PRINTLN("Leave, since prefetch was not successful");
+            m_previous_prefetch_failed = true;
             return;
         }
         renderTitle();
-        m_last_coin_swap = millis_test();
+        m_previous_prefetch_failed = false;
         rewrite = true;
     }
 
