@@ -359,7 +359,7 @@ void Display::renderTitle()
     }
 }
 
-void Display::renderCoin(bool fetchPrice)
+void Display::renderCoin()
 {
     LOG_FUNC
 
@@ -367,12 +367,7 @@ void Display::renderCoin(bool fetchPrice)
     gecko_t price2;
     gecko_t change_pct;
 
-    if (fetchPrice) {
-        m_gecko.price(m_current_coin_index, price, price2, change_pct);
-    } else {
-        // already obtained by prefetch()
-        m_gecko.recentPrice(price, price2, change_pct);
-    }
+    m_gecko.price(m_current_coin_index, price, price2, change_pct);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
@@ -1032,7 +1027,7 @@ void Display::showMultipleCoins()
 
     heartbeat();
     wifiConnect();
-    renderCoin(false);
+    renderCoin();
 
     if (rewrite || doInterval(m_last_chart_update, interval)) {
         if (!renderChart(static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {

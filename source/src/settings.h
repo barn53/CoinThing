@@ -27,7 +27,7 @@ public:
         ALL_PERIODS = PERIOD_24_H + PERIOD_48_H + PERIOD_30_D + PERIOD_60_D
     };
 
-    enum Mode : uint8_t {
+    enum class Mode : uint8_t {
         ONE_COIN = 1,
         TWO_COINS,
         MULTIPLE_COINS

@@ -51,6 +51,9 @@ private:
     bool fetchCoinPriceChange(uint32_t coinIndex);
     bool fetchTwoCoinsPriceChange();
     bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
+    uint32_t getPriceInterval() const;
+    uint32_t getChart48hInterval() const;
+    uint32_t getChart60dInterval() const;
     void appendProAPIKey(String& url) const;
     void resetFetchIssue();
     void handleFetchIssue();
