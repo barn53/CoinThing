@@ -145,6 +145,7 @@ void Display::loop()
                 uint8_t pct(m_gecko.recoverFromHTTP429());
                 if (pct < 100) {
                     showRecover(pct);
+                    m_previous_prefetch_failed = false;
                 } else {
                     if (m_settings.mode() == Settings::Mode::ONE_COIN) {
                         showCoin();
@@ -203,6 +204,25 @@ void Display::heartbeat()
         m_heart_beat_count = 0;
         return;
     }
+
+    ////////////////////////////////////////////////////////
+    ///// On-screen debugging
+#if 0
+    m_tft.loadFont(F("NotoSans-Regular15"));
+    if (m_gecko.recentlyHTTP429()) {
+        m_tft.setTextColor(TFT_MAGENTA, TFT_BLACK);
+    } else {
+        m_tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
+    }
+    m_tft.setCursor(200, 30);
+    if (m_gecko.increaseIntervalDueToHTTP429()) {
+        m_tft.print("*");
+    }
+    m_tft.setCursor(150, 45);
+    m_tft.print(m_gecko.http429PauseCount());
+#endif
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
 
     if (m_last_screen == Screen::COIN
         && (((millis_test() - m_last_heartbeat) > 300
@@ -324,6 +344,7 @@ void Display::renderCoin()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
+
     m_gecko.price(m_current_coin_index, price, price2, change_pct);
 
     if (m_last_price_update >= m_gecko.lastPriceFetch()) {
@@ -942,7 +963,7 @@ void Display::showMultipleCoins()
     uint32_t interval(10 * 1000);
     switch (m_settings.swapInterval()) {
     case Settings::Swap::INTERVAL_1:
-        if (m_gecko.recentlyHTTP429()) {
+        if (m_gecko.increaseIntervalDueToHTTP429()) {
             interval = (15 * 1000);
         }
         break;
@@ -969,14 +990,18 @@ void Display::showMultipleCoins()
 
     LOG_I_PRINTF("m_last_coin_swap: [%d] \n", (m_last_coin_swap / 1000));
 
-    if (rewrite || doInterval(m_last_coin_swap, interval)) {
-        nextCoinID();
+    if (rewrite || m_previous_prefetch_failed || doInterval(m_last_coin_swap, interval)) {
+        if (!m_previous_prefetch_failed) {
+            nextCoinID();
+            m_last_coin_swap = millis_test();
+        }
         if (!m_gecko.prefetch(m_current_coin_index, static_cast<Settings::ChartPeriod>(m_settings.chartPeriod()))) {
-            LOG_I_PRINTLN("Leave as prefetch was not successful");
+            LOG_I_PRINTLN("Leave, since prefetch was not successful");
+            m_previous_prefetch_failed = true;
             return;
         }
         renderTitle();
-        m_last_coin_swap = millis_test();
+        m_previous_prefetch_failed = false;
         rewrite = true;
     }
 
@@ -1060,7 +1085,7 @@ void Display::showSettingsQR()
 
         String url(F("http://"));
         url += WiFi.localIP().toString().c_str();
-        url += "/";
+        url += F("/");
         ESP_QRcode tftQR(&m_tft);
         tftQR.qrcode(url.c_str(), 20, 50, 200, 3);
 

@@ -2,8 +2,6 @@
 #include "utils.h"
 #include <StreamUtils.h>
 
-#define HTTP_429_RESET_INTERVAL (60 * 60 * 1000)
-
 HttpJson::HttpJson()
 {
     m_client.setInsecure();
@@ -41,14 +39,7 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
                 deserializeJson(jsonDoc, bufferedClient, DeserializationOption::Filter(jsonFilter));
 #endif
                 m_http.end();
-
-                if (m_last_http_429 > 0 && (millis_test() - m_last_http_429) > HTTP_429_RESET_INTERVAL) {
-                    // reset last 429 timestamp, when it is more than an hour ago
-                    m_last_http_429 = 0;
-                }
                 return true;
-            } else if (m_last_http_code == HTTP_CODE_TOO_MANY_REQUESTS) {
-                m_last_http_429 = millis_test();
             }
         } else {
             LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
@@ -61,7 +52,28 @@ bool HttpJson::read(const char* url, DynamicJsonDocument& jsonDoc, DynamicJsonDo
     return false;
 }
 
-bool HttpJson::recentlyHTTP429() const
+bool HttpJson::read(const char* url)
 {
-    return m_last_http_429 > 0;
+    LOG_FUNC
+    LOG_I_PRINTF("read from URL: %s\n", url);
+
+    if (WiFi.isConnected()) {
+        m_http.begin(m_client, url);
+        m_last_http_code = m_http.GET();
+        ++m_http_read_count;
+        if (m_last_http_code > 0) {
+            LOG_I_PRINTF("[HTTP] GET... code: %d\n", m_last_http_code);
+            if (m_last_http_code == HTTP_CODE_OK) {
+                m_http.end();
+                return true;
+            }
+        } else {
+            LOG_I_PRINTF("[HTTP] GET... failed, error: %d - %s\n", m_last_http_code, m_http.errorToString(m_last_http_code).c_str());
+        }
+        m_http.end();
+    } else {
+        m_last_http_code = -1;
+        LOG_I_PRINTLN("[HTTP] not connected");
+    }
+    return false;
 }

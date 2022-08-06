@@ -18,7 +18,6 @@ GET https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_curren
 GET https://api.coingecko.com/api/v3/simple/price?ids=baby-doge-coin,shiba-inu,matic-network&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
 
 
-
 ###
 GET https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false HTTP/1.0
 
@@ -47,7 +46,6 @@ GET https://api.coingecko.com/api/v3/coins/ethereum?localization=false&tickers=f
 
 ### ####################
 # PRO API
-GET  https://pro-api.coingecko.com/api/v3/simple/price?x_cg_pro_api_key=abcd12346549879aergseb&ids=bitcoin,ethereum&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
+GET  https://pro-api.coingecko.com/api/v3/simple/price?x_cg_pro_api_key=CG-xxxxxxxxxxxxxxxxxxxxxxxx&ids=bitcoin,ethereum&vs_currencies=eur,usd&include_24hr_change=true HTTP/1.0
 
 ### ####################
-

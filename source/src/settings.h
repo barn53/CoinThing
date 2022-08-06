@@ -27,7 +27,7 @@ public:
         ALL_PERIODS = PERIOD_24_H + PERIOD_48_H + PERIOD_30_D + PERIOD_60_D
     };
 
-    enum Mode : uint8_t {
+    enum class Mode : uint8_t {
         ONE_COIN = 1,
         TWO_COINS,
         MULTIPLE_COINS
@@ -85,6 +85,7 @@ public:
     static void setFakeGeckoServer(String address);
     static bool isFakeGeckoServer();
     static String getGeckoServer();
+    static String getSettings();
 
     static uint8_t handlePowerupSequenceForResetBegin();
     static void handlePowerupSequenceForResetEnd();
