@@ -314,6 +314,17 @@ String Settings::getGeckoServer()
     return F("https://api.coingecko.com");
 }
 
+String Settings::getSettings()
+{
+    if (SPIFFS.exists(SETTINGS_FILE)) {
+        File f = SPIFFS.open(SETTINGS_FILE, "r");
+        String settings(f.readString());
+        f.close();
+        return settings;
+    }
+    return F("{}");
+}
+
 uint8_t Settings::handlePowerupSequenceForResetBegin()
 {
     LOG_FUNC

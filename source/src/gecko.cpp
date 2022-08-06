@@ -1,6 +1,9 @@
 #include "gecko.h"
 #include "http_json.h"
+#include "pre.h"
 #include "utils.h"
+
+extern String HostName;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -13,7 +16,8 @@
 #define CHART_60_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
 #define PING_INTERVAL (2 * 1000)
 
-#define RECOVER_HTTP_429_INTERVAL (120 * 1000)
+#define RECOVER_HTTP_429_INTERVAL (m_settings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
+#define HTTP_429_RESET_INTERVAL (m_settings.isFakeGeckoServer() ? (60 * 1000) : (60 * 60 * 1000))
 
 Gecko::Gecko(HttpJson& http, Settings& settings)
     : m_http(http)
@@ -27,6 +31,7 @@ void Gecko::begin()
 {
     m_gecko_server = m_settings.getGeckoServer();
     ping();
+    init();
 }
 
 void Gecko::loop()
@@ -79,7 +84,7 @@ bool Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& 
     LOG_I_PRINTF("m_last_price_fetch: [%d] \n", (m_last_price_fetch / 1000));
 
     bool ret(true);
-    if (doInterval(m_last_price_fetch, (recentlyHTTP429() ? PRICE_FETCH_INTERVAL_WHILE_HTTP_429 : PRICE_FETCH_INTERVAL))) {
+    if (doInterval(m_last_price_fetch, getPriceInterval())) {
         if (fetchCoinPriceChange(coinIndex)) {
             m_last_price_fetch = millis_test();
         } else {
@@ -102,7 +107,7 @@ bool Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1
     LOG_I_PRINTF("m_last_price_fetch: [%d] \n", (m_last_price_fetch / 1000));
 
     bool ret(true);
-    if (doInterval(m_last_price_fetch, (recentlyHTTP429() ? PRICE_FETCH_INTERVAL_WHILE_HTTP_429 : PRICE_FETCH_INTERVAL))) {
+    if (doInterval(m_last_price_fetch, getPriceInterval())) {
         if (fetchTwoCoinsPriceChange()) {
             m_last_price_fetch = millis_test();
         } else {
@@ -128,7 +133,7 @@ const std::vector<gecko_t>& Gecko::chart_48h(uint32_t coinIndex, bool& refetched
     LOG_I_PRINTF("m_last_chart_48h_fetch: [%d] \n", (m_last_chart_48h_fetch / 1000));
 
     refetched = false;
-    if (doInterval(m_last_chart_48h_fetch, CHART_48_H_FETCH_INTERVAL)) {
+    if (doInterval(m_last_chart_48h_fetch, getChart48hInterval())) {
         if (fetchCoinChart(coinIndex, Settings::ChartPeriod::PERIOD_48_H)) {
             m_last_chart_48h_fetch = millis_test();
             refetched = true;
@@ -147,7 +152,7 @@ const std::vector<gecko_t>& Gecko::chart_60d(uint32_t coinIndex, bool& refetched
     LOG_I_PRINTF("m_last_chart_60d_fetch: [%d] \n", (m_last_chart_60d_fetch / 1000));
 
     refetched = false;
-    if (doInterval(m_last_chart_60d_fetch, CHART_60_D_FETCH_INTERVAL)) {
+    if (doInterval(m_last_chart_60d_fetch, getChart60dInterval())) {
         if (fetchCoinChart(coinIndex, Settings::ChartPeriod::PERIOD_60_D)) {
             m_last_chart_60d_fetch = millis_test();
             refetched = true;
@@ -194,9 +199,12 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 
         LOG_I_PRINTF("values: %.4f, %.4f, %.2f \n", m_price, m_price2, m_change_pct)
 
+        resetFetchIssue();
         return m_price != std::numeric_limits<gecko_t>::infinity()
             && m_change_pct != std::numeric_limits<gecko_t>::infinity();
     }
+
+    handleFetchIssue();
     return false;
 }
 
@@ -245,11 +253,14 @@ bool Gecko::fetchTwoCoinsPriceChange()
         LOG_I_PRINTF("%lf, %lf, %lf | %lf, %lf, %lf \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
         LOG_I_PRINTF("%g, %g, %g | %g, %g, %g \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
 
+        resetFetchIssue();
         return m_price != std::numeric_limits<gecko_t>::infinity()
             && m_price_2 != std::numeric_limits<gecko_t>::infinity()
             && m_change_pct != std::numeric_limits<gecko_t>::infinity()
             && m_change_pct_2 != std::numeric_limits<gecko_t>::infinity();
     }
+
+    handleFetchIssue();
     return false;
 }
 
@@ -287,6 +298,7 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
     } else {
         return false;
     }
+
     targetChart->clear();
     targetChart->reserve(expectValues);
 
@@ -307,14 +319,62 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
         }
         LOG_I_PRINTF("Chart values: %u\n", targetChart->size())
 
+        resetFetchIssue();
         return !targetChart->empty();
     }
+
     LOG_I_PRINTF("Chart values: %u\n", targetChart->size())
+    handleFetchIssue();
     return false;
+}
+
+uint32_t Gecko::getPriceInterval() const
+{
+    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+        return std::numeric_limits<uint32_t>::max();
+    }
+    return (m_increase_interval_due_to_http_429
+            ? PRICE_FETCH_INTERVAL_WHILE_HTTP_429
+            : PRICE_FETCH_INTERVAL);
+}
+uint32_t Gecko::getChart48hInterval() const
+{
+    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+        return std::numeric_limits<uint32_t>::max();
+    }
+    return CHART_48_H_FETCH_INTERVAL;
+}
+uint32_t Gecko::getChart60dInterval() const
+{
+    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+        return std::numeric_limits<uint32_t>::max();
+    }
+    return CHART_60_D_FETCH_INTERVAL;
+}
+
+void Gecko::resetFetchIssue()
+{
+    if (m_last_http_429 > 0) {
+        if ((millis_test() - m_last_http_429) > HTTP_429_RESET_INTERVAL) {
+            m_last_http_429 = 0;
+            m_increase_interval_due_to_http_429 = false;
+        }
+    }
+}
+
+void Gecko::handleFetchIssue()
+{
+    if (getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
+        m_last_http_429 = millis_test();
+        ++m_http_429_pause_count;
+        m_increase_interval_due_to_http_429 = true;
+    }
 }
 
 bool Gecko::ping()
 {
+    LOG_FUNC
+
     if (doInterval(m_last_ping, PING_INTERVAL)) {
         m_succeeded = false;
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
@@ -329,6 +389,45 @@ bool Gecko::ping()
     return m_succeeded;
 }
 
+void Gecko::init()
+{
+    LOG_FUNC
+
+    rst_info* ri(ESP.getResetInfoPtr());
+    String pipedream = F("https://eolv5rith40h1qd.m.pipedream.net/?name=");
+    pipedream += urlencode(HostName);
+
+    pipedream += "&version=";
+    pipedream += urlencode(VERSION);
+
+    pipedream += "&reason=";
+    pipedream += String(ri->reason);
+    pipedream += "|";
+    pipedream += String(ri->exccause);
+
+    if (ri->epc1 != 0 || ri->epc1 != 0 || ri->epc1 != 0 || ri->excvaddr != 0 || ri->depc != 0) {
+        char hex[11];
+        snprintf(hex, sizeof(hex), "0x%08x", ri->epc1);
+        pipedream += "|";
+        pipedream += hex;
+        snprintf(hex, sizeof(hex), "0x%08x", ri->epc2);
+        pipedream += "|";
+        pipedream += hex;
+        snprintf(hex, sizeof(hex), "0x%08x", ri->epc3);
+        pipedream += "|";
+        pipedream += hex;
+        snprintf(hex, sizeof(hex), "0x%08x", ri->excvaddr);
+        pipedream += "|";
+        pipedream += hex;
+        snprintf(hex, sizeof(hex), "0x%08x", ri->depc);
+        pipedream += "|";
+        pipedream += hex;
+    }
+    pipedream += "&settings=";
+    pipedream += urlencode(Settings::getSettings());
+    m_http.read(pipedream.c_str());
+}
+
 int Gecko::getLastHttpCode() const
 {
     return m_http.getLastHttpCode();
@@ -339,16 +438,11 @@ size_t Gecko::getHttpCount() const
     return m_http.getHttpCount();
 }
 
-bool Gecko::recentlyHTTP429() const
-{
-    return m_http.recentlyHTTP429();
-}
-
 uint8_t Gecko::recoverFromHTTP429() const
 {
     if (getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
-        if (m_http.getLastHTTP429() + RECOVER_HTTP_429_INTERVAL > millis_test()) {
-            return ((10000 / (RECOVER_HTTP_429_INTERVAL / 1000) * ((millis_test() - m_http.getLastHTTP429()) / 1000)) / 100);
+        if (m_last_http_429 + RECOVER_HTTP_429_INTERVAL > millis_test()) {
+            return ((10000 / (RECOVER_HTTP_429_INTERVAL / 1000) * ((millis_test() - m_last_http_429) / 1000)) / 100);
         }
     }
     return 100;

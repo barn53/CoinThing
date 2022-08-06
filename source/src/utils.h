@@ -73,6 +73,8 @@ struct Depth {
 #define LOG_I_PRINTF(...)
 #endif
 
+String urlencode(const String& url);
+
 using gecko_t = double;
 
 enum class NumberFormat : uint8_t {
