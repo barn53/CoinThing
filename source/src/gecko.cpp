@@ -17,9 +17,9 @@ extern String HostName;
 #define CHART_60_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
 #define PING_INTERVAL (2 * 1000)
 
-#define RECOVER_HTTP_429_INTERVAL (2 * 60 * 1000)
-#define HTTP_429_RESET_INTERVAL (60 * 60 * 1000)
-#define HTTP_429_RESET_PRO_INTERVAL (2 * 60 * 1000)
+#define RECOVER_HTTP_429_INTERVAL (m_settings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
+#define HTTP_429_RESET_INTERVAL (m_settings.isFakeGeckoServer() ? (60 * 1000) : (60 * 60 * 1000))
+#define HTTP_429_RESET_PRO_INTERVAL (m_settings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
 
 Gecko::Gecko(HttpJson& http, Settings& settings)
     : m_http(http)
