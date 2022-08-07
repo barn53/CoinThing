@@ -57,6 +57,9 @@ def prepareSecretFiles(env, withWiFi):
         shutil.copyfile("secrets/wifi.json",
                         env["PROJECT_DATA_DIR"] + "/wifi.json")
 
+    shutil.copyfile("secrets/aes128.key",
+                    env["PROJECT_DATA_DIR"] + "/aes128.key")
+
     # maybe copy secrets.json
     # maybe copy secrets_wifi.json
 
