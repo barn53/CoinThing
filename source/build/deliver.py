@@ -25,10 +25,23 @@ def preAction():
     tools.prepareSecretFiles(env, False)
 
 
-def postAction(source, target, env):
+def postActionBuild(source, target, env):
 
     print("###############################")
-    print("#### postAction()")
+    print("#### postActionBuild()")
+    print("###############################")
+
+    version = tools.getVersion()
+    version = version.replace("*", "#")
+
+    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
+                "assets/whaleticker_" + version + ".bin")
+
+
+def postActionSpiffs(source, target, env):
+
+    print("###############################")
+    print("#### postActionSpiffs()")
     print("###############################")
 
     version = tools.getVersion()
@@ -40,4 +53,6 @@ def postAction(source, target, env):
 
 preAction()
 
-env.AddPostAction("$BUILD_DIR/spiffs.bin", postAction)
+env.AddPostAction("buildprog", postActionBuild)
+
+env.AddPostAction("$BUILD_DIR/spiffs.bin", postActionSpiffs)

@@ -25,19 +25,4 @@ def preAction():
     tools.prepareSecretFiles(env, True)
 
 
-def postAction(source, target, env):
-
-    print("###############################")
-    print("#### postAction()")
-    print("###############################")
-
-    version = tools.getVersion()
-    version = version.replace("*", "#")
-
-    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
-                    "assets/whaleticker_" + version + ".bin")
-
-
 preAction()
-
-env.AddPostAction("buildprog", postAction)
