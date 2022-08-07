@@ -25,19 +25,4 @@ def preAction():
     tools.prepareSecretFiles(env, True)
 
 
-def postAction(source, target, env):
-
-    print("###############################")
-    print("#### postAction()")
-    print("###############################")
-
-    version = tools.getVersion()
-    version = version.replace("*", "#")
-
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin",
-                "assets/spiffs_" + version + "_wifi.bin")
-
-
 preAction()
-
-env.AddPostAction("$BUILD_DIR/spiffs.bin", postAction)
