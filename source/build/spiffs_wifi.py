@@ -22,15 +22,7 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildSpiffsFile(env)
 
-    try:
-        os.remove(env["PROJECT_DATA_DIR"] + "/wifi.json")
-    except OSError:
-        pass
-
-    shutil.copyfile("secrets/wifi.json",
-                    env["PROJECT_DATA_DIR"] + "/wifi.json")
-
-    # maybe copy secrets.json
+    tools.prepareSecretFiles(env, True)
 
 
 def postAction(source, target, env):

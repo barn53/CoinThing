@@ -22,6 +22,8 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildSpiffsFile(env)
 
+    tools.prepareSecretFiles(env, True)
+
 
 def postAction(source, target, env):
 

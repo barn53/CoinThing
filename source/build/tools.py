@@ -4,6 +4,7 @@ import subprocess
 import glob
 import string
 import os
+import shutil
 import random
 
 
@@ -44,6 +45,20 @@ def removeBuildSpiffsFile(env):
                   env["PIOENV"] + "/spiffs.bin")
     except OSError:
         pass
+
+
+def prepareSecretFiles(env, withWiFi):
+    try:
+        os.remove(env["PROJECT_DATA_DIR"] + "/wifi.json")
+    except OSError:
+        pass
+
+    if withWiFi:
+        shutil.copyfile("secrets/wifi.json",
+                        env["PROJECT_DATA_DIR"] + "/wifi.json")
+
+    # maybe copy secrets.json
+    # maybe copy secrets_wifi.json
 
 
 def prepareHTMLFiles(env):
