@@ -1,19 +1,7 @@
+#include "unit.h"
 #include "utils.h"
+
 #include <unity.h>
-
-void setUp()
-{
-    // set stuff up here
-}
-
-void tearDown()
-{
-    // clean stuff up here
-}
-
-void loop()
-{
-}
 
 void compactZeroes()
 {
@@ -195,18 +183,4 @@ void uglyRounding()
         formatNumber(value, s, NumberFormat::DECIMAL_COMMA, false, true, SmallDecimalNumberFormat::NORMAL);
         TEST_ASSERT_EQUAL_STRING(expected[ii], s.c_str());
     }
-}
-
-void setup()
-{
-    delay(2000);
-    UNITY_BEGIN();
-
-    RUN_TEST(compactZeroes);
-    RUN_TEST(forceSign);
-    RUN_TEST(formats);
-    RUN_TEST(forceDecimalPlaces);
-    RUN_TEST(uglyRounding);
-
-    UNITY_END();
 }
