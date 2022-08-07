@@ -34,8 +34,8 @@ def postAction(source, target, env):
     version = tools.getVersion()
     version = version.replace("*", "#")
 
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
-                "assets/whaleticker_" + version + ".bin")
+    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
+                    "assets/whaleticker_" + version + ".bin")
 
 
 preAction()
