@@ -4,6 +4,7 @@ import subprocess
 import glob
 import string
 import os
+import shutil
 import random
 
 
@@ -11,7 +12,7 @@ def getVersion():
     version = subprocess.check_output(
         ["git", "describe", "--tags", "--always", "--match", "v[0-9]*"]).strip()
     version = version.decode('utf-8')
-    version = version.replace("-whale", "")  # remove the -whale from the tag
+    version = version.replace("-2inch", "")  # remove the -2inch from the tag
     changes = subprocess.check_output(["git", "status", "--porcelain"]).strip()
     changes = changes.decode('utf-8')
 
@@ -44,6 +45,20 @@ def removeBuildSpiffsFile(env):
                   env["PIOENV"] + "/spiffs.bin")
     except OSError:
         pass
+
+
+def prepareSecretFiles(env, withWiFi):
+    try:
+        os.remove(env["PROJECT_DATA_DIR"] + "/wifi.json")
+    except OSError:
+        pass
+
+    if withWiFi:
+        shutil.copyfile("secrets/wifi.json",
+                        env["PROJECT_DATA_DIR"] + "/wifi.json")
+
+    # maybe copy secrets.json
+    # maybe copy secrets_wifi.json
 
 
 def prepareHTMLFiles(env):

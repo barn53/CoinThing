@@ -6,6 +6,8 @@
 .vscode/launch.json
 .vscode/ipch
 
+__pycache__
+
 # Prerequisites
 *.d
 
