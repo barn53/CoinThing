@@ -20,9 +20,9 @@ print(env)
 # print(projenv.Dump())
 
 version = subprocess.check_output(
-    ["git", "describe", "--tags", "--always"]).strip()
+    ["git", "describe", "--tags", "--always", "--match", "v[0-9]*"]).strip()
 version = version.decode('utf-8')
-version = version.replace("-whale", "") # remove the -whale from the tag
+version = version.replace("-whale", "")  # remove the -whale from the tag
 changes = subprocess.check_output(["git", "status", "--porcelain"]).strip()
 changes = changes.decode('utf-8')
 
