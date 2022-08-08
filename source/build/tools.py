@@ -142,8 +142,6 @@ def prepareSecretFiles(env, withWiFi):
         pass
 
     if withWiFi:
-        ## shutil.copyfile("secrets/wifi.json",
-        ##                 env["PROJECT_DATA_DIR"] + "/wifi.json")
         shutil.copyfile("secrets/secrets_wifi.json",
                         env["PROJECT_DATA_DIR"] + "/secrets.json")
     else:
