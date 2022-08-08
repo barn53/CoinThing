@@ -1,9 +1,11 @@
 #include "gecko.h"
 #include "http_json.h"
+#include "json_store.h"
 #include "pre.h"
 #include "utils.h"
 
 extern String HostName;
+extern JsonStore Secrets;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -393,39 +395,43 @@ void Gecko::init()
 {
     LOG_FUNC
 
-    rst_info* ri(ESP.getResetInfoPtr());
-    String pipedream = F("https://eolv5rith40h1qd.m.pipedream.net/?name=");
-    pipedream += urlencode(HostName);
+    String url;
+    if (Secrets.get(F("pipedream"), url)) {
+        url += "?name=";
+        url += urlencode(HostName);
 
-    pipedream += "&version=";
-    pipedream += urlencode(VERSION);
+        url += "&version=";
+        url += urlencode(VERSION);
 
-    pipedream += "&reason=";
-    pipedream += String(ri->reason);
-    pipedream += "|";
-    pipedream += String(ri->exccause);
+        rst_info* ri(ESP.getResetInfoPtr());
+        url += "&reason=";
+        url += String(ri->reason);
+        url += "|";
+        url += String(ri->exccause);
 
-    if (ri->epc1 != 0 || ri->epc1 != 0 || ri->epc1 != 0 || ri->excvaddr != 0 || ri->depc != 0) {
-        char hex[11];
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc1);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc2);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc3);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->excvaddr);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->depc);
-        pipedream += "|";
-        pipedream += hex;
+        if (ri->epc1 != 0 || ri->epc1 != 0 || ri->epc1 != 0 || ri->excvaddr != 0 || ri->depc != 0) {
+            char hex[11];
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc1);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc2);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc3);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->excvaddr);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->depc);
+            url += "|";
+            url += hex;
+        }
+
+        url += "&settings=";
+        url += urlencode(Settings::getSettings());
+        m_http.read(url.c_str());
     }
-    pipedream += "&settings=";
-    pipedream += urlencode(Settings::getSettings());
-    m_http.read(pipedream.c_str());
 }
 
 int Gecko::getLastHttpCode() const
