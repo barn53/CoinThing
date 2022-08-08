@@ -134,18 +134,28 @@ def moveSpiffs(env, withWiFi):
                 assets + "/" + getSpiffsFilename(withWiFi))
 
 
-def prepareSecretFiles(env, withWiFi):
+def prepareSecretFiles(env, withWiFi, withSettings):
     try:
         os.remove(env["PROJECT_DATA_DIR"] + "/secrets.json")
     except OSError:
         pass
 
     if withWiFi:
-        shutil.copyfile("secrets/secrets_wifi.json",
-                        env["PROJECT_DATA_DIR"] + "/secrets.json")
+        shutil.copyfile("secrets/secrets_wifi.json", env["PROJECT_DATA_DIR"] + "/secrets.json")
     else:
-        shutil.copyfile("secrets/secrets.json",
-                        env["PROJECT_DATA_DIR"] + "/secrets.json")
+        shutil.copyfile("secrets/secrets.json", env["PROJECT_DATA_DIR"] + "/secrets.json")
+
+    # settings.json only if avaiable
+    try:
+        os.remove(env["PROJECT_DATA_DIR"] + "/settings.json")
+    except OSError:
+        pass
+
+    if withSettings:
+        try:
+            shutil.copyfile("secrets/settings.json", env["PROJECT_DATA_DIR"] + "/settings.json")
+        except OSError:
+            pass
 
 
 def prepareHTMLFiles(env):
@@ -157,23 +167,15 @@ def prepareHTMLFiles(env):
             print("Error while deleting file")
 
     # Add ./source/build to PATH for windows to execute gzip
-    subprocess.call(
-        ["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/settings.html"])
-    subprocess.call(
-        ["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/about.html"])
-    subprocess.call(
-        ["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/admin.html"])
-    subprocess.call(
-        ["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/style.css"])
+    subprocess.call(["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/settings.html"])
+    subprocess.call(["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/about.html"])
+    subprocess.call(["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/admin.html"])
+    subprocess.call(["gzip", "-k", "-f", env["PROJECT_DATA_DIR"] + "/../html/style.css"])
 
-    os.replace(env["PROJECT_DATA_DIR"] + "/../html/settings.html.gz",
-               env["PROJECT_DATA_DIR"] + "/settings.html.gz")
-    os.replace(env["PROJECT_DATA_DIR"] + "/../html/about.html.gz",
-               env["PROJECT_DATA_DIR"] + "/about.html.gz")
-    os.replace(env["PROJECT_DATA_DIR"] + "/../html/admin.html.gz",
-               env["PROJECT_DATA_DIR"] + "/admin.html.gz")
-    os.replace(env["PROJECT_DATA_DIR"] + "/../html/style.css.gz",
-               env["PROJECT_DATA_DIR"] + "/style.css.gz")
+    os.replace(env["PROJECT_DATA_DIR"] + "/../html/settings.html.gz", env["PROJECT_DATA_DIR"] + "/settings.html.gz")
+    os.replace(env["PROJECT_DATA_DIR"] + "/../html/about.html.gz", env["PROJECT_DATA_DIR"] + "/about.html.gz")
+    os.replace(env["PROJECT_DATA_DIR"] + "/../html/admin.html.gz", env["PROJECT_DATA_DIR"] + "/admin.html.gz")
+    os.replace(env["PROJECT_DATA_DIR"] + "/../html/style.css.gz", env["PROJECT_DATA_DIR"] + "/style.css.gz")
 
 
 def copyHTMLFiles(env):

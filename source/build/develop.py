@@ -22,7 +22,7 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildSpiffsFile(env)
 
-    tools.prepareSecretFiles(env, True)
+    tools.prepareSecretFiles(env, True, True)
 
 
 preAction()
