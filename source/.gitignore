@@ -4,5 +4,5 @@ pre.h
 
 data/*.version
 data/secrets.json
-data/wifi.json
+data/settings.json
 data/*.gz
