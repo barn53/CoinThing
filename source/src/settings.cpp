@@ -1,5 +1,6 @@
 #include "common.h"
 #include "gecko.h"
+#include "json_store.h"
 #include "utils.h"
 #include <ESP8266WiFi.h>
 #include <StreamUtils.h>
@@ -8,6 +9,8 @@
 
 #define JSON_DOCUMENT_CONFIG_SIZE 1536
 #define JSON_DOCUMENT_BRIGHTNESS_SIZE 32
+
+extern JsonStore Secrets;
 
 Settings::Settings()
 {
@@ -359,7 +362,8 @@ void Settings::handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter)
 
     if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
         deleteFile();
-        SPIFFS.remove(WIFI_FILE);
+        Secrets.remove(F("ssid"));
+        Secrets.remove(F("pwd"));
         SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
         // keep COLOR_SET_FILE
         WiFi.disconnect();

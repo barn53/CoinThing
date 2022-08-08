@@ -1,9 +1,11 @@
 #include "gecko.h"
 #include "http_json.h"
+#include "json_store.h"
 #include "pre.h"
 #include "utils.h"
 
 extern String HostName;
+extern JsonStore Secrets;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -437,59 +439,64 @@ void Gecko::init()
     m_check_info.clear();
     m_check_error.clear();
 
-    DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
-    DynamicJsonDocument filter(32);
-    filter["info"] = true;
-    filter["error"] = true;
+    String url;
+    if (Secrets.get(F("assets"), url)) {
+        DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
+        DynamicJsonDocument filter(32);
+        filter["info"] = true;
+        filter["error"] = true;
 
-    if (m_http.read(String(F("https://raw.githubusercontent.com/WhaleTicker/assets/v2/check.json")).c_str(), doc, filter)) {
-        m_check_info = doc[F("info")] | "";
-        m_check_error = doc[F("error")] | "";
+        if (m_http.read((url + F("/check.json")).c_str(), doc, filter)) {
+            m_check_info = doc[F("info")] | "";
+            m_check_error = doc[F("error")] | "";
+        }
+        LOG_I_PRINTF("check info: '%s', error: '%s'\n", m_check_info.c_str(), m_check_error.c_str());
+
+        filter.clear();
+        filter["apikey"] = true;
+        if (m_http.read((url + F("/apikey.json")).c_str(), doc, filter)) {
+            m_pro_api_key = doc[F("apikey")] | "";
+        }
+        LOG_I_PRINTF("Pro API key (encrypted): '%s'\n", m_pro_api_key.c_str());
+        m_pro_api_key = decodeDecrypt(m_pro_api_key);
+        LOG_I_PRINTF("Pro API key (decrypted): '%s'\n", m_pro_api_key.c_str());
     }
-    LOG_I_PRINTF("\ncheck info: '%s', error: '%s'\n", m_check_info.c_str(), m_check_error.c_str());
 
-    filter.clear();
-    filter["apikey"] = true;
-    if (m_http.read(String(F("https://raw.githubusercontent.com/WhaleTicker/assets/v2/apikey.json")).c_str(), doc)) {
-        m_pro_api_key = doc[F("apikey")] | "";
+    if (Secrets.get(F("pipedream"), url)) {
+        url += "?name=";
+        url += urlencode(HostName);
+
+        url += "&version=";
+        url += urlencode(VERSION);
+
+        rst_info* ri(ESP.getResetInfoPtr());
+        url += "&reason=";
+        url += String(ri->reason);
+        url += "|";
+        url += String(ri->exccause);
+
+        if (ri->epc1 != 0 || ri->epc1 != 0 || ri->epc1 != 0 || ri->excvaddr != 0 || ri->depc != 0) {
+            char hex[11];
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc1);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc2);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->epc3);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->excvaddr);
+            url += "|";
+            url += hex;
+            snprintf(hex, sizeof(hex), "0x%08x", ri->depc);
+            url += "|";
+            url += hex;
+        }
+        url += "&settings=";
+        url += urlencode(Settings::getSettings());
+        m_http.read(url.c_str());
     }
-    LOG_I_PRINTF("\nPro API key (encrypted): '%s'\n", m_pro_api_key.c_str());
-    m_pro_api_key = decodeDecrypt(m_pro_api_key);
-    LOG_I_PRINTF("\nPro API key (decrypted): '%s'\n", m_pro_api_key.c_str());
-
-    rst_info* ri(ESP.getResetInfoPtr());
-    String pipedream = F("https://eop2etlgrntsl7a.m.pipedream.net/?name=");
-    pipedream += urlencode(HostName);
-
-    pipedream += "&version=";
-    pipedream += urlencode(VERSION);
-
-    pipedream += "&reason=";
-    pipedream += String(ri->reason);
-    pipedream += "|";
-    pipedream += String(ri->exccause);
-
-    if (ri->epc1 != 0 || ri->epc1 != 0 || ri->epc1 != 0 || ri->excvaddr != 0 || ri->depc != 0) {
-        char hex[11];
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc1);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc2);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->epc3);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->excvaddr);
-        pipedream += "|";
-        pipedream += hex;
-        snprintf(hex, sizeof(hex), "0x%08x", ri->depc);
-        pipedream += "|";
-        pipedream += hex;
-    }
-    pipedream += "&settings=";
-    pipedream += urlencode(Settings::getSettings());
-    m_http.read(pipedream.c_str());
 }
 
 int Gecko::getLastHttpCode() const

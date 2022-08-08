@@ -128,7 +128,7 @@
                 $.get("/action/get/version", function (data) {
                     $("#forVersion").append("Code: " + data + "<br>")
                 }).fail(function () { $("#forVersion").append("Code: failure") })
-                $.get("/version.spiffs", function (data) {
+                $.get("/spiffs.version", function (data) {
                     $("#forVersion").append("SPIFFS: " + data + "<br>")
                 }).fail(function () { $("#forVersion").append("SPIFFS: failure") })
             })

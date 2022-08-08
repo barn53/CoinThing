@@ -2,9 +2,8 @@
 
 #include <Arduino.h>
 
+#define SECRETS_FILE F("/secrets.json")
 #define FOR_UPDATE_FILE F("/forupdate")
-#define WIFI_FILE F("/wifi.json")
-#define AES128_KEY_FILE F("/aes128.key")
 #define SELFTEST_FILE F("/selftest")
 #define VERSION_BEFORE_UPDATE_FILE F("/versionbeforeupdate")
 #define COLOR_SET_FILE F("/colorset")

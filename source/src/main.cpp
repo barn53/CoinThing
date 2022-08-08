@@ -3,6 +3,7 @@
 #include "gecko.h"
 #include "handler.h"
 #include "http_json.h"
+#include "json_store.h"
 #include "pre.h"
 #include "selftest.h"
 #include "settings.h"
@@ -23,6 +24,7 @@ Display display(gecko, settings);
 Handler handler(gecko, settings);
 
 String HostName;
+JsonStore Secrets("/secrets.json");
 
 #ifndef UNIT_TEST
 

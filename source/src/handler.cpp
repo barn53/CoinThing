@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gecko.h"
 #include "handler.h"
+#include "json_store.h"
 #include "pre.h"
 #include "settings.h"
 #include "utils.h"
@@ -9,6 +10,7 @@
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
 extern String HostName;
+extern JsonStore Secrets;
 
 using namespace std;
 
@@ -67,7 +69,8 @@ bool Handler::handleResetWiFi() const
 {
     server.send(200, F("text/plain"), "1");
 
-    SPIFFS.remove(WIFI_FILE);
+    Secrets.remove(F("ssid"));
+    Secrets.remove(F("pwd"));
     delay(200);
     WiFi.disconnect();
     delay(200);
@@ -80,7 +83,8 @@ bool Handler::handleResetAll() const
     server.send(200, F("text/plain"), "1");
 
     m_settings.deleteFile();
-    SPIFFS.remove(WIFI_FILE);
+    Secrets.remove(F("ssid"));
+    Secrets.remove(F("pwd"));
     SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
     // keep COLOR_SET_FILE
     delay(200);
@@ -277,8 +281,13 @@ bool Handler::handleFileRead()
     String path(server.uri());
     LOG_I_PRINTF("handleFileRead: %s\n", path.c_str());
 
-    if (path.endsWith("/")) {
+    if (path.endsWith(F("/"))) {
         path += F("settings.html");
+    }
+
+    if (path.endsWith(F("/secrets.json"))) {
+        server.send(403, F("text/plain"), F("403: Forbidden"));
+        return true;
     }
     return streamFile(path.c_str());
 }

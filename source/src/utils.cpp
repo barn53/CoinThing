@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "common.h"
+#include "json_store.h"
 
 #include <AES.h>
 #include <Base64.h>
@@ -8,6 +9,8 @@
 int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
+
+extern JsonStore Secrets;
 
 #define AES_KEY_SIZE 16
 #define AES_BLOCK_SIZE 16
@@ -231,11 +234,7 @@ void getAes128Key(uint8_t* key)
 {
 #ifndef UNIT_TEST
     String s;
-    if (SPIFFS.exists(AES128_KEY_FILE)) {
-        File f = SPIFFS.open(AES128_KEY_FILE, "r");
-        s = f.readString();
-        f.close();
-    }
+    Secrets.get(F("aes128key"), s);
 #else
     String s("abcdefghijklmnop");
 #endif
