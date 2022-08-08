@@ -32,7 +32,7 @@ void selftest(Display& display)
     size_t textY(65);
     tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
     tft.print(msg);
-    File file = SPIFFS.open(F("/version.spiffs"), "r");
+    File file = SPIFFS.open(F("/spiffs.version"), "r");
     if (file.available()) {
         String spiffs(file.readString());
         file.close();

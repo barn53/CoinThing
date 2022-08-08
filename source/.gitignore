@@ -2,7 +2,7 @@
 secrets.h
 pre.h
 
-data/version.spiffs
+data/*.version
 data/secrets.json
 data/wifi.json
 data/*.gz
