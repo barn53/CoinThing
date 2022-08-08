@@ -137,18 +137,11 @@ def moveSpiffs(env, withWiFi):
 
 def prepareSecretFiles(env, withWiFi):
     try:
-        os.remove(env["PROJECT_DATA_DIR"] + "/wifi.json")
-    except OSError:
-        pass
-
-    try:
         os.remove(env["PROJECT_DATA_DIR"] + "/secrets.json")
     except OSError:
         pass
 
     if withWiFi:
-        shutil.copyfile("secrets/wifi.json",
-                        env["PROJECT_DATA_DIR"] + "/wifi.json")
         shutil.copyfile("secrets/secrets_wifi.json",
                         env["PROJECT_DATA_DIR"] + "/secrets.json")
     else:

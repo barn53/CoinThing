@@ -3,16 +3,16 @@
 
 class JsonStore {
 public:
-    JsonStore(const char* file);
+    JsonStore(const String& file);
 
-    bool get(const char* key, String& value) const;
-    bool set(const char* key, const char* value) const;
-    bool remove(const char* key) const;
-    bool has(const char* key) const;
+    bool get(const String& key, String& value) const;
+    bool set(const String& key, const String& value) const;
+    bool remove(const String& key) const;
+    bool has(const String& key) const;
     bool exists() const;
-    void del() const;
+    void deleteStore() const;
 
 private:
     void create() const;
-    const char* m_file;
+    String m_file;
 };

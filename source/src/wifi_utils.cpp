@@ -1,14 +1,15 @@
 #include "wifi_utils.h"
 #include "common.h"
 #include "display.h"
+#include "json_store.h"
 #include "pre.h"
 #include "utils.h"
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
-#include <StreamUtils.h>
 #include <WiFiManager.h>
 
 extern String HostName;
+extern JsonStore Secrets;
 
 #define JSON_DOCUMENT_WIFI_SIZE 128
 
@@ -64,26 +65,16 @@ void handleWifi(Display& display)
 {
     LOG_FUNC
 
-    bool successFromWiFiFile(false);
-    if (SPIFFS.exists(WIFI_FILE)) {
-        LOG_I_PRINTLN(F("CoinThing WiFi initialization from /wifi.json file"));
+    bool successFromWiFiSecret(false);
+    if (Secrets.has(F("ssid"))) {
+        LOG_I_PRINTLN(F("WhaleTicker WiFi initialization from /secrets.json file"));
 
-        File file;
-        file = SPIFFS.open(WIFI_FILE, "r");
-        if (file) {
-            DynamicJsonDocument doc(JSON_DOCUMENT_WIFI_SIZE);
-            ReadBufferingStream bufferedFile { file, 64 };
-            DeserializationError error = deserializeJson(doc, bufferedFile);
-
-            if (!error) {
-                const char* ssid(doc[F("ssid")] | "");
-                const char* pwd(doc[F("pwd")] | "");
-                successFromWiFiFile = setupWiFi(ssid, pwd);
-            } else {
-                LOG_I_PRINTLN(F("deserializeJson() failed: "));
-                LOG_I_PRINTLN(error.f_str());
-            }
-            file.close();
+        String ssid;
+        String pwd;
+        if (Secrets.get(F("ssid"), ssid) && Secrets.get(F("pwd"), pwd)) {
+            successFromWiFiSecret = setupWiFi(ssid.c_str(), pwd.c_str());
+        } else {
+            LOG_I_PRINTLN("Secrets access failed for ssid and pwd");
         }
     }
 
@@ -139,7 +130,7 @@ void handleWifi(Display& display)
             LOG_I_PRINTLN(F("Not connected – restart"));
             ESP.restart();
         }
-    } else if (!successFromWiFiFile) {
+    } else if (!successFromWiFiSecret) {
         const char* menu[] = { "wifi" };
         wifiManager.setMenu(menu, 1);
 
