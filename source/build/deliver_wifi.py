@@ -24,6 +24,10 @@ def preAction():
 
     tools.prepareSecretFiles(env, True)
 
+    tools.createAssetsDirectory()
+    tools.createUploadScript(env, True)
+    tools.copyHTMLFiles(env)
+
 
 def postActionBuild(source, target, env):
 
@@ -31,11 +35,7 @@ def postActionBuild(source, target, env):
     print("#### postActionBuild()")
     print("###############################")
 
-    version = tools.getVersion()
-    version = version.replace("*", "#")
-
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
-                "assets/whaleticker_" + version + ".bin")
+    tools.moveFirmware(env)
 
 
 def postActionSpiffs(source, target, env):
@@ -44,11 +44,7 @@ def postActionSpiffs(source, target, env):
     print("#### postActionSpiffs()")
     print("###############################")
 
-    version = tools.getVersion()
-    version = version.replace("*", "#")
-
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin",
-                "assets/whaleticker_spiffs_" + version + "_wifi.bin")
+    tools.moveSpiffs(env, True)
 
 
 preAction()
