@@ -4,6 +4,6 @@ pre.h
 
 data/*.version
 data/secrets.json
-data/wifi.json
+data/settings.json
 data/aes128.key
 data/*.gz
