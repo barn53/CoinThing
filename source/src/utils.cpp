@@ -1,9 +1,9 @@
 #include "utils.h"
+#include "b64.h"
 #include "common.h"
 #include "json_store.h"
 
 #include <AES.h>
-#include <Base64.h>
 
 #if COIN_THING_SERIAL > 0
 int callDepth { 0 };
@@ -46,147 +46,6 @@ String urlencode(const String& url)
     }
     return encoded;
 }
-
-namespace Base64 {
-
-const char PROGMEM _Base64AlphabetTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                            "abcdefghijklmnopqrstuvwxyz"
-                                            "0123456789+/";
-
-int encode(char* output, char* input, int inputLength)
-{
-    int i = 0, j = 0;
-    int encodedLength = 0;
-    unsigned char A3[3];
-    unsigned char A4[4];
-
-    while (inputLength--) {
-        A3[i++] = *(input++);
-        if (i == 3) {
-            fromA3ToA4(A4, A3);
-
-            for (i = 0; i < 4; i++) {
-                output[encodedLength++] = pgm_read_byte(&_Base64AlphabetTable[A4[i]]);
-            }
-
-            i = 0;
-        }
-    }
-
-    if (i) {
-        for (j = i; j < 3; j++) {
-            A3[j] = '\0';
-        }
-
-        fromA3ToA4(A4, A3);
-
-        for (j = 0; j < i + 1; j++) {
-            output[encodedLength++] = pgm_read_byte(&_Base64AlphabetTable[A4[j]]);
-        }
-
-        while ((i++ < 3)) {
-            output[encodedLength++] = '=';
-        }
-    }
-    output[encodedLength] = '\0';
-    return encodedLength;
-}
-
-int decode(char* output, char* input, int inputLength)
-{
-    int i = 0, j = 0;
-    int decodedLength = 0;
-    unsigned char A3[3];
-    unsigned char A4[4];
-
-    while (inputLength--) {
-        if (*input == '=') {
-            break;
-        }
-
-        A4[i++] = *(input++);
-        if (i == 4) {
-            for (i = 0; i < 4; i++) {
-                A4[i] = lookupTable(A4[i]);
-            }
-
-            fromA4ToA3(A3, A4);
-
-            for (i = 0; i < 3; i++) {
-                output[decodedLength++] = A3[i];
-            }
-            i = 0;
-        }
-    }
-
-    if (i) {
-        for (j = i; j < 4; j++) {
-            A4[j] = '\0';
-        }
-
-        for (j = 0; j < 4; j++) {
-            A4[j] = lookupTable(A4[j]);
-        }
-
-        fromA4ToA3(A3, A4);
-
-        for (j = 0; j < i - 1; j++) {
-            output[decodedLength++] = A3[j];
-        }
-    }
-    output[decodedLength] = '\0';
-    return decodedLength;
-}
-
-int encodedLength(int plainLength)
-{
-    int n = plainLength;
-    return (n + 2 - ((n + 2) % 3)) / 3 * 4;
-}
-
-int decodedLength(char* input, int inputLength)
-{
-    int i = 0;
-    int numEq = 0;
-    for (i = inputLength - 1; input[i] == '='; i--) {
-        numEq++;
-    }
-
-    return ((6 * inputLength) / 8) - numEq;
-}
-
-// Private utility functions
-inline void fromA3ToA4(unsigned char* A4, unsigned char* A3)
-{
-    A4[0] = (A3[0] & 0xfc) >> 2;
-    A4[1] = ((A3[0] & 0x03) << 4) + ((A3[1] & 0xf0) >> 4);
-    A4[2] = ((A3[1] & 0x0f) << 2) + ((A3[2] & 0xc0) >> 6);
-    A4[3] = (A3[2] & 0x3f);
-}
-
-inline void fromA4ToA3(unsigned char* A3, unsigned char* A4)
-{
-    A3[0] = (A4[0] << 2) + ((A4[1] & 0x30) >> 4);
-    A3[1] = ((A4[1] & 0xf) << 4) + ((A4[2] & 0x3c) >> 2);
-    A3[2] = ((A4[2] & 0x3) << 6) + A4[3];
-}
-
-inline unsigned char lookupTable(char c)
-{
-    if (c >= 'A' && c <= 'Z')
-        return c - 'A';
-    if (c >= 'a' && c <= 'z')
-        return c - 71;
-    if (c >= '0' && c <= '9')
-        return c + 4;
-    if (c == '+')
-        return 62;
-    if (c == '/')
-        return 63;
-    return -1;
-}
-
-} // namespace Base64
 
 void hex(const uint8_t* buffer, size_t length)
 {
@@ -256,18 +115,18 @@ String encryptEncode(const String& value)
     aes128.encryptBlock(&cypher32[0], &(val32[0]));
     aes128.encryptBlock(&cypher32[AES_BLOCK_SIZE], &(val32[AES_BLOCK_SIZE]));
 
-    int encodedLength = Base64::encodedLength(AES_VALUE_SIZE);
+    int encodedLength = b64::encodedLength(AES_VALUE_SIZE);
     char encoded[encodedLength];
-    Base64::encode(encoded, reinterpret_cast<char*>(cypher32), AES_VALUE_SIZE);
+    b64::encode(encoded, reinterpret_cast<char*>(cypher32), AES_VALUE_SIZE);
 
     return encoded;
 }
 
 String decodeDecrypt(const String& value)
 {
-    int decodedLength = Base64::decodedLength(const_cast<char*>(value.c_str()), value.length());
+    int decodedLength = b64::decodedLength(const_cast<char*>(value.c_str()), value.length());
     char decoded[decodedLength];
-    Base64::decode(decoded, const_cast<char*>(value.c_str()), value.length());
+    b64::decode(decoded, const_cast<char*>(value.c_str()), value.length());
 
     uint8_t key[AES_KEY_SIZE];
     getAes128Key(key);
