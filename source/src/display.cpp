@@ -22,8 +22,8 @@
 #define DISTANCE_CHART_VALUE 3
 #define POWERUP_SEQUENCE_INDICATOR_Y 150
 
-#define API_OK_SHOW_TIME (8 * 1000)
-#define CHECK_INFO_SHOW_TIME (4 * 1000)
+#define API_OK_SHOW_TIME (4 * 1000)
+#define CHECK_INFO_SHOW_TIME (5 * 1000)
 
 extern String HostName;
 
