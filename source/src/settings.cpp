@@ -323,13 +323,32 @@ String Settings::getGeckoServer(bool useProAPI)
 
 String Settings::getSettings()
 {
+    LOG_FUNC
+
+    String settings(F("{}"));
     if (SPIFFS.exists(SETTINGS_FILE)) {
-        File f = SPIFFS.open(SETTINGS_FILE, "r");
-        String settings(f.readString());
-        f.close();
-        return settings;
+        File file;
+        file = SPIFFS.open(SETTINGS_FILE, "r");
+        if (file) {
+            DynamicJsonDocument doc(JSON_DOCUMENT_CONFIG_SIZE);
+            ReadBufferingStream bufferedFile { file, 64 };
+
+#if COIN_THING_SERIAL > 0
+            ReadLoggingStream loggingStream(bufferedFile, Serial);
+            DeserializationError error = deserializeJson(doc, loggingStream);
+#else
+            DeserializationError error = deserializeJson(doc, bufferedFile);
+#endif
+
+            if (!error) {
+                settings.clear();
+                serializeJson(doc, settings);
+            }
+            // Close the file (Curiously, File's destructor doesn't close the file)
+            file.close();
+        }
     }
-    return F("{}");
+    return settings;
 }
 
 uint8_t Settings::handlePowerupSequenceForResetBegin()
