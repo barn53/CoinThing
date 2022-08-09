@@ -171,7 +171,7 @@ const std::vector<gecko_t>& Gecko::chart_60d(uint32_t coinIndex, bool& refetched
 
 void Gecko::appendProAPIKey(String& url) const
 {
-    if (m_use_pro_api) {
+    if (m_on_pro_api) {
         url += F("&x_cg_pro_api_key=");
         url += m_pro_api_key;
     }
@@ -370,7 +370,7 @@ uint32_t Gecko::getChart60dInterval() const
 void Gecko::resetFetchIssue()
 {
     if (m_last_http_429 > 0) {
-        if ((m_use_pro_api && ((millis_test() - m_last_http_429) > HTTP_429_RESET_PRO_INTERVAL))
+        if ((m_on_pro_api && ((millis_test() - m_last_http_429) > HTTP_429_RESET_PRO_INTERVAL))
             || ((millis_test() - m_last_http_429) > HTTP_429_RESET_INTERVAL)) {
             m_last_http_429 = 0;
         }
@@ -378,8 +378,8 @@ void Gecko::resetFetchIssue()
 
     if (m_last_http_429 == 0) {
         m_increase_interval_due_to_http_429 = false;
-        if (m_use_pro_api) {
-            m_use_pro_api = false;
+        if (m_on_pro_api) {
+            m_on_pro_api = false;
             // do not reset this flag
             // m_had_problems_with_pro_api = false;
             m_gecko_server = m_settings.getGeckoServer(false);
@@ -391,15 +391,16 @@ void Gecko::handleFetchIssue()
 {
     if (getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
         m_last_http_429 = millis_test();
-        if (!m_use_pro_api
-            && !m_had_problems_with_pro_api) {
-            m_use_pro_api = true;
+        if (!m_on_pro_api
+            && !m_had_problems_with_pro_api
+            && m_pro_api_enabled) {
+            m_on_pro_api = true;
             m_increase_interval_due_to_http_429 = false;
             ++m_switch_to_pro_count;
             m_gecko_server = m_settings.getGeckoServer(true);
-        } else if (m_use_pro_api) {
+        } else if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
-            m_use_pro_api = false;
+            m_on_pro_api = false;
             m_increase_interval_due_to_http_429 = true;
             m_gecko_server = m_settings.getGeckoServer(false);
         } else {
@@ -408,9 +409,9 @@ void Gecko::handleFetchIssue()
         }
     } else if (getLastHttpCode() == HTTP_CODE_UNAUTHORIZED
         || getLastHttpCode() == HTTP_CODE_BAD_REQUEST) {
-        if (m_use_pro_api) {
+        if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
-            m_use_pro_api = false;
+            m_on_pro_api = false;
             m_gecko_server = m_settings.getGeckoServer(false);
         }
     }
@@ -511,7 +512,7 @@ size_t Gecko::getHttpCount() const
 
 uint8_t Gecko::recoverFromHTTP429() const
 {
-    if (!m_use_pro_api && getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
+    if (!m_on_pro_api && getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
         if (m_last_http_429 + RECOVER_HTTP_429_INTERVAL > millis_test()) {
             return ((10000 / (RECOVER_HTTP_429_INTERVAL / 1000) * ((millis_test() - m_last_http_429) / 1000)) / 100);
         }

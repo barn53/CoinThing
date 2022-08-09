@@ -306,7 +306,7 @@ bool Settings::isFakeGeckoServer()
     return SPIFFS.exists(FAKE_GECKO_SERVER_FILE);
 }
 
-String Settings::getGeckoServer(bool useProAPI)
+String Settings::getGeckoServer(bool onProAPI)
 {
     if (SPIFFS.exists(FAKE_GECKO_SERVER_FILE)) {
         File f = SPIFFS.open(FAKE_GECKO_SERVER_FILE, "r");
@@ -314,7 +314,7 @@ String Settings::getGeckoServer(bool useProAPI)
         f.close();
         return fakeGeckoServer;
     }
-    if (useProAPI) {
+    if (onProAPI) {
         return F("https://pro-api.coingecko.com");
     } else {
         return F("https://api.coingecko.com");

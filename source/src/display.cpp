@@ -228,20 +228,22 @@ void Display::heartbeat()
         m_tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
     }
     m_tft.setCursor(200, 30);
-    if (m_gecko.useProAPI()) {
-        m_tft.print("+");
+    if (m_gecko.onProAPI()) {
+        m_tft.print(F("+"));
+    } else if (!m_gecko.proAPIEnabled()) {
+        m_tft.print(F("X"));
     } else {
-        m_tft.print("-");
+        m_tft.print(F("-"));
     }
     if (m_gecko.increaseIntervalDueToHTTP429()) {
-        m_tft.print(" *");
+        m_tft.print(F(" *"));
     }
     if (m_gecko.hadProblemsWithProApi()) {
-        m_tft.print(" !");
+        m_tft.print(F(" !"));
     }
     m_tft.setCursor(150, 45);
     m_tft.print(m_gecko.switchToProCount());
-    m_tft.print("/");
+    m_tft.print(F("/"));
     m_tft.print(m_gecko.http429PauseCount());
 #endif
     ////////////////////////////////////////////////////////

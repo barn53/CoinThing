@@ -35,8 +35,10 @@ public:
     size_t getHttpCount() const;
 
     bool increaseIntervalDueToHTTP429() const { return m_increase_interval_due_to_http_429; }
-    bool useProAPI() const { return m_use_pro_api; }
+    bool onProAPI() const { return m_on_pro_api; }
     uint8_t recoverFromHTTP429() const;
+    void enableProAPI(bool enable) { m_pro_api_enabled = enable; };
+    bool proAPIEnabled() const { return m_pro_api_enabled; };
 
     //   remove
     bool recentlyHTTP429() const { return m_last_http_429 > 0; }
@@ -61,7 +63,8 @@ private:
 
     bool m_succeeded { false };
 
-    bool m_use_pro_api { false };
+    bool m_on_pro_api { false };
+    bool m_pro_api_enabled { true };
     bool m_had_problems_with_pro_api { false };
     String m_pro_api_key;
     bool m_increase_interval_due_to_http_429 { false };

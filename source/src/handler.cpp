@@ -235,6 +235,10 @@ bool Handler::handleSet() const
         server.send(200, F("text/plain"), server.arg(F("fakegeckoserver")));
         delay(200);
         ESP.restart();
+    } else if (server.hasArg(F("proapi"))) {
+        m_gecko.enableProAPI(server.arg(F("proapi")) == F("1") ? true : false);
+        server.send(200, F("text/plain"), server.arg(F("proapi")) == F("1") ? F("1") : F("0"));
+        delay(200);
     } else {
         server.send(200, F("application/json"), F(R"({"error":"Nothing to set!"})"));
     }
