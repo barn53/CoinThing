@@ -259,6 +259,11 @@ void Display::showOnScreenDebug()
         if (!xGecko.proAPIEnabled()) {
             xTft.print(F(" pro disabled"));
         }
+
+        xTft.fillRect(5, 25, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 25);
+        xTft.print(F("req:"));
+        xTft.print(xGecko.getHttpCount());
         if (xGecko.increaseIntervalDueToHTTP429()) {
             xTft.print(F(" slow"));
             if (xGecko.recoverFromHTTP429() < 100) {
@@ -266,11 +271,6 @@ void Display::showOnScreenDebug()
                 xTft.print(100 - xGecko.recoverFromHTTP429());
             }
         }
-
-        xTft.fillRect(5, 25, 230, 20, TFT_BLACK);
-        xTft.setCursor(7, 25);
-        xTft.print(F("req:"));
-        xTft.print(xGecko.getHttpCount());
 
         xTft.fillRect(5, 45, 230, 20, TFT_BLACK);
         xTft.setCursor(7, 45);
