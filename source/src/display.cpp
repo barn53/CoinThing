@@ -24,6 +24,7 @@
 
 #define API_OK_SHOW_TIME (4 * 1000)
 #define CHECK_INFO_SHOW_TIME (5 * 1000)
+#define ON_SCREEN_DEBUG_INTERVAL (5 * 1000)
 
 extern String xHostname;
 extern Settings xSettings;
@@ -173,6 +174,9 @@ void Display::loop()
                 showSettingsQR();
             }
         }
+        if (m_on_screen_debug_enabled) {
+            showOnScreenDebug();
+        }
     } else {
         showAPIFailed();
     }
@@ -218,37 +222,6 @@ void Display::heartbeat()
         return;
     }
 
-    ////////////////////////////////////////////////////////
-    ///// On-screen debugging
-#if 0
-    xTft.loadFont(F("NotoSans-Regular15"));
-    if (xGecko.recentlyHTTP429()) {
-        xTft.setTextColor(TFT_MAGENTA, TFT_BLACK);
-    } else {
-        xTft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
-    }
-    xTft.setCursor(200, 30);
-    if (xGecko.onProAPI()) {
-        xTft.print(F("+"));
-    } else if (!xGecko.proAPIEnabled()) {
-        xTft.print(F("X"));
-    } else {
-        xTft.print(F("-"));
-    }
-    if (xGecko.increaseIntervalDueToHTTP429()) {
-        xTft.print(F(" *"));
-    }
-    if (xGecko.hadProblemsWithProApi()) {
-        xTft.print(F(" !"));
-    }
-    xTft.setCursor(150, 45);
-    xTft.print(xGecko.switchToProCount());
-    xTft.print(F("/"));
-    xTft.print(xGecko.http429PauseCount());
-#endif
-    ////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////
-
     if (m_last_screen == Screen::COIN
         && (((millis_test() - m_last_heartbeat) > 300
                 && (m_heart_beat_count == 0
@@ -267,6 +240,66 @@ void Display::heartbeat()
     }
 }
 
+void Display::showOnScreenDebug()
+{
+    if (doInterval(m_last_on_screen_debug_update, ON_SCREEN_DEBUG_INTERVAL)) {
+        xTft.loadFont(F("NotoSans-Regular20"));
+        xTft.fillRect(5, 5, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 5);
+        if (xGecko.onProAPI()) {
+            xTft.setTextColor(TFT_CYAN, TFT_BLACK);
+            xTft.print(F("pro"));
+        } else {
+            xTft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
+            xTft.print(F("free"));
+        }
+        if (xGecko.hadProblemsWithProApi()) {
+            xTft.print(F(" pro failed"));
+        }
+        if (!xGecko.proAPIEnabled()) {
+            xTft.print(F(" pro disabled"));
+        }
+        if (xGecko.increaseIntervalDueToHTTP429()) {
+            xTft.print(F(" slow"));
+        }
+
+        xTft.fillRect(5, 25, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 25);
+        xTft.print(F("req:"));
+        xTft.print(xGecko.getHttpCount());
+
+        xTft.fillRect(5, 45, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 45);
+        xTft.print(F("pro:"));
+        xTft.print(xGecko.proApiRequestsCount());
+        xTft.print(F(" 429:"));
+        xTft.print(xGecko.http429Count());
+
+        xTft.fillRect(5, 65, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 65);
+        xTft.print(F("prosw:"));
+        xTft.print(xGecko.switchToProCount());
+        xTft.print(F(" 429p:"));
+        xTft.print(xGecko.http429PauseCount());
+
+        xTft.fillRect(5, 85, 230, 20, TFT_BLACK);
+        xTft.setCursor(7, 85);
+        xTft.print(F("last429:"));
+        if (xGecko.lastHttp429Persist() > 0) {
+            xTft.print((millis_test() - xGecko.lastHttp429Persist()) / 1000 / 60);
+            xTft.print(F("m"));
+        } else {
+            xTft.print(F("-"));
+        }
+
+        xTft.print(F(" run:"));
+        xTft.print(millis_test() / 1000 / 60);
+        xTft.print(F("m"));
+
+        m_last_on_screen_debug_update = millis_test();
+    }
+}
+
 void Display::renderTitle()
 {
     LOG_FUNC
@@ -277,6 +310,7 @@ void Display::renderTitle()
 
     xTft.fillScreen(TFT_BLACK);
     m_shows_wifi_not_connected = false;
+    m_last_on_screen_debug_update = false;
 
     if (xSettings.mode() != Settings::Mode::TWO_COINS) {
         name = xSettings.name(m_current_coin_index);

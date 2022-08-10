@@ -11,6 +11,8 @@
 #include "wifi_utils.h"
 #include <ESP8266WebServer.h>
 
+#ifndef UNIT_TEST
+
 ESP8266WebServer server(80);
 
 // strange PlatformIO behavior:
@@ -28,8 +30,6 @@ String xHostname;
 JsonStore xSecrets("/secrets.json");
 
 Handler handler;
-
-#ifndef UNIT_TEST
 
 void setup(void)
 {

@@ -369,6 +369,10 @@ uint32_t Gecko::getChart60dInterval() const
 
 void Gecko::resetFetchIssue()
 {
+    if (m_on_pro_api) {
+        ++m_pro_api_requests_count;
+    }
+
     if (m_last_http_429 > 0) {
         if ((m_on_pro_api && ((millis_test() - m_last_http_429) > HTTP_429_RESET_PRO_INTERVAL))
             || ((millis_test() - m_last_http_429) > HTTP_429_RESET_INTERVAL)) {
@@ -391,6 +395,9 @@ void Gecko::handleFetchIssue()
 {
     if (getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
         m_last_http_429 = millis_test();
+        m_last_http_429_persist = m_last_http_429;
+        ++m_http_429_count;
+
         if (!m_on_pro_api
             && !m_had_problems_with_pro_api
             && m_pro_api_enabled) {
