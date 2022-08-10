@@ -2,14 +2,10 @@
 #include "settings.h"
 #include "utils.h"
 
-class HttpJson;
-
-bool isCoin(const char* coin);
-
 class Gecko {
 
 public:
-    Gecko(HttpJson& http, Settings& settings);
+    Gecko();
 
     void begin();
     void loop();
@@ -27,7 +23,6 @@ public:
 
     bool prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod);
 
-    HttpJson& getHttpJson() { return m_http; }
     int getLastHttpCode() const;
     size_t getHttpCount() const;
 
@@ -76,7 +71,4 @@ private:
     uint32_t m_last_chart_60d_fetch { 0 };
     uint32_t m_last_seen_settings { 0 };
     uint32_t m_last_ping { 0 };
-
-    HttpJson& m_http;
-    Settings& m_settings;
 };
