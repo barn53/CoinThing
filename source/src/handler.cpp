@@ -1,5 +1,6 @@
 #include "handler.h"
 #include "common.h"
+#include "display.h"
 #include "gecko.h"
 #include "handler.h"
 #include "json_store.h"
@@ -9,6 +10,7 @@
 
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
+extern Display xDisplay;
 extern Settings xSettings;
 extern Gecko xGecko;
 extern String xHostname;
@@ -205,6 +207,10 @@ bool Handler::handleSet() const
         server.send(200, F("text/plain"), server.arg(F("fakegeckoserver")));
         delay(200);
         ESP.restart();
+    } else if (server.hasArg(F("osd"))) {
+        xDisplay.enableOnScreenDebug(server.arg(F("osd")) == F("1") ? true : false);
+        server.send(200, F("text/plain"), server.arg(F("osd")) == F("1") ? F("1") : F("0"));
+        delay(200);
     } else {
         server.send(200, F("application/json"), F(R"({"error":"Nothing to set!"})"));
     }

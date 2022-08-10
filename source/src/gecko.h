@@ -29,10 +29,10 @@ public:
     bool increaseIntervalDueToHTTP429() const { return m_increase_interval_due_to_http_429; }
     uint8_t recoverFromHTTP429() const;
 
-    //   remove
     bool recentlyHTTP429() const { return m_last_http_429 > 0; }
+    uint32_t lastHttp429Persist() const { return m_last_http_429_persist; }
     size_t http429PauseCount() const { return m_http_429_pause_count; }
-    //   /remove
+    size_t http429Count() const { return m_http_429_count; }
 
 private:
     bool fetchCoinPriceChange(uint32_t coinIndex);
@@ -52,9 +52,11 @@ private:
 
     bool m_increase_interval_due_to_http_429 { false };
     uint32_t m_last_http_429 { 0 };
+    uint32_t m_last_http_429_persist { 0 };
     String m_gecko_server;
 
     size_t m_http_429_pause_count { 0 };
+    size_t m_http_429_count { 0 };
 
     gecko_t m_price { 0. };
     gecko_t m_price2 { 0. };

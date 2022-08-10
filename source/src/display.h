@@ -14,13 +14,12 @@ public:
 
     void showAPQR();
     void showUpdateQR();
-    void showSettingsQR();
-    void showAPIOK();
-    void showAPIFailed();
 
     void showPrepareUpdate(bool failed);
     void showUpdated();
     void showNotUpdated();
+
+    void enableOnScreenDebug(bool enable) { m_on_screen_debug_enabled = enable; };
 
     static bool drawBmp(const String& filename, TFT_eSPI& tft, int16_t x, int16_t y);
 
@@ -38,6 +37,12 @@ private:
     void renderTwoCoins();
     bool renderChart(Settings::ChartPeriod chartPeriod);
     void chartFailed();
+
+    void showOnScreenDebug();
+
+    void showSettingsQR();
+    void showAPIOK();
+    void showAPIFailed();
 
     Settings::ChartPeriod nextChartPeriod() const;
     void nextCoinID();
@@ -66,6 +71,9 @@ private:
 
     uint32_t m_current_coin_index { std::numeric_limits<uint32_t>::max() };
     uint32_t m_last_coin_swap { 0 };
+
+    uint32_t m_last_on_screen_debug_update { 0 };
+    bool m_on_screen_debug_enabled { false };
 
     bool m_shows_wifi_not_connected { false };
     bool m_shows_recover { false };
