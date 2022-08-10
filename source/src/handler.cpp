@@ -9,8 +9,10 @@
 
 #include <ESP8266WebServer.h>
 extern ESP8266WebServer server;
-extern String HostName;
-extern JsonStore Secrets;
+extern Settings xSettings;
+extern Gecko xGecko;
+extern String xHostname;
+extern JsonStore xSecrets;
 
 using namespace std;
 
@@ -40,12 +42,6 @@ String getContentType(const String& filename)
 
 } // anonymous namespace
 
-Handler::Handler(Gecko& gecko, Settings& settings)
-    : m_gecko(gecko)
-    , m_settings(settings)
-{
-}
-
 bool Handler::handleResetESP() const
 {
     server.send(200, F("text/plain"), "1");
@@ -59,7 +55,7 @@ bool Handler::handleResetSettings() const
 {
     server.send(200, F("text/plain"), "1");
 
-    m_settings.deleteFile();
+    xSettings.deleteFile();
     delay(200);
     ESP.restart();
     return true;
@@ -69,8 +65,8 @@ bool Handler::handleResetWiFi() const
 {
     server.send(200, F("text/plain"), "1");
 
-    Secrets.remove(F("ssid"));
-    Secrets.remove(F("pwd"));
+    xSecrets.remove(F("ssid"));
+    xSecrets.remove(F("pwd"));
     delay(200);
     WiFi.disconnect();
     delay(200);
@@ -82,9 +78,9 @@ bool Handler::handleResetAll() const
 {
     server.send(200, F("text/plain"), "1");
 
-    m_settings.deleteFile();
-    Secrets.remove(F("ssid"));
-    Secrets.remove(F("pwd"));
+    xSettings.deleteFile();
+    xSecrets.remove(F("ssid"));
+    xSecrets.remove(F("pwd"));
     SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
     // keep COLOR_SET_FILE
     delay(200);
@@ -102,7 +98,7 @@ bool Handler::handleGetVersion() const
 
 bool Handler::handleGetName() const
 {
-    server.send(200, F("text/plain"), HostName);
+    server.send(200, F("text/plain"), xHostname);
     return true;
 }
 
@@ -111,15 +107,15 @@ bool Handler::handleGetPrice()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
-    m_gecko.price(0, price, price2, change_pct);
+    xGecko.price(0, price, price2, change_pct);
 
     String result;
-    formatNumber(price, result, m_settings.numberFormat(), false, true, m_settings.smallDecimalNumberFormat());
+    formatNumber(price, result, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
     String ret;
-    ret = m_settings.symbol(0);
+    ret = xSettings.symbol(0);
     ret += F(": ");
     ret += result;
-    ret += m_settings.currencySymbol();
+    ret += xSettings.currencySymbol();
     server.send(200, F("text/plain"), ret);
     return true;
 }
@@ -220,23 +216,23 @@ bool Handler::handleSet() const
 #endif
 
     if (server.hasArg(F("brightness"))) {
-        m_settings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
+        xSettings.setBrightness(static_cast<uint8_t>(server.arg(F("brightness")).toInt()));
         streamFile(BRIGHTNESS_FILE);
     } else if (server.hasArg(F("json"))) {
-        m_settings.set(server.arg(F("json")).c_str());
+        xSettings.set(server.arg(F("json")).c_str());
         streamFile(SETTINGS_FILE);
     } else if (server.hasArg(F("colorset"))) {
-        m_settings.setColorSet(server.arg(F("colorset")).toInt());
+        xSettings.setColorSet(server.arg(F("colorset")).toInt());
         server.send(200, F("text/plain"), server.arg(F("colorset")));
         delay(200);
         ESP.restart();
     } else if (server.hasArg(F("fakegeckoserver"))) {
-        m_settings.setFakeGeckoServer(server.arg(F("fakegeckoserver")));
+        xSettings.setFakeGeckoServer(server.arg(F("fakegeckoserver")));
         server.send(200, F("text/plain"), server.arg(F("fakegeckoserver")));
         delay(200);
         ESP.restart();
     } else if (server.hasArg(F("proapi"))) {
-        m_gecko.enableProAPI(server.arg(F("proapi")) == F("1") ? true : false);
+        xGecko.enableProAPI(server.arg(F("proapi")) == F("1") ? true : false);
         server.send(200, F("text/plain"), server.arg(F("proapi")) == F("1") ? F("1") : F("0"));
         delay(200);
     } else {

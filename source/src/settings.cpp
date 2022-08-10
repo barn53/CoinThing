@@ -10,7 +10,7 @@
 #define JSON_DOCUMENT_CONFIG_SIZE 1536
 #define JSON_DOCUMENT_BRIGHTNESS_SIZE 32
 
-extern JsonStore Secrets;
+extern JsonStore xSecrets;
 
 Settings::Settings()
 {
@@ -381,8 +381,8 @@ void Settings::handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter)
 
     if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
         deleteFile();
-        Secrets.remove(F("ssid"));
-        Secrets.remove(F("pwd"));
+        xSecrets.remove(F("ssid"));
+        xSecrets.remove(F("pwd"));
         SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
         // keep COLOR_SET_FILE
         WiFi.disconnect();

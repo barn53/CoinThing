@@ -6,32 +6,32 @@
 #include "pre.h"
 #include <TFT_eSPI.h>
 
-void selftest(Display& display)
+extern TFT_eSPI xTft;
+extern Gecko xGecko;
+extern HttpJson xHttpJson;
+
+void selftest()
 {
     LOG_FUNC
     LOG_I_PRINTLN("")
     LOG_I_PRINTLN("S E L F T E S T")
 
-    auto& tft(display.getTFT());
-    auto& gecko(display.getGecko());
-    auto& http(gecko.getHttpJson());
-
-    uint16_t bg(tft.color565(0xf0, 0x00, 0xff));
-    tft.fillScreen(bg);
+    uint16_t bg(xTft.color565(0xf0, 0x00, 0xff));
+    xTft.fillScreen(bg);
 
     String msg(F("SELFTEST"));
-    tft.loadFont(F("NotoSans-Regular50"));
-    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, 10);
-    tft.setTextColor(TFT_WHITE, bg);
-    tft.print(msg);
-    tft.unloadFont();
+    xTft.loadFont(F("NotoSans-Regular50"));
+    xTft.setCursor((TFT_WIDTH - xTft.textWidth(msg)) / 2, 10);
+    xTft.setTextColor(TFT_WHITE, bg);
+    xTft.print(msg);
+    xTft.unloadFont();
 
-    tft.loadFont(F("NotoSans-Regular20"));
+    xTft.loadFont(F("NotoSans-Regular20"));
     msg = F("v: ");
     msg += VERSION;
     size_t textY(65);
-    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
-    tft.print(msg);
+    xTft.setCursor((TFT_WIDTH - xTft.textWidth(msg)) / 2, textY);
+    xTft.print(msg);
     File file = SPIFFS.open(F("/spiffs.version"), "r");
     if (file.available()) {
         String spiffs(file.readString());
@@ -39,17 +39,17 @@ void selftest(Display& display)
         msg = F("s: ");
         msg += spiffs;
         textY += 22;
-        tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
-        tft.print(msg);
+        xTft.setCursor((TFT_WIDTH - xTft.textWidth(msg)) / 2, textY);
+        xTft.print(msg);
     }
     msg = F("colorset: ");
     msg += Settings::getColorSet();
     textY += 22;
-    tft.setCursor((TFT_WIDTH - tft.textWidth(msg)) / 2, textY);
-    tft.print(msg);
-    tft.unloadFont();
+    xTft.setCursor((TFT_WIDTH - xTft.textWidth(msg)) / 2, textY);
+    xTft.print(msg);
+    xTft.unloadFont();
 
-    tft.loadFont(F("NotoSans-Regular30"));
+    xTft.loadFont(F("NotoSans-Regular30"));
     String pre(F("https://api.coingecko.com"));
     pre += F("/api/v3/simple/price?ids=");
     String post(F("&vs_currencies=usd&include_24hr_change=true"));
@@ -59,7 +59,7 @@ void selftest(Display& display)
         url += post;
 
         DynamicJsonDocument doc(384);
-        if (http.read(url.c_str(), doc)) {
+        if (xHttpJson.read(url.c_str(), doc)) {
             auto p(doc[id][F("usd")] | std::numeric_limits<gecko_t>::infinity());
             auto c(doc[id][F("usd_24h_change")] | std::numeric_limits<gecko_t>::infinity());
 
@@ -69,7 +69,7 @@ void selftest(Display& display)
             formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true, SmallDecimalNumberFormat::COMPACT);
             formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, SmallDecimalNumberFormat::NORMAL, 2);
 
-            tft.setCursor(0, 140);
+            xTft.setCursor(0, 140);
             msg = "  ";
             msg += id;
             msg += F(":           \n  ");
@@ -77,7 +77,7 @@ void selftest(Display& display)
             msg += F("$           \n  24h: ");
             msg += change;
             msg += F("%           ");
-            tft.print(msg);
+            xTft.print(msg);
             delay(500);
         }
     }
@@ -91,7 +91,7 @@ void selftest(Display& display)
         delay(10);
     }
 
-    tft.setTextColor(TFT_DARKGREEN, TFT_BLACK);
+    xTft.setTextColor(TFT_DARKGREEN, TFT_BLACK);
     for (const auto* font : {
              F("NotoSans-Regular15"),
              F("NotoSans-Regular20"),
@@ -104,20 +104,20 @@ void selftest(Display& display)
              F("NotoSans-ExtraCondensed25"),
              F("NotoSans-ExtraCondensed30"),
              F("NotoSans-ExtraCondensed50") }) {
-        tft.unloadFont();
-        tft.loadFont(font);
-        tft.fillScreen(TFT_BLACK);
-        tft.setCursor(10, 100);
+        xTft.unloadFont();
+        xTft.loadFont(font);
+        xTft.fillScreen(TFT_BLACK);
+        xTft.setCursor(10, 100);
         String f(font);
         f.replace(F("NotoSans-"), (""));
-        tft.print(f);
+        xTft.print(f);
         delay(300);
     }
 
-    tft.unloadFont();
-    tft.loadFont(F("NotoSans-Regular30"));
-    tft.fillScreen(TFT_BLACK);
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    xTft.unloadFont();
+    xTft.loadFont(F("NotoSans-Regular30"));
+    xTft.fillScreen(TFT_BLACK);
+    xTft.setTextColor(TFT_WHITE, TFT_BLACK);
     int16_t bmpX(0);
     int16_t bmpY(0);
     int16_t bmpCount(0);
@@ -126,33 +126,33 @@ void selftest(Display& display)
         auto f(dir.fileName());
         if (f.endsWith(F(".bmp"))) {
             ++bmpCount;
-            Display::drawBmp(f, tft, bmpX, bmpY);
+            Display::drawBmp(f, xTft, bmpX, bmpY);
             bmpX += 50;
             if (bmpX > 200) {
                 bmpX = 0;
                 bmpY += 50;
                 if (bmpY > 200) {
                     bmpY = 0;
-                    tft.setCursor(0, 210);
-                    tft.print(bmpCount);
+                    xTft.setCursor(0, 210);
+                    xTft.print(bmpCount);
                     delay(300);
-                    tft.fillScreen(TFT_BLACK);
+                    xTft.fillScreen(TFT_BLACK);
                 }
             }
         }
     }
-    tft.setCursor(0, 210);
-    tft.print(bmpCount);
+    xTft.setCursor(0, 210);
+    xTft.print(bmpCount);
     delay(1500);
 
-    bg = tft.color565(0x00, 0x90, 0x10);
-    tft.unloadFont();
-    tft.loadFont(F("NotoSans-Regular50"));
-    tft.fillScreen(bg);
-    tft.setCursor(80, 80);
-    tft.setTextColor(TFT_WHITE, bg);
+    bg = xTft.color565(0x00, 0x90, 0x10);
+    xTft.unloadFont();
+    xTft.loadFont(F("NotoSans-Regular50"));
+    xTft.fillScreen(bg);
+    xTft.setCursor(80, 80);
+    xTft.setTextColor(TFT_WHITE, bg);
     msg = F("OK!");
-    tft.print(msg);
+    xTft.print(msg);
 
     delay(2500);
     ESP.restart();

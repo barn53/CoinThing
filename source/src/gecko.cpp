@@ -4,8 +4,10 @@
 #include "pre.h"
 #include "utils.h"
 
-extern String HostName;
-extern JsonStore Secrets;
+extern Settings xSettings;
+extern String xHostname;
+extern HttpJson xHttpJson;
+extern JsonStore xSecrets;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
@@ -19,13 +21,11 @@ extern JsonStore Secrets;
 #define CHART_60_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
 #define PING_INTERVAL (2 * 1000)
 
-#define RECOVER_HTTP_429_INTERVAL (m_settings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
-#define HTTP_429_RESET_INTERVAL (m_settings.isFakeGeckoServer() ? (60 * 1000) : (60 * 60 * 1000))
-#define HTTP_429_RESET_PRO_INTERVAL (m_settings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
+#define RECOVER_HTTP_429_INTERVAL (xSettings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
+#define HTTP_429_RESET_INTERVAL (xSettings.isFakeGeckoServer() ? (60 * 1000) : (60 * 60 * 1000))
+#define HTTP_429_RESET_PRO_INTERVAL (xSettings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
 
-Gecko::Gecko(HttpJson& http, Settings& settings)
-    : m_http(http)
-    , m_settings(settings)
+Gecko::Gecko()
 {
     m_chart_48h.reserve(48);
     m_chart_60d.reserve(60);
@@ -33,7 +33,7 @@ Gecko::Gecko(HttpJson& http, Settings& settings)
 
 void Gecko::begin()
 {
-    m_gecko_server = m_settings.getGeckoServer(false);
+    m_gecko_server = xSettings.getGeckoServer(false);
     ping();
     init();
 }
@@ -41,9 +41,9 @@ void Gecko::begin()
 void Gecko::loop()
 {
     if (m_succeeded) {
-        if (m_settings.valid()) {
-            if (m_settings.lastChange() != m_last_seen_settings) {
-                m_last_seen_settings = m_settings.lastChange();
+        if (xSettings.valid()) {
+            if (xSettings.lastChange() != m_last_seen_settings) {
+                m_last_seen_settings = xSettings.lastChange();
                 m_last_price_fetch = 0;
                 m_last_chart_48h_fetch = 0;
                 m_last_chart_60d_fetch = 0;
@@ -181,9 +181,9 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 {
     LOG_FUNC
 
-    String coinId(m_settings.coin(coinIndex));
-    String currency(m_settings.currency());
-    String currency2(m_settings.currency2());
+    String coinId(xSettings.coin(coinIndex));
+    String currency(xSettings.currency());
+    String currency2(xSettings.currency2());
 
     coinId.toLowerCase();
     currency.toLowerCase();
@@ -204,7 +204,7 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
-    if (m_http.read(url.c_str(), doc)) {
+    if (xHttpJson.read(url.c_str(), doc)) {
         m_price = doc[coinId][currency] | std::numeric_limits<gecko_t>::infinity();
         m_price2 = doc[coinId][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct = doc[coinId][change24h] | std::numeric_limits<gecko_t>::infinity();
@@ -225,10 +225,10 @@ bool Gecko::fetchTwoCoinsPriceChange()
 {
     LOG_FUNC
 
-    String coinId1(m_settings.coin(0));
-    String coinId2(m_settings.coin(1));
-    String currency(m_settings.currency());
-    String currency2(m_settings.currency2());
+    String coinId1(xSettings.coin(0));
+    String coinId2(xSettings.coin(1));
+    String currency(xSettings.currency());
+    String currency2(xSettings.currency2());
 
     coinId1.toLowerCase();
     coinId2.toLowerCase();
@@ -252,7 +252,7 @@ bool Gecko::fetchTwoCoinsPriceChange()
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
-    if (m_http.read(url.c_str(), doc)) {
+    if (xHttpJson.read(url.c_str(), doc)) {
         m_price = doc[coinId1][currency] | std::numeric_limits<gecko_t>::infinity();
         m_price2 = doc[coinId1][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct = doc[coinId1][change24h] | std::numeric_limits<gecko_t>::infinity();
@@ -283,8 +283,8 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
     LOG_FUNC
     LOG_I_PRINTF("type: %u\n", type);
 
-    String coinId(m_settings.coin(coinIndex));
-    String currency(m_settings.currency());
+    String coinId(xSettings.coin(coinIndex));
+    String currency(xSettings.currency());
 
     coinId.toLowerCase();
     currency.toLowerCase();
@@ -322,7 +322,7 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
 
     DynamicJsonDocument doc(DYNAMIC_JSON_CHART_SIZE);
 
-    if (m_http.read(url.c_str(), doc, filter)) {
+    if (xHttpJson.read(url.c_str(), doc, filter)) {
         JsonArray jPrices = doc[F("prices")];
         size_t jj(jPrices.size());
         for (const auto& p : jPrices) {
@@ -345,7 +345,7 @@ bool Gecko::fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type)
 
 uint32_t Gecko::getPriceInterval() const
 {
-    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+    if (xSettings.mode() == Settings::Mode::MULTIPLE_COINS) {
         return std::numeric_limits<uint32_t>::max();
     }
     return (m_increase_interval_due_to_http_429
@@ -354,14 +354,14 @@ uint32_t Gecko::getPriceInterval() const
 }
 uint32_t Gecko::getChart48hInterval() const
 {
-    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+    if (xSettings.mode() == Settings::Mode::MULTIPLE_COINS) {
         return std::numeric_limits<uint32_t>::max();
     }
     return CHART_48_H_FETCH_INTERVAL;
 }
 uint32_t Gecko::getChart60dInterval() const
 {
-    if (m_settings.mode() == Settings::Mode::MULTIPLE_COINS) {
+    if (xSettings.mode() == Settings::Mode::MULTIPLE_COINS) {
         return std::numeric_limits<uint32_t>::max();
     }
     return CHART_60_D_FETCH_INTERVAL;
@@ -382,7 +382,7 @@ void Gecko::resetFetchIssue()
             m_on_pro_api = false;
             // do not reset this flag
             // m_had_problems_with_pro_api = false;
-            m_gecko_server = m_settings.getGeckoServer(false);
+            m_gecko_server = xSettings.getGeckoServer(false);
         }
     }
 }
@@ -397,12 +397,12 @@ void Gecko::handleFetchIssue()
             m_on_pro_api = true;
             m_increase_interval_due_to_http_429 = false;
             ++m_switch_to_pro_count;
-            m_gecko_server = m_settings.getGeckoServer(true);
+            m_gecko_server = xSettings.getGeckoServer(true);
         } else if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
             m_on_pro_api = false;
             m_increase_interval_due_to_http_429 = true;
-            m_gecko_server = m_settings.getGeckoServer(false);
+            m_gecko_server = xSettings.getGeckoServer(false);
         } else {
             ++m_http_429_pause_count;
             m_increase_interval_due_to_http_429 = true;
@@ -412,7 +412,7 @@ void Gecko::handleFetchIssue()
         if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
             m_on_pro_api = false;
-            m_gecko_server = m_settings.getGeckoServer(false);
+            m_gecko_server = xSettings.getGeckoServer(false);
         }
     }
 }
@@ -424,7 +424,7 @@ bool Gecko::ping()
         DynamicJsonDocument doc(DYNAMIC_JSON_PING_SIZE);
         String url(m_gecko_server);
         url += F("/api/v3/ping");
-        if (m_http.read(url.c_str(), doc)) {
+        if (xHttpJson.read(url.c_str(), doc)) {
             const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
             m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
         }
@@ -441,13 +441,13 @@ void Gecko::init()
     m_check_error.clear();
 
     String url;
-    if (Secrets.get(F("assets"), url)) {
+    if (xSecrets.get(F("assets"), url)) {
         DynamicJsonDocument doc(DYNAMIC_JSON_CHECK_SIZE);
         DynamicJsonDocument filter(32);
         filter["info"] = true;
         filter["error"] = true;
 
-        if (m_http.read((url + F("/check.json")).c_str(), doc, filter)) {
+        if (xHttpJson.read((url + F("/check.json")).c_str(), doc, filter)) {
             m_check_info = doc[F("info")] | "";
             m_check_error = doc[F("error")] | "";
         }
@@ -455,7 +455,7 @@ void Gecko::init()
 
         filter.clear();
         filter["apikey"] = true;
-        if (m_http.read((url + F("/apikey.json")).c_str(), doc, filter)) {
+        if (xHttpJson.read((url + F("/apikey.json")).c_str(), doc, filter)) {
             m_pro_api_key = doc[F("apikey")] | "";
         }
         LOG_I_PRINTF("Pro API key (encrypted): '%s'\n", m_pro_api_key.c_str());
@@ -463,9 +463,9 @@ void Gecko::init()
         LOG_I_PRINTF("Pro API key (decrypted): '%s'\n", m_pro_api_key.c_str());
     }
 
-    if (Secrets.get(F("pipedream"), url)) {
+    if (xSecrets.get(F("pipedream"), url)) {
         url += "?name=";
-        url += urlencode(HostName);
+        url += urlencode(xHostname);
 
         url += "&version=";
         url += urlencode(VERSION);
@@ -496,18 +496,18 @@ void Gecko::init()
         }
         url += "&settings=";
         url += urlencode(Settings::getSettings());
-        m_http.read(url.c_str());
+        xHttpJson.read(url.c_str());
     }
 }
 
 int Gecko::getLastHttpCode() const
 {
-    return m_http.getLastHttpCode();
+    return xHttpJson.getLastHttpCode();
 }
 
 size_t Gecko::getHttpCount() const
 {
-    return m_http.getHttpCount();
+    return xHttpJson.getHttpCount();
 }
 
 uint8_t Gecko::recoverFromHTTP429() const

@@ -8,8 +8,9 @@
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 
-extern String HostName;
-extern JsonStore Secrets;
+extern Display xDisplay;
+extern String xHostname;
+extern JsonStore xSecrets;
 
 #define JSON_DOCUMENT_WIFI_SIZE 128
 
@@ -55,26 +56,26 @@ bool setupWiFi(const char* ssid, const char* pwd)
 {
     wifiWake();
 
-    WiFi.hostname(HostName);
+    WiFi.hostname(xHostname);
     WiFi.begin(ssid, pwd);
 
     return waitWiFiConnect();
 }
 
-void handleWifi(Display& display)
+void handleWifi()
 {
     LOG_FUNC
 
     bool successFromWiFiSecret(false);
-    if (Secrets.has(F("ssid"))) {
+    if (xSecrets.has(F("ssid"))) {
         LOG_I_PRINTLN(F("WhaleTicker WiFi initialization from /secrets.json file"));
 
         String ssid;
         String pwd;
-        if (Secrets.get(F("ssid"), ssid) && Secrets.get(F("pwd"), pwd)) {
+        if (xSecrets.get(F("ssid"), ssid) && xSecrets.get(F("pwd"), pwd)) {
             successFromWiFiSecret = setupWiFi(ssid.c_str(), pwd.c_str());
         } else {
-            LOG_I_PRINTLN("Secrets access failed for ssid and pwd");
+            LOG_I_PRINTLN("xSecrets access failed for ssid and pwd");
         }
     }
 
@@ -86,7 +87,7 @@ void handleWifi(Display& display)
     wifiManager.setDebugOutput(true);
 
     if (SPIFFS.exists(FOR_UPDATE_FILE)) {
-        display.showPrepareUpdate(false);
+        xDisplay.showPrepareUpdate(false);
 
         LOG_I_PRINTLN(F("WhaleTicker in update mode"));
         LOG_I_PRINT(F("Version before update: "));
@@ -98,7 +99,7 @@ void handleWifi(Display& display)
 
             if (WiFi.status() != WL_CONNECTED) {
                 LOG_I_PRINTLN(F("Not connected – restart"));
-                display.showPrepareUpdate(true);
+                xDisplay.showPrepareUpdate(true);
                 delay(5000);
                 ESP.restart();
             }
@@ -107,11 +108,11 @@ void handleWifi(Display& display)
             f.print(VERSION);
             f.close();
             Settings::handlePowerupSequenceForResetEnd();
-            display.showUpdateQR();
+            xDisplay.showUpdateQR();
         });
 
         waitWiFiConnect();
-        wifiManager.startConfigPortal(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str());
+        wifiManager.startConfigPortal(xHostname.c_str(), String(SECRET_AP_PASSWORD).c_str());
     } else if (SPIFFS.exists(VERSION_BEFORE_UPDATE_FILE)) {
         File f = SPIFFS.open(VERSION_BEFORE_UPDATE_FILE, "r");
         String beforeVersion(f.readString());
@@ -120,9 +121,9 @@ void handleWifi(Display& display)
 
         String currentVersion(VERSION);
         if (beforeVersion != currentVersion) {
-            display.showUpdated();
+            xDisplay.showUpdated();
         } else {
-            display.showNotUpdated();
+            xDisplay.showNotUpdated();
         }
 
         delay(2500);
@@ -134,12 +135,12 @@ void handleWifi(Display& display)
         const char* menu[] = { "wifi" };
         wifiManager.setMenu(menu, 1);
 
-        WiFi.hostname(HostName);
+        WiFi.hostname(xHostname);
 
         wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
             LOG_I_PRINTLN(F("AP Callback For WiFi Config"));
             Settings::handlePowerupSequenceForResetEnd();
-            display.showAPQR();
+            xDisplay.showAPQR();
         });
 
         wifiManager.setSaveConfigCallback([&]() {
@@ -153,7 +154,7 @@ void handleWifi(Display& display)
             ESP.restart();
         });
 
-        if (!wifiManager.autoConnect(HostName.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
+        if (!wifiManager.autoConnect(xHostname.c_str(), String(SECRET_AP_PASSWORD).c_str())) {
             LOG_I_PRINTLN(F("failed to connect, we should reset and see if it connects"));
             delay(3000);
             ESP.restart();

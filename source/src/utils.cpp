@@ -10,7 +10,7 @@ int callDepth { 0 };
 uint32_t lastIndentMillis { 0 };
 #endif
 
-extern JsonStore Secrets;
+extern JsonStore xSecrets;
 
 #define AES_KEY_SIZE 16
 #define AES_BLOCK_SIZE 16
@@ -93,7 +93,7 @@ void getAes128Key(uint8_t* key)
 {
 #ifndef UNIT_TEST
     String s;
-    Secrets.get(F("aes128key"), s);
+    xSecrets.get(F("aes128key"), s);
 #else
     String s("abcdefghijklmnop");
 #endif

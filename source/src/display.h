@@ -5,11 +5,9 @@
 
 #define TFT_BL PIN_D2 // Backlight PWM
 
-class Gecko;
-
 class Display {
 public:
-    Display(Gecko& gecko, const Settings& settings);
+    Display();
 
     void begin(uint8_t powerupSequenceCounter);
     void loop();
@@ -22,9 +20,6 @@ public:
     void showNotUpdated();
 
     static bool drawBmp(const String& filename, TFT_eSPI& tft, int16_t x, int16_t y);
-
-    Gecko& getGecko() { return m_gecko; }
-    TFT_eSPI& getTFT() { return m_tft; }
 
 private:
     void wifiConnect();
@@ -63,10 +58,6 @@ private:
         CHECK_INFO,
         CHECK_ERROR
     };
-
-    Gecko& m_gecko;
-    const Settings& m_settings;
-    TFT_eSPI m_tft;
 
     Screen m_last_screen { Screen::NONE };
     Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };

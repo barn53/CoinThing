@@ -1,13 +1,8 @@
 #pragma once
 #include <Arduino.h>
 
-class Gecko;
-class Settings;
-
 class Handler {
 public:
-    Handler(Gecko& gecko, Settings& settings);
-
     bool handleAction();
     static bool handleFileRead();
 
@@ -28,7 +23,4 @@ private:
 
     bool handleForUpdate() const;
     bool handleSelftest() const;
-
-    Gecko& m_gecko;
-    Settings& m_settings;
 };
