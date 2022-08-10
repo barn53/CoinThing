@@ -261,6 +261,10 @@ void Display::showOnScreenDebug()
         }
         if (xGecko.increaseIntervalDueToHTTP429()) {
             xTft.print(F(" slow"));
+            if (xGecko.recoverFromHTTP429() < 100) {
+                xTft.print(F(" p "));
+                xTft.print(100 - xGecko.recoverFromHTTP429());
+            }
         }
 
         xTft.fillRect(5, 25, 230, 20, TFT_BLACK);
