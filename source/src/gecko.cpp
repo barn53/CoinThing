@@ -368,7 +368,10 @@ void Gecko::handleFetchIssue()
 {
     if (getLastHttpCode() == HTTP_CODE_TOO_MANY_REQUESTS) {
         m_last_http_429 = millis_test();
+        m_last_http_429_persist = m_last_http_429;
         ++m_http_429_pause_count;
+        ++m_http_429_count;
+
         m_increase_interval_due_to_http_429 = true;
     }
 }
