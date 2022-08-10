@@ -17,14 +17,17 @@ ESP8266WebServer server(80);
 // https://community.platformio.org/t/adafruit-gfx-lib-will-not-build-any-more-pio-5/15776/12
 #include <Adafruit_I2CDevice.h>
 
-HttpJson httpJson;
-Settings settings;
-Gecko gecko(httpJson, settings);
-Display display(gecko, settings);
-Handler handler(gecko, settings);
+TFT_eSPI xTft;
 
-String HostName;
-JsonStore Secrets("/secrets.json");
+HttpJson xHttpJson;
+Settings xSettings;
+Gecko xGecko;
+Display xDisplay;
+
+String xHostname;
+JsonStore xSecrets("/secrets.json");
+
+Handler handler;
 
 #ifndef UNIT_TEST
 
@@ -33,8 +36,8 @@ void setup(void)
     Serial.begin(115200);
     SPIFFS.begin();
 
-    HostName = F("CoinThing-");
-    HostName += ESP.getChipId();
+    xHostname = F("CoinThing-");
+    xHostname += ESP.getChipId();
 
 #if COIN_THING_SERIAL > 0
     rst_info* ri(ESP.getResetInfoPtr());
@@ -44,17 +47,17 @@ void setup(void)
     LOG_PRINTF("\n---------------------\n");
 #endif
 
-    uint8_t counter(settings.handlePowerupSequenceForResetBegin());
-    display.begin(counter);
+    uint8_t counter(xSettings.handlePowerupSequenceForResetBegin());
+    xDisplay.begin(counter);
 
-    handleWifi(display);
+    handleWifi();
 
-    gecko.begin();
-    settings.begin();
+    xGecko.begin();
+    xSettings.begin();
 
     if (SPIFFS.exists(SELFTEST_FILE)) {
         SPIFFS.remove(SELFTEST_FILE);
-        selftest(display);
+        selftest();
     }
 
     server.onNotFound([]() { // If the client requests any URI
@@ -73,12 +76,12 @@ void setup(void)
         // ensure setup duration is at least 5 seconds
         delay(5500 - millis_test());
     }
-    settings.handlePowerupSequenceForResetEnd(counter);
+    xSettings.handlePowerupSequenceForResetEnd(counter);
 }
 
 void loop()
 {
-    display.loop();
+    xDisplay.loop();
 #if COIN_THING_SERIAL > 1
     delay(500);
 #endif
