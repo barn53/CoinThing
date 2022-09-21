@@ -9,6 +9,9 @@ Import("env")
 # print(env.Dump())
 # print(projenv.Dump())
 
+withWiFi = True
+withPipedream = False
+withSettings = True
 
 def preAction():
 
@@ -22,7 +25,7 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildSpiffsFile(env)
 
-    tools.prepareSecretFiles(env, True, True)
+    tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
 
 
 preAction()

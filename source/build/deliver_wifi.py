@@ -9,6 +9,9 @@ Import("env")
 # print(env.Dump())
 # print(projenv.Dump())
 
+withWiFi = True
+withPipedream = True
+withSettings = False
 
 def preAction():
 
@@ -22,10 +25,10 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildSpiffsFile(env)
 
-    tools.prepareSecretFiles(env, True, False)
+    tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
 
     tools.createAssetsDirectory()
-    tools.createUploadScript(env, True)
+    tools.createUploadScript(env, withWiFi, withPipedream)
     tools.copyHTMLFiles(env)
 
 
@@ -44,7 +47,7 @@ def postActionSpiffs(source, target, env):
     print("#### postActionSpiffs()")
     print("###############################")
 
-    tools.moveSpiffs(env, True)
+    tools.moveSpiffs(env, withWiFi, withPipedream)
 
 
 preAction()
