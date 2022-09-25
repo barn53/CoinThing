@@ -102,6 +102,24 @@
                         </div>
 
                         <div class="form-group">
+                            <label><b>Show on Second Line</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl" id="sl_0" value="0">
+                                    <label class="form-check-label" for="sl_0">2<sup>nd</sup> Currency</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl" id="sl_1" value="1">
+                                    <label class="form-check-label" for="sl_1">Market Cap.</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl" id="sl_2" value="2">
+                                    <label class="form-check-label" for="sl_2">Volume</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label><b>Chart Period</b></label>
                             <div>
                                 <div class="form-check form-check-inline">
@@ -196,6 +214,24 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label><b>Show on Second Line</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-2" id="sl_0-2" value="0">
+                                    <label class="form-check-label" for="sl_0-2">2<sup>nd</sup> Currency</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-2" id="sl_1-2" value="1">
+                                    <label class="form-check-label" for="sl_1-2">Market Cap.</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-2" id="sl_2-2" value="2">
+                                    <label class="form-check-label" for="sl_2-2">Volume</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane fade" id="nav-n" role="tabpanel" aria-labelledby="nav-n-tab">
@@ -277,6 +313,24 @@
                                     placeholder="2nd Currency">
                                 <div class="input-group-append">
                                     <span id="currency1clear-n" class="input-group-text clearbutton">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>Show on Second Line</b></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-n" id="sl_0-n" value="0">
+                                    <label class="form-check-label" for="sl_0-n">2<sup>nd</sup> Currency</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-n" id="sl_1-n" value="1">
+                                    <label class="form-check-label" for="sl_1-n">Market Cap.</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sl-n" id="sl_2-n" value="2">
+                                    <label class="form-check-label" for="sl_2-n">Volume</label>
                                 </div>
                             </div>
                         </div>
@@ -474,9 +528,20 @@
                 $("#coin0").valEvent(settings.coins[0].name || '')
                 $("#currency0").valEvent(settings.currencies[0].currency || '')
                 $("#currency1").valEvent(settings.currencies[1].currency || '')
+                second_line = settings.second_line || 0
                 chart_period = settings.chart_period || 0
                 swap_interval = settings.swap_interval || 0
                 chart_style = settings.chart_style || 0
+
+                try {
+                    $("#sl_" + second_line)[0].checked = true
+                } catch (error) { }
+
+                if (second_line == 1 || second_line == 2) {
+                    $('#currency1').prop("disabled", true)
+                } else {
+                    $('#currency1').prop("disabled", false)
+                }
 
                 if ((chart_period & 1) > 0) {
                     $("#cp_1")[0].checked = true
@@ -506,9 +571,19 @@
                 $("#coin1-2").valEvent(settings.coins[1].name || '')
                 $("#currency0-2").valEvent(settings.currencies[0].currency || '')
                 $("#currency1-2").valEvent(settings.currencies[1].currency || '')
+                second_line = settings.second_line || 0
+
+                try {
+                    $("#sl_" + second_line + "-2")[0].checked = true
+                } catch (error) { }
+
+                if (second_line == 1 || second_line == 2) {
+                    $('#currency1-2').prop("disabled", true)
+                } else {
+                    $('#currency1-2').prop("disabled", false)
+                }
             } else if (settings.mode == 3) {
                 $('#nav-tab a[href="#nav-n"]').tab('show')
-
 
                 for (ii = 0; ii < 10; ++ii) {
                     if (ii < settings.coins.length) {
@@ -520,9 +595,20 @@
 
                 $("#currency0-n").valEvent(settings.currencies[0].currency || '')
                 $("#currency1-n").valEvent(settings.currencies[1].currency || '')
+                second_line = settings.second_line || 0
                 swap_interval = settings.swap_interval || 0
                 chart_period = settings.chart_period || 0
                 chart_style = settings.chart_style || 0
+
+                try {
+                    $("#sl_" + second_line + "-n")[0].checked = true
+                } catch (error) { }
+
+                if (second_line == 1 || second_line == 2) {
+                    $('#currency1-n').prop("disabled", true)
+                } else {
+                    $('#currency1-n').prop("disabled", false)
+                }
 
                 try {
                     $("#si_" + swap_interval + "-n")[0].checked = true
@@ -560,6 +646,11 @@
         }
 
         function getSettings() {
+
+            setDefaultsMode1()
+            setDefaultsMode2()
+            setDefaultsMode3()
+
             $.get("/settings.json", function (data) {
                 displaySettings(data)
             })
@@ -707,6 +798,19 @@
                     getCurrencyInfo($("#currency1").val(), true)
                 ]
 
+                settings.second_line = -1
+                if ($("#sl_0")[0].checked) {
+                    settings.second_line = 0
+                } else if ($("#sl_1")[0].checked) {
+                    settings.second_line = 1
+                } else if ($("#sl_2")[0].checked) {
+                    settings.second_line = 2
+                }
+                if (settings.second_line === -1) {
+                    showError(": Show Second Line not selected!")
+                    return
+                }
+
                 settings.chart_period = 0
                 if ($("#cp_1")[0].checked) {
                     settings.chart_period += 1
@@ -771,6 +875,19 @@
                     getCurrencyInfo($("#currency0-2").val(), false),
                     getCurrencyInfo($("#currency1-2").val(), true)
                 ]
+
+                settings.second_line = -1
+                if ($("#sl_0-2")[0].checked) {
+                    settings.second_line = 0
+                } else if ($("#sl_1-2")[0].checked) {
+                    settings.second_line = 1
+                } else if ($("#sl_2-2")[0].checked) {
+                    settings.second_line = 2
+                }
+                if (settings.second_line === -1) {
+                    showError(": Show Second Line not selected!")
+                    return
+                }
             }
 
             if ($("#nav-n").hasClass('active')) {
@@ -807,6 +924,19 @@
                     getCurrencyInfo($("#currency0-n").val(), false),
                     getCurrencyInfo($("#currency1-n").val(), true)
                 ]
+
+                settings.second_line = -1
+                if ($("#sl_0-n")[0].checked) {
+                    settings.second_line = 0
+                } else if ($("#sl_1-n")[0].checked) {
+                    settings.second_line = 1
+                } else if ($("#sl_2-n")[0].checked) {
+                    settings.second_line = 2
+                }
+                if (settings.second_line === -1) {
+                    showError(": Show Second Line not selected!")
+                    return
+                }
 
                 settings.swap_interval = -1
                 if ($("#si_0-n")[0].checked) {
@@ -990,7 +1120,45 @@
             { "currency": "XAU", "symbol": "XAU" } // Philadelphia Gold and Silver Index
         ]
 
-        function setDefaults() {
+        function setDefaultsMode1() {
+            if ($("#currency0").val().length == 0) {
+                $("#currency0").valEvent("USD")
+            }
+            if ($("#currency1").val().length == 0) {
+                $("#currency1").valEvent("EUR")
+            }
+
+            try {
+                $("#sl_0")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#cp_2")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#si_0")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#cs_0")[0].checked = true
+            } catch (error) { }
+        }
+
+        function setDefaultsMode2() {
+            if ($("#currency0-2").val().length == 0) {
+                $("#currency0-2").valEvent("USD")
+            }
+            if ($("#currency1-2").val().length == 0) {
+                $("#currency1-2").valEvent("EUR")
+            }
+
+            try {
+                $("#sl_0-2")[0].checked = true
+            } catch (error) { }
+        }
+
+        function setDefaultsMode3() {
             if ($("#currency0-n").val().length == 0) {
                 $("#currency0-n").valEvent("USD")
             }
@@ -1008,6 +1176,10 @@
 
             try {
                 $("#cs_0-n")[0].checked = true
+            } catch (error) { }
+
+            try {
+                $("#sl_0-n")[0].checked = true
             } catch (error) { }
 
             try {
@@ -1032,7 +1204,6 @@
                     $("#coin" + index + "-n").valEvent(element.name)
                     index++
                 });
-                setDefaults()
             })
         }
 
@@ -1046,7 +1217,6 @@
                     $("#coin" + index + "-n").valEvent(element.item.id)
                     index++
                 });
-                setDefaults()
             })
         }
 
@@ -1087,6 +1257,28 @@
                 clearId = '#' + e.target.id.replace('clear', '')
                 $(clearId).valEvent('')
                 $(clearId).focus()
+            })
+
+            $("[name='sl']").click(function (e) {
+                if ($("#sl_0")[0].checked == true) {
+                    $('#currency1').prop("disabled", false);
+                } else {
+                    $('#currency1').prop("disabled", true)
+                }
+            })
+            $("[name='sl-2']").click(function (e) {
+                if ($("#sl_0-2")[0].checked == true) {
+                    $('#currency1-2').prop("disabled", false);
+                } else {
+                    $('#currency1-2').prop("disabled", true)
+                }
+            })
+            $("[name='sl-n']").click(function (e) {
+                if ($("#sl_0-n")[0].checked == true) {
+                    $('#currency1-n').prop("disabled", false);
+                } else {
+                    $('#currency1-n').prop("disabled", true)
+                }
             })
 
             $('.sync').on('input', (e) => {

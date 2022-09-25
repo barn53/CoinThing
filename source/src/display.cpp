@@ -407,8 +407,10 @@ void Display::renderCoin()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
+    gecko_t market_cap;
+    gecko_t volume;
 
-    xGecko.price(m_current_coin_index, price, price2, change_pct);
+    xGecko.price(m_current_coin_index, price, price2, change_pct, market_cap, volume);
 
     if (m_last_price_update >= xGecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
@@ -448,36 +450,51 @@ void Display::renderCoin()
     xTft.print(msg);
     xTft.unloadFont();
 
-    String msg2;
-    formatNumber(price2, msg2, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+    String secondLine;
+    uint16_t secondLineColor(GREY_LEVEL2);
+    switch (xSettings.secondLine()) {
+    case Settings::SecondLine::CURRENCY2:
+        formatNumber(price2, secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        addCurrencySmbol(secondLine, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
+        break;
+    case Settings::SecondLine::MARKETCAP:
+        formatNumber(market_cap, secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        addCurrencySmbol(secondLine, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
+        secondLineColor = TFT_GOLD;
+        break;
+    case Settings::SecondLine::VOLUME:
+        formatNumber(volume, secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        addCurrencySmbol(secondLine, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
+        secondLineColor = TFT_SKYBLUE;
+        break;
+    }
     formatNumber(change_pct, msg, xSettings.numberFormat(), true, false, SmallDecimalNumberFormat::NORMAL, 2);
-    addCurrencySmbol(msg2, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
-
     msg += "%";
-    xTft.loadFont(F("NotoSans-Regular25"));
-    auto usdWidth(xTft.textWidth(msg2));
-    auto changeWidth(xTft.textWidth(msg));
 
-    if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+    xTft.loadFont(F("NotoSans-Regular25"));
+    auto secondLineWidth(xTft.textWidth(secondLine));
+    auto changePctWidth(xTft.textWidth(msg));
+
+    if ((secondLineWidth + changePctWidth + 15) > DISPLAY_WIDTH) {
         xTft.unloadFont();
         xTft.loadFont(F("NotoSans-Condensed25"));
-        usdWidth = xTft.textWidth(msg2);
-        changeWidth = xTft.textWidth(msg);
-        if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+        secondLineWidth = xTft.textWidth(secondLine);
+        changePctWidth = xTft.textWidth(msg);
+        if ((secondLineWidth + changePctWidth + 15) > DISPLAY_WIDTH) {
             xTft.unloadFont();
             xTft.loadFont(F("NotoSans-ExtraCondensed25"));
-            usdWidth = xTft.textWidth(msg2);
-            changeWidth = xTft.textWidth(msg);
+            secondLineWidth = xTft.textWidth(secondLine);
+            changePctWidth = xTft.textWidth(msg);
         }
     }
 
-    xTft.fillRect(0, y_change, DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
-    xTft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, y_change);
-    xTft.setTextColor(GREY_LEVEL2, TFT_BLACK);
-    xTft.print(msg2);
+    xTft.fillRect(0, y_change, DISPLAY_WIDTH - secondLineWidth - changePctWidth - 15, 25, TFT_BLACK);
+    xTft.setCursor(DISPLAY_WIDTH - secondLineWidth - changePctWidth - 15, y_change);
+    xTft.setTextColor(secondLineColor, TFT_BLACK);
+    xTft.print(secondLine);
 
-    xTft.fillRect(DISPLAY_WIDTH - changeWidth - 15, y_change, 15, 25, TFT_BLACK);
-    xTft.setCursor(DISPLAY_WIDTH - changeWidth, y_change);
+    xTft.fillRect(DISPLAY_WIDTH - changePctWidth - 15, y_change, 15, 25, TFT_BLACK);
+    xTft.setCursor(DISPLAY_WIDTH - changePctWidth, y_change);
     xTft.setTextColor(color, TFT_BLACK);
     xTft.print(msg);
 
@@ -493,7 +510,9 @@ void Display::renderTwoCoins()
     gecko_t price[2];
     gecko_t price2[2];
     gecko_t change_pct[2];
-    xGecko.twoPrices(price[0], price2[0], change_pct[0], price[1], price2[1], change_pct[1]);
+    gecko_t market_cap[2];
+    gecko_t volume[2];
+    xGecko.twoPrices(price[0], price2[0], change_pct[0], market_cap[0], volume[0], price[1], price2[1], change_pct[1], market_cap[1], volume[1]);
 
     if (m_last_price_update >= xGecko.lastPriceFetch()) {
         LOG_I_PRINTLN("Prices unchanged - skip");
@@ -527,44 +546,59 @@ void Display::renderTwoCoins()
         xTft.print(msg);
         xTft.unloadFont();
 
-        String msg2;
-        formatNumber(price2[coinIndex], msg2, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        String secondLine;
+        uint16_t secondLineColor(GREY_LEVEL2);
+        switch (xSettings.secondLine()) {
+        case Settings::SecondLine::CURRENCY2:
+            formatNumber(price2[coinIndex], secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+            addCurrencySmbol(secondLine, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
+            break;
+        case Settings::SecondLine::MARKETCAP:
+            formatNumber(market_cap[coinIndex], secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+            addCurrencySmbol(secondLine, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
+            secondLineColor = TFT_GOLD;
+            break;
+        case Settings::SecondLine::VOLUME:
+            formatNumber(volume[coinIndex], secondLine, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+            addCurrencySmbol(secondLine, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
+            secondLineColor = TFT_SKYBLUE;
+            break;
+        }
         formatNumber(change_pct[coinIndex], msg, xSettings.numberFormat(), true, false, SmallDecimalNumberFormat::NORMAL, 2);
-        addCurrencySmbol(msg2, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
-
         msg += "%";
-        xTft.loadFont(F("NotoSans-Regular30"));
-        auto usdWidth(xTft.textWidth(msg2));
-        auto changeWidth(xTft.textWidth(msg));
 
-        if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+        xTft.loadFont(F("NotoSans-Regular30"));
+        auto secondLineWidth(xTft.textWidth(secondLine));
+        auto changePctWidth(xTft.textWidth(msg));
+
+        if ((secondLineWidth + changePctWidth + 15) > DISPLAY_WIDTH) {
             xTft.unloadFont();
             xTft.loadFont(F("NotoSans-Condensed30"));
-            usdWidth = xTft.textWidth(msg2);
-            changeWidth = xTft.textWidth(msg);
+            secondLineWidth = xTft.textWidth(secondLine);
+            changePctWidth = xTft.textWidth(msg);
 
-            if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+            if ((secondLineWidth + changePctWidth + 15) > DISPLAY_WIDTH) {
                 xTft.unloadFont();
                 xTft.loadFont(F("NotoSans-ExtraCondensed30"));
-                usdWidth = xTft.textWidth(msg2);
-                changeWidth = xTft.textWidth(msg);
+                secondLineWidth = xTft.textWidth(secondLine);
+                changePctWidth = xTft.textWidth(msg);
 
-                if ((usdWidth + changeWidth + 15) > DISPLAY_WIDTH) {
+                if ((secondLineWidth + changePctWidth + 15) > DISPLAY_WIDTH) {
                     xTft.unloadFont();
                     xTft.loadFont(F("NotoSans-ExtraCondensed25"));
-                    usdWidth = xTft.textWidth(msg2);
-                    changeWidth = xTft.textWidth(msg);
+                    secondLineWidth = xTft.textWidth(secondLine);
+                    changePctWidth = xTft.textWidth(msg);
                 }
             }
         }
 
-        xTft.fillRect(0, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - usdWidth - changeWidth - 15, 25, TFT_BLACK);
-        xTft.setCursor(DISPLAY_WIDTH - usdWidth - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
-        xTft.setTextColor(GREY_LEVEL2, TFT_BLACK);
-        xTft.print(msg2);
+        xTft.fillRect(0, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), DISPLAY_WIDTH - secondLineWidth - changePctWidth - 15, 25, TFT_BLACK);
+        xTft.setCursor(DISPLAY_WIDTH - secondLineWidth - changePctWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
+        xTft.setTextColor(secondLineColor, TFT_BLACK);
+        xTft.print(secondLine);
 
-        xTft.fillRect(DISPLAY_WIDTH - changeWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), 15, 25, TFT_BLACK);
-        xTft.setCursor(DISPLAY_WIDTH - changeWidth, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
+        xTft.fillRect(DISPLAY_WIDTH - changePctWidth - 15, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)), 15, 25, TFT_BLACK);
+        xTft.setCursor(DISPLAY_WIDTH - changePctWidth, 85 + (coinIndex * ((DISPLAY_HEIGHT / 2) + 7)));
         xTft.setTextColor(color, TFT_BLACK);
         xTft.print(msg);
 

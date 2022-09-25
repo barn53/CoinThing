@@ -12,7 +12,7 @@ extern JsonStore xSecrets;
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
 #define DYNAMIC_JSON_CHECK_SIZE 256
-#define DYNAMIC_JSON_PRICE_CHANGE_SIZE 384
+#define DYNAMIC_JSON_PRICE_CHANGE_SIZE 512
 #define DYNAMIC_JSON_CHART_SIZE 3072
 
 #define PRICE_FETCH_INTERVAL (10 * 1000)
@@ -66,12 +66,14 @@ bool Gecko::prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod)
     gecko_t p;
     gecko_t p2;
     gecko_t pct;
+    gecko_t mcap;
+    gecko_t vol;
     bool refetched;
 
     m_last_price_fetch = 0;
     m_last_chart_48h_fetch = 0;
     m_last_chart_60d_fetch = 0;
-    if (price(coinIndex, p, p2, pct)) {
+    if (price(coinIndex, p, p2, pct, mcap, vol)) {
         if (chartPeriod == Settings::ChartPeriod::PERIOD_24_H
             || chartPeriod == Settings::ChartPeriod::PERIOD_48_H) {
             return !chart_48h(coinIndex, refetched).empty();
@@ -82,7 +84,7 @@ bool Gecko::prefetch(uint32_t coinIndex, Settings::ChartPeriod chartPeriod)
     return false;
 }
 
-bool Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct)
+bool Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct, gecko_t& market_cap, gecko_t& volume)
 {
     LOG_FUNC
     LOG_I_PRINTF("m_last_price_fetch: [%d] \n", (m_last_price_fetch / 1000));
@@ -101,11 +103,13 @@ bool Gecko::price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& 
     price = m_price;
     price2 = m_price2;
     change_pct = m_change_pct;
+    market_cap = m_market_cap;
+    volume = m_volume;
     return ret;
 }
 
-bool Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
-    gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2)
+bool Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1, gecko_t& market_cap_1, gecko_t& volume_1,
+    gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2, gecko_t& market_cap_2, gecko_t& volume_2)
 {
     LOG_FUNC
     LOG_I_PRINTF("m_last_price_fetch: [%d] \n", (m_last_price_fetch / 1000));
@@ -124,10 +128,14 @@ bool Gecko::twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1
     price_1 = m_price;
     price2_1 = m_price2;
     change_pct_1 = m_change_pct;
+    market_cap_1 = m_market_cap;
+    volume_1 = m_volume;
 
     price_2 = m_price_2;
     price2_2 = m_price2_2;
     change_pct_2 = m_change_pct_2;
+    market_cap_2 = m_market_cap_2;
+    volume_2 = m_volume_2;
     return ret;
 }
 
@@ -191,6 +199,10 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 
     String change24h(currency);
     change24h += F("_24h_change");
+    String marketcap(currency);
+    marketcap += F("_market_cap");
+    String volume24h(currency);
+    volume24h += F("_24h_vol");
 
     String url(m_gecko_server);
     url += F("/api/v3/simple/price?ids=");
@@ -199,7 +211,7 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
     url += currency;
     url += ",";
     url += currency2;
-    url += F("&include_24hr_change=true");
+    url += F("&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true");
     appendProAPIKey(url);
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
@@ -208,9 +220,13 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
         m_price = doc[coinId][currency] | std::numeric_limits<gecko_t>::infinity();
         m_price2 = doc[coinId][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct = doc[coinId][change24h] | std::numeric_limits<gecko_t>::infinity();
+        m_market_cap = doc[coinId][marketcap] | std::numeric_limits<gecko_t>::infinity();
+        m_volume = doc[coinId][volume24h] | std::numeric_limits<gecko_t>::infinity();
+
         m_last_price_fetch = millis_test();
 
-        LOG_I_PRINTF("values: %.4f, %.4f, %.2f \n", m_price, m_price2, m_change_pct)
+        LOG_I_PRINTF("values: %.4f, %.4f, %.2f, %.4f, %.4f \n",
+            m_price, m_price2, m_change_pct, m_market_cap, m_volume)
 
         resetFetchIssue();
         return m_price != std::numeric_limits<gecko_t>::infinity()
@@ -237,6 +253,10 @@ bool Gecko::fetchTwoCoinsPriceChange()
 
     String change24h(currency);
     change24h += F("_24h_change");
+    String marketcap(currency);
+    marketcap += F("_market_cap");
+    String volume24h(currency);
+    volume24h += F("_24h_vol");
 
     String url(m_gecko_server);
     url += F("/api/v3/simple/price?ids=");
@@ -247,7 +267,7 @@ bool Gecko::fetchTwoCoinsPriceChange()
     url += currency;
     url += F(",");
     url += currency2;
-    url += F("&include_24hr_change=true");
+    url += F("&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true");
     appendProAPIKey(url);
 
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
@@ -256,16 +276,23 @@ bool Gecko::fetchTwoCoinsPriceChange()
         m_price = doc[coinId1][currency] | std::numeric_limits<gecko_t>::infinity();
         m_price2 = doc[coinId1][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct = doc[coinId1][change24h] | std::numeric_limits<gecko_t>::infinity();
+        m_market_cap = doc[coinId1][marketcap] | std::numeric_limits<gecko_t>::infinity();
+        m_volume = doc[coinId1][volume24h] | std::numeric_limits<gecko_t>::infinity();
 
         m_price_2 = doc[coinId2][currency] | std::numeric_limits<gecko_t>::infinity();
         m_price2_2 = doc[coinId2][currency2] | std::numeric_limits<gecko_t>::infinity();
         m_change_pct_2 = doc[coinId2][change24h] | std::numeric_limits<gecko_t>::infinity();
+        m_market_cap_2 = doc[coinId2][marketcap] | std::numeric_limits<gecko_t>::infinity();
+        m_volume_2 = doc[coinId2][volume24h] | std::numeric_limits<gecko_t>::infinity();
 
         m_last_price_fetch = millis_test();
 
-        // LOG_I_PRINTF("%.4f, %.4f, %.2f | %.4f, %.4f, %.2f \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
-        LOG_I_PRINTF("%lf, %lf, %lf | %lf, %lf, %lf \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
-        LOG_I_PRINTF("%g, %g, %g | %g, %g, %g \n", m_price, m_price2, m_change_pct, m_price_2, m_price2_2, m_change_pct_2)
+        LOG_I_PRINTF("%lf, %lf, %lf, %lf, %lf | %lf, %lf, %lf, %lf, %lf \n",
+            m_price, m_price2, m_change_pct, m_market_cap, m_volume,
+            m_price_2, m_price2_2, m_change_pct_2, m_market_cap_2, m_volume_2)
+        LOG_I_PRINTF("%g, %g, %g, %g, %g | %g, %g, %g, %g, %g \n",
+            m_price, m_price2, m_change_pct, m_market_cap, m_volume,
+            m_price_2, m_price2_2, m_change_pct_2, m_market_cap_2, m_volume_2)
 
         resetFetchIssue();
         return m_price != std::numeric_limits<gecko_t>::infinity()

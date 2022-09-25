@@ -1,0 +1,30 @@
+{
+    "mode": 2,
+    "coins": [
+        {
+            "id": "bitcoin",
+            "symbol": "BTC",
+            "name": "Bitcoin"
+        },
+        {
+            "id": "ethereum",
+            "symbol": "ETH",
+            "name": "Ethereum"
+        }
+    ],
+    "currencies": [
+        {
+            "currency": "EUR",
+            "symbol": "€"
+        },
+        {
+            "currency": "USD",
+            "symbol": "$"
+        }
+    ],
+    "second_line": 2,
+    "number_format": 1,
+    "small_decimal_number": 1,
+    "currency_symbol_position": 1,
+    "heartbeat": true
+}

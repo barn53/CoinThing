@@ -35,6 +35,7 @@ void setup(void)
 {
     Serial.begin(115200);
     SPIFFS.begin();
+    SPIFFS.gc();
 
     xHostname = F("WT-");
     xHostname += ESP.getChipId();

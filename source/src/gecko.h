@@ -16,9 +16,10 @@ public:
     const String& getCheckInfo() const { return m_check_info; }
     const String& getCheckError() const { return m_check_error; }
 
-    bool price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct);
-    bool twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1,
-        gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2);
+    bool price(uint32_t coinIndex, gecko_t& price, gecko_t& price2, gecko_t& change_pct, gecko_t& market_cap, gecko_t& volume);
+    bool twoPrices(gecko_t& price_1, gecko_t& price2_1, gecko_t& change_pct_1, gecko_t& market_cap_1, gecko_t& volume_1,
+        gecko_t& price_2, gecko_t& price2_2, gecko_t& change_pct_2, gecko_t& market_cap_2, gecko_t& volume_2);
+
     const std::vector<gecko_t>& chart_48h(uint32_t coinIndex, bool& refetched);
     const std::vector<gecko_t>& chart_60d(uint32_t coinIndex, bool& refetched);
 
@@ -76,10 +77,15 @@ private:
     gecko_t m_price { 0. };
     gecko_t m_price2 { 0. };
     gecko_t m_change_pct { 0. };
+    gecko_t m_market_cap { 0. };
+    gecko_t m_volume { 0. };
     // for two coins:
     gecko_t m_price_2 { 0. };
     gecko_t m_price2_2 { 0. };
     gecko_t m_change_pct_2 { 0. };
+    gecko_t m_market_cap_2 { 0. };
+    gecko_t m_volume_2 { 0. };
+
     std::vector<gecko_t> m_chart_48h;
     std::vector<gecko_t> m_chart_60d;
 
