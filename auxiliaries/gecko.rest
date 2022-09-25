@@ -3,6 +3,11 @@ GET https://api.coingecko.com/api/v3/ping HTTP/1.0
 ###
 GET https://api.coingecko.com/api/v3/coins/list?include_platform=false HTTP/1.0
 
+###
+GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=20&page=12&sparkline=false
+
+###
+GET https://api.coingecko.com/api/v3/coins/binancecoin
 
 ###
 GET https://api.coingecko.com/api/v3/simple/supported_vs_currencies
