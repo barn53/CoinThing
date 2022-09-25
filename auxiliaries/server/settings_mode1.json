@@ -1,0 +1,28 @@
+{
+    "mode": 1,
+    "coins": [
+        {
+            "id": "bitcoin",
+            "symbol": "BTC",
+            "name": "Bitcoin"
+        }
+    ],
+    "currencies": [
+        {
+            "currency": "EUR",
+            "symbol": "€"
+        },
+        {
+            "currency": "USD",
+            "symbol": "$"
+        }
+    ],
+    "second_line": 1,
+    "chart_period": 2,
+    "swap_interval": 0,
+    "chart_style": 0,
+    "number_format": 1,
+    "small_decimal_number": 1,
+    "currency_symbol_position": 1,
+    "heartbeat": true
+}

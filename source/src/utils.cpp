@@ -68,6 +68,21 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
         }
     }
 
+    String largeNumberPostfix;
+    if (n >= 1000000000000) { // trillion
+        n /= 1000000000000.;
+        decimalPlaces = 3;
+        largeNumberPostfix = 'T';
+    } else if (n >= 1000000000) { // billion
+        n /= 1000000000.;
+        decimalPlaces = 3;
+        largeNumberPostfix = 'B';
+    } else if (n >= 1000000) { // million
+        n /= 1000000.;
+        decimalPlaces = 3;
+        largeNumberPostfix = 'M';
+    }
+
     if (forceSign && n != 0.) {
         snprintf(buf, sizeof(buf), "%+.*f", decimalPlaces, n);
     } else {
@@ -192,7 +207,6 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
         }
     }
 
-    s.replace(F(" "), F("\u2006")); // Six-Per-Em Space U+2006
     if (dash00) {
         String dotZero(decimalSeparator);
         dotZero += F("00");
@@ -203,6 +217,15 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             s.replace(dotZero, repl);
         }
     }
+
+    if (!largeNumberPostfix.isEmpty()) {
+        if (thousandSeparator != '#') {
+            s += F(" ");
+        }
+        s += largeNumberPostfix;
+    }
+
+    s.replace(F(" "), F("\u2006")); // Six-Per-Em Space U+2006
 }
 
 // format large numbers:
