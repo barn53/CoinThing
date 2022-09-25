@@ -6,11 +6,18 @@
 
 class Settings {
 public:
+    enum class SecondLine : uint8_t {
+        CURRENCY2 = 0,
+        MARKETCAP,
+        VOLUME
+    };
+
     enum class ChartStyle : uint8_t {
         SIMPLE = 0,
         HIGH_LOW,
         HIGH_LOW_FIRST_LAST
     };
+
     enum class Swap : uint8_t {
         INTERVAL_1 = 0, // 5s (chart), 10s (coin)
         INTERVAL_2, // 30s
@@ -30,7 +37,8 @@ public:
     enum class Mode : uint8_t {
         ONE_COIN = 1,
         TWO_COINS,
-        MULTIPLE_COINS
+        MULTIPLE_COINS,
+        UNDEFINED
     };
 
     struct Coin {
@@ -49,8 +57,7 @@ public:
     void begin();
     void set(const char* json);
     void read();
-    void write() const;
-    void deleteFile() const;
+    void deleteFile(bool brightness) const;
 
     const String& coin(uint32_t index) const;
     const String& name(uint32_t index) const;
@@ -65,6 +72,7 @@ public:
 
     Mode mode() const { return m_mode; }
     uint32_t numberCoins() const;
+    SecondLine secondLine() const { return m_second_line; }
     NumberFormat numberFormat() const { return m_number_format; }
     SmallDecimalNumberFormat smallDecimalNumberFormat() const { return m_small_decimal_number; }
     uint8_t chartPeriod() const { return m_chart_period; }
@@ -92,17 +100,19 @@ public:
     void handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter);
 
 private:
-    void set(DynamicJsonDocument& doc, bool toFile);
+    bool set(DynamicJsonDocument& doc);
+    void write() const;
     void trace() const;
 
     uint32_t validCoinIndex(uint32_t index) const;
 
-    Mode m_mode { Mode::ONE_COIN };
+    Mode m_mode { Mode::UNDEFINED };
 
     std::vector<Coin> m_coins;
     std::array<Currency, 2> m_currencies;
     CurrencySymbolPosition m_currency_symbol_position { CurrencySymbolPosition::TRAILING };
 
+    SecondLine m_second_line { SecondLine::CURRENCY2 };
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     SmallDecimalNumberFormat m_small_decimal_number { SmallDecimalNumberFormat::NORMAL };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };

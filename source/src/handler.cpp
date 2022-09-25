@@ -57,7 +57,7 @@ bool Handler::handleResetSettings() const
 {
     server.send(200, F("text/plain"), "1");
 
-    xSettings.deleteFile();
+    xSettings.deleteFile(true);
     delay(200);
     ESP.restart();
     return true;
@@ -80,7 +80,7 @@ bool Handler::handleResetAll() const
 {
     server.send(200, F("text/plain"), "1");
 
-    xSettings.deleteFile();
+    xSettings.deleteFile(true);
     xSecrets.remove(F("ssid"));
     xSecrets.remove(F("pwd"));
     SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
@@ -109,7 +109,9 @@ bool Handler::handleGetPrice()
     gecko_t price;
     gecko_t price2;
     gecko_t change_pct;
-    xGecko.price(0, price, price2, change_pct);
+    gecko_t market_cap;
+    gecko_t volume;
+    xGecko.price(0, price, price2, change_pct, market_cap, volume);
 
     String result;
     formatNumber(price, result, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());

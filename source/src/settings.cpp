@@ -26,13 +26,24 @@ void Settings::set(const char* json)
 {
     LOG_FUNC
 
-    DynamicJsonDocument doc(JSON_DOCUMENT_CONFIG_SIZE);
-    DeserializationError error = deserializeJson(doc, json);
-    if (!error) {
-        set(doc, true);
+    bool success(false);
+    { // this scope is to deconstruct doc before calling write(),
+      //  which also creates a DynamicJsonDocument
+        DynamicJsonDocument doc(JSON_DOCUMENT_CONFIG_SIZE);
+        DeserializationError error = deserializeJson(doc, json);
+        if (!error) {
+            success = set(doc);
+        } else {
+            LOG_I_PRINT(F("deserializeJson() failed: "));
+            LOG_I_PRINTLN(error.f_str());
+            return;
+        }
+    }
+
+    if (success) {
+        write();
     } else {
-        LOG_I_PRINT(F("deserializeJson() failed: "));
-        LOG_I_PRINTLN(error.f_str());
+        deleteFile(false);
     }
 }
 
@@ -40,6 +51,7 @@ void Settings::read()
 {
     LOG_FUNC
 
+    bool success(false);
     if (SPIFFS.exists(SETTINGS_FILE)) {
         File file;
         file = SPIFFS.open(SETTINGS_FILE, "r");
@@ -56,24 +68,31 @@ void Settings::read()
 #endif
 
             if (!error) {
-                set(doc, false);
+                success = set(doc);
             } else {
                 LOG_I_PRINT(F("deserializeJson() failed: "));
                 LOG_I_PRINTLN(error.f_str());
             }
-            // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
+        }
+
+        if (!success) {
+            deleteFile(false);
         }
     }
 }
 
-void Settings::set(DynamicJsonDocument& doc, bool toFile)
+bool Settings::set(DynamicJsonDocument& doc)
 {
     LOG_FUNC
 
     m_last_change = millis_test();
 
-    m_mode = static_cast<Mode>(doc[F("mode")] | static_cast<uint8_t>(Mode::ONE_COIN));
+    m_mode = static_cast<Mode>(doc[F("mode")] | static_cast<uint8_t>(Mode::UNDEFINED));
+
+    if (m_mode == Mode::UNDEFINED) {
+        return false;
+    }
 
     m_coins.clear();
     for (JsonObject elem : doc[F("coins")].as<JsonArray>()) {
@@ -96,6 +115,7 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
         }
     }
 
+    m_second_line = static_cast<SecondLine>(doc[F("second_line")] | static_cast<uint8_t>(SecondLine::CURRENCY2));
     m_number_format = static_cast<NumberFormat>(doc[F("number_format")] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
     m_small_decimal_number = static_cast<SmallDecimalNumberFormat>(doc[F("small_decimal_number")] | static_cast<uint8_t>(SmallDecimalNumberFormat::NORMAL));
     m_currency_symbol_position = static_cast<CurrencySymbolPosition>(doc[F("currency_symbol_position")] | static_cast<uint8_t>(CurrencySymbolPosition::TRAILING));
@@ -105,9 +125,8 @@ void Settings::set(DynamicJsonDocument& doc, bool toFile)
     m_heartbeat = doc[F("heartbeat")] | true;
 
     trace();
-    if (toFile) {
-        write();
-    }
+
+    return true;
 }
 
 void Settings::write() const
@@ -138,6 +157,7 @@ void Settings::write() const
         doc[F("swap_interval")] = static_cast<uint8_t>(m_swap_interval);
         doc[F("chart_period")] = static_cast<uint8_t>(m_chart_period);
         doc[F("chart_style")] = static_cast<uint8_t>(m_chart_style);
+        doc[F("second_line")] = static_cast<uint8_t>(m_second_line);
         doc[F("number_format")] = static_cast<uint8_t>(m_number_format);
         doc[F("small_decimal_number")] = static_cast<uint8_t>(m_small_decimal_number);
         doc[F("currency_symbol_position")] = static_cast<uint8_t>(m_currency_symbol_position);
@@ -148,15 +168,17 @@ void Settings::write() const
     }
 }
 
-void Settings::deleteFile() const
+void Settings::deleteFile(bool brightness) const
 {
     SPIFFS.remove(SETTINGS_FILE);
-    SPIFFS.remove(BRIGHTNESS_FILE);
+    if (brightness) {
+        SPIFFS.remove(BRIGHTNESS_FILE);
+    }
 }
 
 bool Settings::valid() const
 {
-    return SPIFFS.exists(SETTINGS_FILE);
+    return (SPIFFS.exists(SETTINGS_FILE) && m_mode != Mode::UNDEFINED);
 }
 
 void Settings::trace() const
@@ -169,6 +191,7 @@ void Settings::trace() const
     }
     LOG_I_PRINTF("Currency:                 >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str())
     LOG_I_PRINTF("Currency 2:               >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str())
+    LOG_I_PRINTF("Second line:              >%u<\n", m_second_line)
     LOG_I_PRINTF("Number format:            >%u<\n", m_number_format)
     LOG_I_PRINTF("Small decimal number:     >%u<\n", m_small_decimal_number)
     LOG_I_PRINTF("Currency Symbol position: >%u<\n", m_currency_symbol_position)
@@ -246,13 +269,14 @@ void Settings::readBrightness()
 #else
             DeserializationError error = deserializeJson(doc, bufferedFile);
 #endif
-
             if (!error) {
                 m_brightness = doc[F("b")] | std::numeric_limits<uint8_t>::max();
+                file.close();
             } else {
                 m_brightness = std::numeric_limits<uint8_t>::max();
+                file.close();
+                SPIFFS.remove(BRIGHTNESS_FILE);
             }
-            file.close();
         }
     }
 }
@@ -340,7 +364,6 @@ String Settings::getSettings()
                 settings.clear();
                 serializeJson(doc, settings);
             }
-            // Close the file (Curiously, File's destructor doesn't close the file)
             file.close();
         }
     }
@@ -376,7 +399,7 @@ void Settings::handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter)
     handlePowerupSequenceForResetEnd();
 
     if (powerupSequenceCounter >= POWERUP_SEQUENCE_COUNT_TO_RESET) {
-        deleteFile();
+        deleteFile(true);
         xSecrets.remove(F("ssid"));
         xSecrets.remove(F("pwd"));
         SPIFFS.remove(FAKE_GECKO_SERVER_FILE);
