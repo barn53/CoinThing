@@ -68,7 +68,7 @@ void handleWifi()
 
     bool successFromWiFiSecret(false);
     if (xSecrets.has(F("ssid"))) {
-        LOG_I_PRINTLN(F("WhaleTicker WiFi initialization from /secrets.json file"));
+        LOG_I_PRINTLN(F("CoinThing WiFi initialization from /secrets.json file"));
 
         String ssid;
         String pwd;
