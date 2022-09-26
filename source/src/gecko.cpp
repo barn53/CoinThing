@@ -189,9 +189,9 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
 
     String change24h(currency);
     change24h += F("_24h_change");
-    String marketcap(currency);
+    String marketcap(currency2);
     marketcap += F("_market_cap");
-    String volume24h(currency);
+    String volume24h(currency2);
     volume24h += F("_24h_vol");
 
     String url(m_gecko_server);
@@ -242,9 +242,9 @@ bool Gecko::fetchTwoCoinsPriceChange()
 
     String change24h(currency);
     change24h += F("_24h_change");
-    String marketcap(currency);
+    String marketcap(currency2);
     marketcap += F("_market_cap");
-    String volume24h(currency);
+    String volume24h(currency2);
     volume24h += F("_24h_vol");
 
     String url(m_gecko_server);
