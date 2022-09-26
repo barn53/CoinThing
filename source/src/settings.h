@@ -6,8 +6,8 @@
 
 class Settings {
 public:
-    enum class SecondLine : uint8_t {
-        CURRENCY2 = 0,
+    enum class SecondCurrencyShow : uint8_t {
+        VALUE = 0,
         MARKETCAP,
         VOLUME
     };
@@ -72,7 +72,7 @@ public:
 
     Mode mode() const { return m_mode; }
     uint32_t numberCoins() const;
-    SecondLine secondLine() const { return m_second_line; }
+    SecondCurrencyShow secondCurrencyShow() const { return m_second_currency_show; }
     NumberFormat numberFormat() const { return m_number_format; }
     SmallDecimalNumberFormat smallDecimalNumberFormat() const { return m_small_decimal_number; }
     uint8_t chartPeriod() const { return m_chart_period; }
@@ -112,7 +112,7 @@ private:
     std::array<Currency, 2> m_currencies;
     CurrencySymbolPosition m_currency_symbol_position { CurrencySymbolPosition::LEADING };
 
-    SecondLine m_second_line { SecondLine::CURRENCY2 };
+    SecondCurrencyShow m_second_currency_show { SecondCurrencyShow::VALUE };
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
     SmallDecimalNumberFormat m_small_decimal_number { SmallDecimalNumberFormat::NORMAL };
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };

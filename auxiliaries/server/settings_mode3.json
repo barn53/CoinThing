@@ -65,7 +65,7 @@
     "swap_interval": 1,
     "chart_period": 4,
     "chart_style": 1,
-    "second_line": 1,
+    "second_currency_show": 1,
     "number_format": 3,
     "small_decimal_number": 1,
     "currency_symbol_position": 1,

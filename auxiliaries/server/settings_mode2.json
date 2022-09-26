@@ -22,7 +22,7 @@
             "symbol": "$"
         }
     ],
-    "second_line": 2,
+    "second_currency_show": 2,
     "number_format": 1,
     "small_decimal_number": 1,
     "currency_symbol_position": 1,

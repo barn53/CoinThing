@@ -17,7 +17,7 @@
             "symbol": "$"
         }
     ],
-    "second_line": 1,
+    "second_currency_show": 1,
     "chart_period": 2,
     "swap_interval": 0,
     "chart_style": 0,
