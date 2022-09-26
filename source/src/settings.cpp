@@ -115,7 +115,7 @@ bool Settings::set(DynamicJsonDocument& doc)
         }
     }
 
-    m_second_line = static_cast<SecondLine>(doc[F("second_line")] | static_cast<uint8_t>(SecondLine::CURRENCY2));
+    m_second_currency_show = static_cast<SecondCurrencyShow>(doc[F("second_currency_show")] | static_cast<uint8_t>(SecondCurrencyShow::VALUE));
     m_number_format = static_cast<NumberFormat>(doc[F("number_format")] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
     m_small_decimal_number = static_cast<SmallDecimalNumberFormat>(doc[F("small_decimal_number")] | static_cast<uint8_t>(SmallDecimalNumberFormat::NORMAL));
     m_currency_symbol_position = static_cast<CurrencySymbolPosition>(doc[F("currency_symbol_position")] | static_cast<uint8_t>(CurrencySymbolPosition::TRAILING));
@@ -157,7 +157,7 @@ void Settings::write() const
         doc[F("swap_interval")] = static_cast<uint8_t>(m_swap_interval);
         doc[F("chart_period")] = static_cast<uint8_t>(m_chart_period);
         doc[F("chart_style")] = static_cast<uint8_t>(m_chart_style);
-        doc[F("second_line")] = static_cast<uint8_t>(m_second_line);
+        doc[F("second_currency_show")] = static_cast<uint8_t>(m_second_currency_show);
         doc[F("number_format")] = static_cast<uint8_t>(m_number_format);
         doc[F("small_decimal_number")] = static_cast<uint8_t>(m_small_decimal_number);
         doc[F("currency_symbol_position")] = static_cast<uint8_t>(m_currency_symbol_position);
@@ -191,7 +191,7 @@ void Settings::trace() const
     }
     LOG_I_PRINTF("Currency:                 >%s< >%s<\n", m_currencies[0].currency.c_str(), m_currencies[0].symbol.c_str())
     LOG_I_PRINTF("Currency 2:               >%s< >%s<\n", m_currencies[1].currency.c_str(), m_currencies[1].symbol.c_str())
-    LOG_I_PRINTF("Second line:              >%u<\n", m_second_line)
+    LOG_I_PRINTF("Second currency show      >%u<\n", m_second_currency_show)
     LOG_I_PRINTF("Number format:            >%u<\n", m_number_format)
     LOG_I_PRINTF("Small decimal number:     >%u<\n", m_small_decimal_number)
     LOG_I_PRINTF("Currency Symbol position: >%u<\n", m_currency_symbol_position)
