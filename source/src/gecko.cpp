@@ -426,7 +426,7 @@ void Gecko::init()
     LOG_FUNC
 
     String url;
-    if (xSecrets.get(F("pipedream"), url)) {
+    if (xSecrets.get(F("pipedream"), url) && url.length() > 0) {
         url += "?name=";
         url += urlencode(xHostname);
 
