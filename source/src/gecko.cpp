@@ -493,11 +493,18 @@ void Gecko::init()
             m_pro_api_key = doc[F("apikey")] | "";
         }
         LOG_I_PRINTF("Pro API key (encrypted): '%s'\n", m_pro_api_key.c_str());
-        m_pro_api_key = decodeDecrypt(m_pro_api_key);
-        LOG_I_PRINTF("Pro API key (decrypted): '%s'\n", m_pro_api_key.c_str());
+        if (m_pro_api_key.length() > 0) {
+            m_pro_api_key = decodeDecrypt(m_pro_api_key);
+            LOG_I_PRINTF("Pro API key (decrypted): '%s'\n", m_pro_api_key.c_str());
+            m_pro_api_enabled = true;
+            LOG_I_PRINTLN("Pro API enabled");
+        } else {
+            m_pro_api_enabled = false;
+            LOG_I_PRINTLN("Pro API disabled");
+        }
     }
 
-    if (xSecrets.get(F("pipedream"), url)) {
+    if (xSecrets.get(F("pipedream"), url) && url.length() > 0) {
         url += "?name=";
         url += urlencode(xHostname);
 

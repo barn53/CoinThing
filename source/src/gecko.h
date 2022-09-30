@@ -61,7 +61,7 @@ private:
     bool m_succeeded { false };
 
     bool m_on_pro_api { false };
-    bool m_pro_api_enabled { true };
+    bool m_pro_api_enabled { false };
     bool m_had_problems_with_pro_api { false };
     String m_pro_api_key;
     bool m_increase_interval_due_to_http_429 { false };
