@@ -99,7 +99,7 @@
 
     <footer class="footer bg-dark text-light ">
         <div class="container">
-            &copy; 2022 Whale Ticker LLC.
+            <span id="copy"></span>
         </div>
     </footer>
 
@@ -122,6 +122,14 @@
         }
 
         $(document).ready(function () {
+
+            copy = '&copy; 2022'
+            currentYear = new Date().getFullYear()
+            if (currentYear > 2022) {
+                copy += '&ndash;' + currentYear
+            }
+            copy += ' Whale Ticker LLC.'
+            $('#copy').html(copy)
 
             $('#getVersion').off().click(function (e) {
                 $("#forVersion").empty()

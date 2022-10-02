@@ -457,7 +457,7 @@
 
     <footer class="footer bg-dark text-light ">
         <div class="container">
-            &copy; 2022 Whale Ticker LLC. &mdash; <a href="about.html">About</a>
+            <span id="copy"></span> <a href="about.html">About</a>
         </div>
     </footer>
 
@@ -1147,6 +1147,14 @@
         }
 
         $(document).ready(function () {
+
+            copy = '&copy; 2022'
+            currentYear = new Date().getFullYear()
+            if (currentYear > 2022) {
+                copy += '&ndash;' + currentYear
+            }
+            copy += ' Whale Ticker LLC. &mdash;'
+            $('#copy').html(copy)
 
             brightnessSlider = $("#brightness").slider({
                 min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
