@@ -97,7 +97,7 @@
 
     <footer class="footer bg-dark text-light ">
         <div class="container">
-            &copy; 2022 barn53
+            <span id="copy"></span>
         </div>
     </footer>
 
@@ -120,6 +120,14 @@
         }
 
         $(document).ready(function () {
+
+            copy = '&copy; 2020'
+            currentYear = new Date().getFullYear()
+            if (currentYear > 2020) {
+                copy += '&ndash;' + currentYear
+            }
+            copy += ' barn53'
+            $('#copy').html(copy)
 
             $('#getVersion').off().click(function (e) {
                 $("#forVersion").empty()

@@ -71,13 +71,22 @@
 
     <footer class="footer bg-dark text-light ">
         <div class="container">
-            &copy; 2022 barn53 &mdash; <a href="settings.html">Settings</a>
+            <span id="copy"></span> <a href="settings.html">Settings</a>
         </div>
     </footer>
 
     <script type="text/javascript">
 
         $(document).ready(function () {
+
+            copy = '&copy; 2020'
+            currentYear = new Date().getFullYear()
+            if (currentYear > 2020) {
+                copy += '&ndash;' + currentYear
+            }
+            copy += ' barn53 &mdash;'
+            $('#copy').html(copy)
+
             $.get("/action/get/version", function (data) {
                 $("#version").empty().append(data)
             })
