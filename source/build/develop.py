@@ -26,6 +26,8 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildBinFiles(env)
 
+    tools.createAssetsDirectory(withWiFi, withPipedream, withSettings)
+
     tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
 
 
