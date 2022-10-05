@@ -58,9 +58,31 @@ def removeBuildBinFiles(env):
         pass
 
 
-def getAssetsDirectoryName():
+def getAssetsDirectoryName(withWiFi, withPipedream, withSettings):
     version = getVersion(True)
     path = "assets/" + version + "/"
+
+    first = True
+    if withWiFi:
+        path += "wifi"
+        if first:
+            first = False
+    if withPipedream:
+        if first:
+            first = False
+        else:
+            path += "_"
+        path += "pipedream"
+    if withSettings:
+        if first:
+            first = False
+        else:
+            path += "_"
+        path += "settings"
+
+    if not first:
+        path += "/"
+
     return path
 
 
@@ -69,24 +91,14 @@ def getFirmwareFilename():
     return "cointhing_" + version + ".bin"
 
 
-def getSpiffsFilename(withWiFi, withPipedream):
+def getSpiffsFilename():
     version = getVersion(True)
-    name = "spiffs_" + version
-    if withWiFi:
-        name += "_wifi"
-    if withPipedream:
-        name += "_pipedream"
-    name += ".bin"
-    return name
+    return "spiffs_" + version + ".bin"
 
 
-def getUploadScriptFilename(withWiFi, withPipedream, sh):
+def getUploadScriptFilename(sh):
     version = getVersion(True)
     name = "cointhing_upload_" + version
-    if withWiFi:
-        name += "_wifi"
-    if withPipedream:
-        name += "_pipedream"
     if sh:
         name += ".sh"
     else:
@@ -94,20 +106,20 @@ def getUploadScriptFilename(withWiFi, withPipedream, sh):
     return name
 
 
-def createAssetsDirectory():
-    path = getAssetsDirectoryName()
+def createAssetsDirectory(withWiFi, withPipedream, withSettings):
+    path = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
     try:
-        os.mkdir(path)
+        os.makedirs(path)
     except:
         pass
     return path
 
 
-def createUploadScript(env, withWiFi, withPipedream):
-    assets = getAssetsDirectoryName()
-    filename = assets + "/" + getUploadScriptFilename(withWiFi, withPipedream, False)
+def createUploadScript(env, withWiFi, withPipedream, withSettings):
+    assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
+    filename = assets + "/" + getUploadScriptFilename(False)
     firmware = getFirmwareFilename()
-    spiffs = getSpiffsFilename(withWiFi, withPipedream)
+    spiffs = getSpiffsFilename()
 
     f = open(filename, "w")
     f.write("python -m esptool erase_flash\n")
@@ -115,7 +127,7 @@ def createUploadScript(env, withWiFi, withPipedream):
     f.write("pio device monitor -b 115200\n")
     f.close()
 
-    filename = assets + "/" + getUploadScriptFilename(withWiFi, withPipedream, True)
+    filename = assets + "/" + getUploadScriptFilename(True)
 
     f = open(filename, "w")
     f.write("export PATH={0}\n".format(env["ENV"]["Path"]))
@@ -126,31 +138,20 @@ def createUploadScript(env, withWiFi, withPipedream):
     os.chmod(filename, 0o777)
 
 
-def moveFirmware(env):
-    assets = getAssetsDirectoryName()
-
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin", assets + "/" + getFirmwareFilename())
-
-
-def copyFirmware(env):
-    assets = getAssetsDirectoryName()
+def copyFirmware(env, withWiFi, withPipedream, withSettings):
+    assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
 
     shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin", assets + "/" + getFirmwareFilename())
 
 
-def moveSpiffs(env, withWiFi, withPipedream):
-    assets = getAssetsDirectoryName()
+def copySpiffs(env, withWiFi, withPipedream, withSettings):
+    assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
 
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename(withWiFi, withPipedream))
-
-
-def copySpiffs(env, withWiFi, withPipedream):
-    assets = getAssetsDirectoryName()
-
-    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename(withWiFi, withPipedream))
+    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename())
 
 
 def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
+    assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
     try:
         os.remove(env["PROJECT_DATA_DIR"] + "/secrets.json")
     except OSError:
@@ -173,10 +174,13 @@ def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
     with open(env["PROJECT_DATA_DIR"] + "/secrets.json", "w") as f:
         json.dump(secrets, f, indent=2, separators=(',', ':'))
 
+    shutil.copyfile(env["PROJECT_DATA_DIR"] + "/secrets.json", assets + "/secrets.json")
+
     # settings.json only if avaiable
     if withSettings:
         try:
             shutil.copyfile("secrets/settings.json", env["PROJECT_DATA_DIR"] + "/settings.json")
+            shutil.copyfile("secrets/settings.json", assets + "/settings.json")
         except OSError:
             pass
 
@@ -201,8 +205,8 @@ def prepareHTMLFiles(env):
     os.replace(env["PROJECT_DATA_DIR"] + "/../html/style.css.gz", env["PROJECT_DATA_DIR"] + "/style.css.gz")
 
 
-def copyHTMLFiles(env):
-    assets = getAssetsDirectoryName()
+def copyHTMLFiles(env, withWiFi, withPipedream, withSettings):
+    assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
 
     shutil.copyfile(env["PROJECT_DATA_DIR"] + "/settings.html.gz", assets + "/settings.html.gz")
     shutil.copyfile(env["PROJECT_DATA_DIR"] + "/about.html.gz", assets + "/about.html.gz")
