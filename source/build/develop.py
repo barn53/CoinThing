@@ -13,6 +13,7 @@ withWiFi = True
 withPipedream = False
 withSettings = True
 
+
 def preAction():
 
     print("###############################")
@@ -23,7 +24,7 @@ def preAction():
 
     tools.writeSpiffsVersion(env)
     tools.prepareHTMLFiles(env)
-    tools.removeBuildSpiffsFile(env)
+    tools.removeBuildBinFiles(env)
 
     tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
 

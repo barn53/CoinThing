@@ -6,11 +6,11 @@ import string
 import os
 import shutil
 import random
+import json
 
 
 def getVersion(pathCompatible):
-    version = subprocess.check_output(
-        ["git", "describe", "--tags", "--always", "--match", "v[0-9]*"]).strip()
+    version = subprocess.check_output(["git", "describe", "--tags", "--always", "--match", "v[0-9]*"]).strip()
     version = version.decode('utf-8')
     version = version.replace("-whale", "")  # remove the -whale from the tag
     changes = subprocess.check_output(["git", "status", "--porcelain"]).strip()
@@ -34,8 +34,7 @@ def writePreHeader(env):
     f = open(env["PROJECT_SRC_DIR"] + "/pre.h", "w")
     letters = string.ascii_lowercase
     f.write('#pragma once\n')
-    f.write('#define SECRET_AP_PASSWORD F("%s")\n' %
-            (''.join(random.choice(letters) for i in range(8))))
+    f.write('#define SECRET_AP_PASSWORD F("%s")\n' % (''.join(random.choice(letters) for i in range(8))))
     f.write('#define VERSION F("%s")\n' % (getVersion(False)))
     f.close()
 
@@ -49,10 +48,13 @@ def writeSpiffsVersion(env):
     shutil.copyfile(env["PROJECT_DATA_DIR"] + "/spiffs.version", env["PROJECT_DATA_DIR"] + "/admin.version")
 
 
-def removeBuildSpiffsFile(env):
+def removeBuildBinFiles(env):
     try:
-        os.remove(env["PROJECT_BUILD_DIR"] + "/" +
-                  env["PIOENV"] + "/spiffs.bin")
+        os.remove(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin")
+    except OSError:
+        pass
+    try:
+        os.remove(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin")
     except OSError:
         pass
 
@@ -128,15 +130,25 @@ def createUploadScript(env, withWiFi, withPipedream):
 def moveFirmware(env):
     assets = getAssetsDirectoryName()
 
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin",
-                assets + "/" + getFirmwareFilename())
+    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin", assets + "/" + getFirmwareFilename())
+
+
+def copyFirmware(env):
+    assets = getAssetsDirectoryName()
+
+    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/firmware.bin", assets + "/" + getFirmwareFilename())
 
 
 def moveSpiffs(env, withWiFi, withPipedream):
     assets = getAssetsDirectoryName()
 
-    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin",
-                assets + "/" + getSpiffsFilename(withWiFi, withPipedream))
+    shutil.move(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename(withWiFi, withPipedream))
+
+
+def copySpiffs(env, withWiFi, withPipedream):
+    assets = getAssetsDirectoryName()
+
+    shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename(withWiFi, withPipedream))
 
 
 def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
@@ -145,25 +157,24 @@ def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
     except OSError:
         pass
 
-    secretFile = "secrets/secrets"
-    if withWiFi:
-        if withPipedream:
-            secretFile += "_wifi_pipedream"
-        else:
-            secretFile += "_wifi"
-    else:
-        if withPipedream:
-            secretFile += "_pipedream"
-
-    secretFile += ".json"
-    shutil.copyfile(secretFile, env["PROJECT_DATA_DIR"] + "/secrets.json")
-
-    # settings.json only if avaiable
     try:
         os.remove(env["PROJECT_DATA_DIR"] + "/settings.json")
     except OSError:
         pass
 
+    with open("secrets/secrets.json", "r") as f:
+        secrets = json.load(f)
+
+    if not withWiFi:
+        secrets.pop("ssid", None)
+        secrets.pop("pwd", None)
+    if not withPipedream:
+        secrets.pop("pipedream", None)
+
+    with open(env["PROJECT_DATA_DIR"] + "/secrets.json", "w") as f:
+        json.dump(secrets, f, indent=2, separators=(',', ':'))
+
+    # settings.json only if avaiable
     if withSettings:
         try:
             shutil.copyfile("secrets/settings.json", env["PROJECT_DATA_DIR"] + "/settings.json")
