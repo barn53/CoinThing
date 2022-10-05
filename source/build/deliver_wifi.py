@@ -13,6 +13,7 @@ withWiFi = True
 withPipedream = True
 withSettings = False
 
+
 def preAction():
 
     print("###############################")
@@ -23,7 +24,7 @@ def preAction():
 
     tools.writeSpiffsVersion(env)
     tools.prepareHTMLFiles(env)
-    tools.removeBuildSpiffsFile(env)
+    tools.removeBuildBinFiles(env)
 
     tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
 
@@ -38,7 +39,7 @@ def postActionBuild(source, target, env):
     print("#### postActionBuild()")
     print("###############################")
 
-    tools.moveFirmware(env)
+    tools.copyFirmware(env)
 
 
 def postActionSpiffs(source, target, env):
@@ -47,7 +48,7 @@ def postActionSpiffs(source, target, env):
     print("#### postActionSpiffs()")
     print("###############################")
 
-    tools.moveSpiffs(env, withWiFi, withPipedream)
+    tools.copySpiffs(env, withWiFi, withPipedream)
 
 
 preAction()
