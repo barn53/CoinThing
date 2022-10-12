@@ -9,8 +9,9 @@
 
 ## What's New
 
-### Version 1.6 is out!
-- Extended number formats and currency symbol position
+### Version 1.7 is out!
+- Second curreny can be shown as value, market cap. or volume
+- More stable behavior when coingecko API fails
 
 -------
 
@@ -96,21 +97,21 @@ Chip ID: 0x00580337
 Hard resetting via RTS pin...
 ```
 
-##### Download the SPIFFS file e.g. __spiffs_v1.6.0.bin__ and execute
+##### Download the SPIFFS file e.g. __spiffs_v1.7.0.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.6.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x200000 <path_to_download>/spiffs_v1.7.0.bin
 ```
 
 After this was successful, you have to install the matching firmware itself.<br>
 
-##### Download the firmware file e.g. __cointhing_v1.6.0.bin__ and execute
+##### Download the firmware file e.g. __cointhing_v1.7.0.bin__ and execute
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.6.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.7.0.bin
 ```
 
 ##### Or both together
 ```bash
-python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.6.0.bin 0x200000 <path_to_download>/spiffs_v1.6.0.bin
+python -m esptool --before default_reset --after hard_reset --chip esp8266 --baud 460800 write_flash 0x0 <path_to_download>/cointhing_v1.7.0.bin 0x200000 <path_to_download>/spiffs_v1.7.0.bin
 ```
 
 That's all.<br>
@@ -129,6 +130,25 @@ python -m esptool erase_flash
 -------
 
 ## Available Versions To Download
+
+## Version 1.7:
+### New features
+- Second curreny can be shown as value, market cap. or volume
+- More stable behavior when coingecko API fails
+
+For an update from version 1.6 or below to version 1.7 you need to upload the file **spiffs_v1.7.0.bin** and one of the **cointhing_v1.7.*.bin** files as described above.
+
+[spiffs_v1.7.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.7.0/spiffs_v1.7.0.bin)
+
+When your CoinThing is already on Version 1.7.*, you can update via the browser update method.
+
+### Version 1.7.0:
+- Second curreny can be shown as value, market cap. or volume
+- More stable behavior when coingecko API fails
+
+[cointhing_v1.7.0.bin](https://github.com/barn53/CoinThing/releases/download/v1.7.0/cointhing_v1.7.0.bin)
+
+-------
 
 ## Version 1.6:
 ### New features
