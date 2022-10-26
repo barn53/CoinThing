@@ -145,17 +145,43 @@ String decodeDecrypt(const String& value)
     return String(reinterpret_cast<char*>(decrypted32));
 }
 
-void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, SmallDecimalNumberFormat smallDecimalNumberFormat, uint8_t forceDecimalPlaces)
+bool isCompactSmall(CompressNumberFormat cnf)
+{
+    return (cnf == CompressNumberFormat::COMPACT_SMALL
+        || cnf == CompressNumberFormat::COMPACT_SMALL_AND_LARGE);
+}
+
+bool isCompactLarge(CompressNumberFormat cnf)
+{
+    return (cnf == CompressNumberFormat::COMPACT_LARGE
+        || cnf == CompressNumberFormat::COMPACT_SMALL_AND_LARGE);
+}
+
+void formatNumber(gecko_t n,
+    String& s,
+    NumberFormat format,
+    bool forceSign,
+    bool dash00,
+    CompressNumberFormat compressNumberFormat,
+    uint8_t forceDecimalPlaces,
+    bool lessDecimalPlaces)
 {
     char buf[21];
     char buf2[21];
 
     uint8_t decimalPlaces(forceDecimalPlaces);
     gecko_t absoluteValue((n < 0 ? n * -1. : n));
+    uint8_t compactFormatPlaces(4); // fix number of digits after .#z 1234
 
     if (forceDecimalPlaces == std::numeric_limits<uint8_t>::max()) {
         decimalPlaces = 4;
-        if (absoluteValue < 0.00000001) {
+        if (lessDecimalPlaces) {
+            decimalPlaces = 2;
+        }
+
+        if (absoluteValue < 0.000000001) {
+            decimalPlaces = 13;
+        } else if (absoluteValue < 0.00000001) {
             decimalPlaces = 12;
         } else if (absoluteValue < 0.0000001) {
             decimalPlaces = 11;
@@ -171,24 +197,39 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             decimalPlaces = 6;
         } else if (absoluteValue < 1.) {
             decimalPlaces = 5;
+            if (lessDecimalPlaces) {
+                decimalPlaces = 3;
+            }
         } else if (static_cast<uint32_t>(absoluteValue) > 99999) {
             decimalPlaces = 2;
+        }
+
+        if (lessDecimalPlaces
+            && absoluteValue < 0.01) {
+            if (isCompactSmall(compressNumberFormat)) {
+                decimalPlaces -= 1;
+                compactFormatPlaces = 3;
+            } else {
+                decimalPlaces -= 2;
+            }
         }
     }
 
     String largeNumberPostfix;
-    if (n >= 1000000000000) { // trillion
-        n /= 1000000000000.;
-        decimalPlaces = 3;
-        largeNumberPostfix = 'T';
-    } else if (n >= 1000000000) { // billion
-        n /= 1000000000.;
-        decimalPlaces = 3;
-        largeNumberPostfix = 'B';
-    } else if (n >= 1000000) { // million
-        n /= 1000000.;
-        decimalPlaces = 3;
-        largeNumberPostfix = 'M';
+    if (isCompactLarge(compressNumberFormat)) {
+        if (absoluteValue >= 1000000000000) { // trillion
+            n /= 1000000000000.;
+            decimalPlaces = 3;
+            largeNumberPostfix = 'T';
+        } else if (absoluteValue >= 1000000000) { // billion
+            n /= 1000000000.;
+            decimalPlaces = 3;
+            largeNumberPostfix = 'B';
+        } else if (absoluteValue >= 1000000) { // million
+            n /= 1000000.;
+            decimalPlaces = 3;
+            largeNumberPostfix = 'M';
+        }
     }
 
     if (forceSign && n != 0.) {
@@ -242,7 +283,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     --copyTo;
 
     uint8_t copyFrom(0);
-    if (numTrailingZeroes > 0) {
+    if (numTrailingZeroes > 0 && largeNumberPostfix.isEmpty()) {
         // remove trailing zeroes (after the decimal separator)
         //  but leave at least 2 digits
         copyFrom = min<uint8_t>(numTrailingZeroes, posDecSep - 2);
@@ -276,7 +317,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
     }
     s = &buf[copyTo + 1];
 
-    if (smallDecimalNumberFormat == SmallDecimalNumberFormat::COMPACT
+    if (isCompactSmall(compressNumberFormat)
         && n != 0.
         && absoluteValue < 0.01) {
         String pattern;
@@ -307,8 +348,7 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
             s.replace(pattern, z);
 
             // s = "+.4z 123" --> "+.4z 1230"
-            // 4: fix number of digits after z
-            uint8_t rpad(4 - (s.length() - z.length()));
+            uint8_t rpad(compactFormatPlaces - (s.length() - z.length()));
             for (; rpad > 0; --rpad) {
                 s += '0';
             }
@@ -335,9 +375,6 @@ void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, boo
 
     s.replace(F(" "), F("\u2006")); // Six-Per-Em Space U+2006
 }
-
-// format large numbers:
-//   https://www.antidote.info/en/blog/reports/millions-billions-and-other-large-numbers
 
 void addCurrencySmbol(String& value, const String& symbol, CurrencySymbolPosition position)
 {

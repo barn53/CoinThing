@@ -66,8 +66,8 @@ void selftest()
             String price;
             String change;
 
-            formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true, SmallDecimalNumberFormat::COMPACT);
-            formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, SmallDecimalNumberFormat::NORMAL, 2);
+            formatNumber(p, price, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, false, true, CompressNumberFormat::COMPACT_SMALL);
+            formatNumber(c, change, NumberFormat::THOUSAND_COMMA_DECIMAL_DOT, true, false, CompressNumberFormat::NORMAL, 2);
 
             xTft.setCursor(0, 140);
             msg = "  ";

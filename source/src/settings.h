@@ -74,7 +74,7 @@ public:
     uint32_t numberCoins() const;
     SecondCurrencyShow secondCurrencyShow() const { return m_second_currency_show; }
     NumberFormat numberFormat() const { return m_number_format; }
-    SmallDecimalNumberFormat smallDecimalNumberFormat() const { return m_small_decimal_number; }
+    CompressNumberFormat smallDecimalNumberFormat() const { return m_small_decimal_number; }
     uint8_t chartPeriod() const { return m_chart_period; }
     Swap swapInterval() const { return m_swap_interval; }
     ChartStyle chartStyle() const { return m_chart_style; }
@@ -114,7 +114,7 @@ private:
 
     SecondCurrencyShow m_second_currency_show { SecondCurrencyShow::VALUE };
     NumberFormat m_number_format { NumberFormat::DECIMAL_DOT };
-    SmallDecimalNumberFormat m_small_decimal_number { SmallDecimalNumberFormat::NORMAL };
+    CompressNumberFormat m_small_decimal_number { CompressNumberFormat::NORMAL }; // only holds NORMAL or COMPACT_SMALL in the settings context
     uint8_t m_chart_period { ChartPeriod::PERIOD_24_H };
     Swap m_swap_interval { Swap::INTERVAL_1 };
     ChartStyle m_chart_style { ChartStyle::SIMPLE };

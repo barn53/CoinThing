@@ -458,17 +458,17 @@ void Display::renderCoin()
         addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
         break;
     case Settings::SecondCurrencyShow::MARKETCAP:
-        formatNumber(market_cap, secondCurrency, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        formatNumber(market_cap, secondCurrency, xSettings.numberFormat(), false, true, CompressNumberFormat::COMPACT_LARGE);
         addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
         secondCurrencyColor = TFT_GOLD;
         break;
     case Settings::SecondCurrencyShow::VOLUME:
-        formatNumber(volume, secondCurrency, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        formatNumber(volume, secondCurrency, xSettings.numberFormat(), false, true, CompressNumberFormat::COMPACT_LARGE);
         addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
         secondCurrencyColor = TFT_SKYBLUE;
         break;
     }
-    formatNumber(change_pct, msg, xSettings.numberFormat(), true, false, SmallDecimalNumberFormat::NORMAL, 2);
+    formatNumber(change_pct, msg, xSettings.numberFormat(), true, false, CompressNumberFormat::NORMAL, 2);
     msg += "%";
 
     xTft.loadFont(F("NotoSans-Regular25"));
@@ -554,17 +554,17 @@ void Display::renderTwoCoins()
             addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
             break;
         case Settings::SecondCurrencyShow::MARKETCAP:
-            formatNumber(market_cap[coinIndex], secondCurrency, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+            formatNumber(market_cap[coinIndex], secondCurrency, xSettings.numberFormat(), false, true, CompressNumberFormat::COMPACT_LARGE);
             addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
             secondCurrencyColor = TFT_GOLD;
             break;
         case Settings::SecondCurrencyShow::VOLUME:
-            formatNumber(volume[coinIndex], secondCurrency, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+            formatNumber(volume[coinIndex], secondCurrency, xSettings.numberFormat(), false, true, CompressNumberFormat::COMPACT_LARGE);
             addCurrencySmbol(secondCurrency, xSettings.currency2Symbol(), xSettings.currencySymbolPosition());
             secondCurrencyColor = TFT_SKYBLUE;
             break;
         }
-        formatNumber(change_pct[coinIndex], msg, xSettings.numberFormat(), true, false, SmallDecimalNumberFormat::NORMAL, 2);
+        formatNumber(change_pct[coinIndex], msg, xSettings.numberFormat(), true, false, CompressNumberFormat::NORMAL, 2);
         msg += "%";
 
         xTft.loadFont(F("NotoSans-Regular30"));
@@ -687,7 +687,7 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
     // draw period as background
     if (xSettings.chartStyle() != Settings::ChartStyle::HIGH_LOW_FIRST_LAST) {
         String lowNumber;
-        formatNumber(low, lowNumber, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        formatNumber(low, lowNumber, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
         xTft.loadFont(F("NotoSans-Regular15"));
         int16_t widthLowNumber(xTft.textWidth(lowNumber) + 30);
         xTft.unloadFont();
@@ -748,12 +748,12 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
             if (ii == 0) {
                 xAt = xAtHigh;
                 yMarker = CHART_Y_START;
-                formatNumber(high, number, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+                formatNumber(high, number, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
                 xTft.setTextColor(CHART_HIGH_COLOR, TFT_BLACK);
             } else {
                 xAt = xAtLow;
                 yMarker = DISPLAY_HEIGHT - (textHeight / 2);
-                formatNumber(low, number, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+                formatNumber(low, number, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
                 xTft.setTextColor(CHART_LOW_COLOR, TFT_BLACK);
             }
             addCurrencySmbol(number, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
@@ -817,10 +817,10 @@ bool Display::renderChart(Settings::ChartPeriod chartPeriod)
         }
 
         String numberFirst, numberLast, numberLow, numberHigh;
-        formatNumber(*beginIt, numberFirst, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
-        formatNumber(prices->back(), numberLast, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
-        formatNumber(low, numberLow, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
-        formatNumber(high, numberHigh, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat());
+        formatNumber(*beginIt, numberFirst, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
+        formatNumber(prices->back(), numberLast, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
+        formatNumber(low, numberLow, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
+        formatNumber(high, numberHigh, xSettings.numberFormat(), false, true, xSettings.smallDecimalNumberFormat(), std::numeric_limits<uint8_t>::max(), true);
         addCurrencySmbol(numberHigh, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
         addCurrencySmbol(numberLow, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
         addCurrencySmbol(numberFirst, xSettings.currencySymbol(), xSettings.currencySymbolPosition());
