@@ -25,9 +25,13 @@ void setup()
     UNITY_BEGIN();
 
     RUN_TEST(compactZeroes);
+    RUN_TEST(compactZeroesLessDecimalPlaces);
     RUN_TEST(forceSign);
+    RUN_TEST(forceSignLessDecimalPlaces);
     RUN_TEST(formats);
+    RUN_TEST(formatsLessDecimalPlaces);
     RUN_TEST(forceDecimalPlaces);
+    RUN_TEST(largeNumbers);
     RUN_TEST(uglyRounding);
 
     RUN_TEST(testJsonStore);

@@ -117,7 +117,7 @@ bool Settings::set(DynamicJsonDocument& doc)
 
     m_second_currency_show = static_cast<SecondCurrencyShow>(doc[F("second_currency_show")] | static_cast<uint8_t>(SecondCurrencyShow::VALUE));
     m_number_format = static_cast<NumberFormat>(doc[F("number_format")] | static_cast<uint8_t>(NumberFormat::DECIMAL_DOT));
-    m_small_decimal_number = static_cast<SmallDecimalNumberFormat>(doc[F("small_decimal_number")] | static_cast<uint8_t>(SmallDecimalNumberFormat::NORMAL));
+    m_small_decimal_number = static_cast<CompressNumberFormat>(doc[F("small_decimal_number")] | static_cast<uint8_t>(CompressNumberFormat::NORMAL));
     m_currency_symbol_position = static_cast<CurrencySymbolPosition>(doc[F("currency_symbol_position")] | static_cast<uint8_t>(CurrencySymbolPosition::TRAILING));
     m_chart_period = doc[F("chart_period")] | static_cast<uint8_t>(ChartPeriod::PERIOD_24_H);
     m_swap_interval = static_cast<Swap>(doc[F("swap_interval")] | static_cast<uint8_t>(Swap::INTERVAL_1));

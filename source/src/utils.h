@@ -85,16 +85,25 @@ enum class NumberFormat : uint8_t {
     THOUSAND_BLANK_DECIMAL_DOT, // 1 000.00
     DECIMAL_DOT // 1000.00
 };
-enum class SmallDecimalNumberFormat : uint8_t {
+enum class CompressNumberFormat : uint8_t {
     NORMAL, // 0.00001234
-    COMPACT // .4z 1234
+    COMPACT_SMALL, // .4z 1234
+    COMPACT_LARGE, // 1.234 B
+    COMPACT_SMALL_AND_LARGE // .4z 1234 + 1.234 B
 };
 enum class CurrencySymbolPosition : uint8_t {
     LEADING,
     TRAILING
 };
 
-void formatNumber(gecko_t n, String& s, NumberFormat format, bool forceSign, bool dash00, SmallDecimalNumberFormat smallDecimalNumberFormat, uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max());
+void formatNumber(gecko_t n,
+    String& s,
+    NumberFormat format,
+    bool forceSign,
+    bool dash00,
+    CompressNumberFormat compressNumberFormat,
+    uint8_t forceDecimalPlaces = std::numeric_limits<uint8_t>::max(),
+    bool lessDecimalPlaces = false);
 void addCurrencySmbol(String& value, const String& symbol, CurrencySymbolPosition position);
 
 uint32_t millis_test();
