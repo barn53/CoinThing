@@ -217,11 +217,11 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
     if (xHttpJson.read(url.c_str(), doc)) {
-        m_price = doc[coinId][currency] | std::numeric_limits<gecko_t>::infinity();
-        m_price2 = doc[coinId][currency2] | std::numeric_limits<gecko_t>::infinity();
-        m_change_pct = doc[coinId][change24h] | std::numeric_limits<gecko_t>::infinity();
-        m_market_cap = doc[coinId][marketcap] | std::numeric_limits<gecko_t>::infinity();
-        m_volume = doc[coinId][volume24h] | std::numeric_limits<gecko_t>::infinity();
+        m_price = doc[coinId][currency] | 0.;
+        m_price2 = doc[coinId][currency2] | 0.;
+        m_change_pct = doc[coinId][change24h] | 0.;
+        m_market_cap = doc[coinId][marketcap] | 0.;
+        m_volume = doc[coinId][volume24h] | 0.;
 
         m_last_price_fetch = millis_test();
 
@@ -229,8 +229,7 @@ bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
             m_price, m_price2, m_change_pct, m_market_cap, m_volume)
 
         resetFetchIssue();
-        return m_price != std::numeric_limits<gecko_t>::infinity()
-            && m_change_pct != std::numeric_limits<gecko_t>::infinity();
+        return true;
     }
 
     handleFetchIssue();
@@ -273,17 +272,17 @@ bool Gecko::fetchTwoCoinsPriceChange()
     DynamicJsonDocument doc(DYNAMIC_JSON_PRICE_CHANGE_SIZE);
 
     if (xHttpJson.read(url.c_str(), doc)) {
-        m_price = doc[coinId1][currency] | std::numeric_limits<gecko_t>::infinity();
-        m_price2 = doc[coinId1][currency2] | std::numeric_limits<gecko_t>::infinity();
-        m_change_pct = doc[coinId1][change24h] | std::numeric_limits<gecko_t>::infinity();
-        m_market_cap = doc[coinId1][marketcap] | std::numeric_limits<gecko_t>::infinity();
-        m_volume = doc[coinId1][volume24h] | std::numeric_limits<gecko_t>::infinity();
+        m_price = doc[coinId1][currency] | 0.;
+        m_price2 = doc[coinId1][currency2] | 0.;
+        m_change_pct = doc[coinId1][change24h] | 0.;
+        m_market_cap = doc[coinId1][marketcap] | 0.;
+        m_volume = doc[coinId1][volume24h] | 0.;
 
-        m_price_2 = doc[coinId2][currency] | std::numeric_limits<gecko_t>::infinity();
-        m_price2_2 = doc[coinId2][currency2] | std::numeric_limits<gecko_t>::infinity();
-        m_change_pct_2 = doc[coinId2][change24h] | std::numeric_limits<gecko_t>::infinity();
-        m_market_cap_2 = doc[coinId2][marketcap] | std::numeric_limits<gecko_t>::infinity();
-        m_volume_2 = doc[coinId2][volume24h] | std::numeric_limits<gecko_t>::infinity();
+        m_price_2 = doc[coinId2][currency] | 0.;
+        m_price2_2 = doc[coinId2][currency2] | 0.;
+        m_change_pct_2 = doc[coinId2][change24h] | 0.;
+        m_market_cap_2 = doc[coinId2][marketcap] | 0.;
+        m_volume_2 = doc[coinId2][volume24h] | 0.;
 
         m_last_price_fetch = millis_test();
 
@@ -295,10 +294,7 @@ bool Gecko::fetchTwoCoinsPriceChange()
             m_price_2, m_price2_2, m_change_pct_2, m_market_cap_2, m_volume_2)
 
         resetFetchIssue();
-        return m_price != std::numeric_limits<gecko_t>::infinity()
-            && m_price_2 != std::numeric_limits<gecko_t>::infinity()
-            && m_change_pct != std::numeric_limits<gecko_t>::infinity()
-            && m_change_pct_2 != std::numeric_limits<gecko_t>::infinity();
+        return true;
     }
 
     handleFetchIssue();
