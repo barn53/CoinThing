@@ -57,14 +57,6 @@ private:
         COIN
     };
 
-    enum class CoinDownUpState {
-        CHANGE_UNDER_1_PCT = 0,
-        CHANGE_PLUS_1_TO_5_PCT = 1,
-        CHANGE_PLUS_MORE_THAN_5_PCT = 2,
-        CHANGE_MINUS_1_TO_5_PCT = 3,
-        CHANGE_MINUS_MORE_THAN_5_PCT = 4,
-    };
-
     Screen m_last_screen { Screen::NONE };
     Settings::ChartPeriod m_last_chart_period { Settings::ChartPeriod::PERIOD_NONE };
 
@@ -78,17 +70,6 @@ private:
     bool m_previous_prefetch_failed { false };
 
     uint32_t m_current_coin_index { std::numeric_limits<uint32_t>::max() };
-    CoinDownUpState m_coin_down_up[10] { CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT,
-        CoinDownUpState::CHANGE_UNDER_1_PCT };
-
     uint32_t m_last_coin_swap { 0 };
 
     uint32_t m_last_on_screen_debug_update { 0 };
@@ -102,8 +83,6 @@ private:
     static uint16_t GREY_LEVEL2;
     static uint16_t PERIOD_COLOR;
     static uint16_t CURRENT_COIN_DOT_COLOR;
-    static uint16_t COIN_DOWN_COLOR;
-    static uint16_t COIN_UP_COLOR;
     static uint16_t CHART_VERTICAL_LINE_COLOR;
     static uint16_t CHART_FIRST_COLOR;
     static uint16_t CHART_LAST_COLOR;

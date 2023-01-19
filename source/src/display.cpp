@@ -35,8 +35,6 @@ uint16_t Display::GREEN565;
 uint16_t Display::GREY_LEVEL2;
 uint16_t Display::PERIOD_COLOR;
 uint16_t Display::CURRENT_COIN_DOT_COLOR;
-uint16_t Display::COIN_DOWN_COLOR;
-uint16_t Display::COIN_UP_COLOR;
 uint16_t Display::CHART_VERTICAL_LINE_COLOR;
 uint16_t Display::CHART_FIRST_COLOR;
 uint16_t Display::CHART_LAST_COLOR;
@@ -52,8 +50,6 @@ Display::Display()
     GREY_LEVEL2 = TFT_DARKGREY;
     PERIOD_COLOR = RGB(0x0, 0x30, 0x90);
     CURRENT_COIN_DOT_COLOR = RGB(0xff, 0x66, 0x0);
-    COIN_DOWN_COLOR = RGB(0xbb, 0x0, 0x0);
-    COIN_UP_COLOR = TFT_DARKGREEN;
     CHART_VERTICAL_LINE_COLOR = RGB(0x03, 0x04, 0x03);
     CHART_FIRST_COLOR = RGB(0xa0, 0x0, 0xa0);
     CHART_LAST_COLOR = RGB(0xa0, 0x80, 0x0);
@@ -76,8 +72,6 @@ void Display::begin(uint8_t powerupSequenceCounter)
         GREY_LEVEL2 = RGB(0xb8, 0xb8, 0xb8);
         PERIOD_COLOR = RGB(0x0, 0x7a, 0xea);
         CURRENT_COIN_DOT_COLOR = RGB(0xdd, 0xaa, 0x0);
-        COIN_DOWN_COLOR = RGB(0xdd, 0x0, 0xa);
-        COIN_UP_COLOR = RGB(0x0, 0xee, 0xa);
         CHART_VERTICAL_LINE_COLOR = RGB(0x30, 0x30, 0x30);
         CHART_FIRST_COLOR = RGB(0xa0, 0x0, 0xa0);
         CHART_LAST_COLOR = RGB(0xa0, 0x80, 0x0);
@@ -327,47 +321,18 @@ void Display::renderTitle()
 
         if (xSettings.mode() == Settings::Mode::MULTIPLE_COINS) {
             uint32_t count(0);
-
-            auto dotColor = [&]() -> uint16_t {
-                uint16_t ret(GREY_LEVEL2);
-                if (count == m_current_coin_index) {
-                    ret = CURRENT_COIN_DOT_COLOR;
-                } else {
-                    switch (m_coin_down_up[count]) {
-                    case CoinDownUpState::CHANGE_PLUS_1_TO_5_PCT:
-                    case CoinDownUpState::CHANGE_PLUS_MORE_THAN_5_PCT:
-                        ret = COIN_UP_COLOR;
-                        break;
-
-                    case CoinDownUpState::CHANGE_MINUS_1_TO_5_PCT:
-                    case CoinDownUpState::CHANGE_MINUS_MORE_THAN_5_PCT:
-                        ret = COIN_DOWN_COLOR;
-                        break;
-
-                    case CoinDownUpState::CHANGE_UNDER_1_PCT:
-                        break;
-                    }
-                }
-                return ret;
-            };
-
+            uint16_t color(GREY_LEVEL2);
             for (uint32_t xx = x_name + 4; count < xSettings.numberCoins(); ++count, xx += 13) {
                 if (count == m_current_coin_index) {
+                    color = CURRENT_COIN_DOT_COLOR;
                     for (uint8_t rr = 0; rr < 2; ++rr) {
-                        xTft.fillCircle(xx, 60, 2, dotColor());
+                        xTft.fillCircle(xx, 60, 2, color);
                         xx += 3;
                     }
-                }
-
-                if (count != m_current_coin_index
-                    && m_coin_down_up[count] == CoinDownUpState::CHANGE_PLUS_MORE_THAN_5_PCT) {
-                    xTft.fillTriangle(xx - 3, 62, xx + 3, 62, xx, 56, dotColor());
-                } else if (count != m_current_coin_index
-                    && m_coin_down_up[count] == CoinDownUpState::CHANGE_MINUS_MORE_THAN_5_PCT) {
-                    xTft.fillTriangle(xx - 3, 58, xx + 3, 58, xx, 64, dotColor());
                 } else {
-                    xTft.fillCircle(xx, 60, 2, dotColor());
+                    color = GREY_LEVEL2;
                 }
+                xTft.fillCircle(xx, 60, 2, color);
             }
         }
     } else { // Settings::Mode::TWO_COINS
@@ -420,17 +385,6 @@ void Display::renderCoin()
     LOG_I_PRINTLN("Update price display");
 
     uint16_t color(change_pct >= 0.0 ? GREEN565 : RED565);
-
-    m_coin_down_up[m_current_coin_index] = CoinDownUpState::CHANGE_UNDER_1_PCT;
-    if (change_pct > 5.) {
-        m_coin_down_up[m_current_coin_index] = CoinDownUpState::CHANGE_PLUS_MORE_THAN_5_PCT;
-    } else if (change_pct > 1.) {
-        m_coin_down_up[m_current_coin_index] = CoinDownUpState::CHANGE_PLUS_1_TO_5_PCT;
-    } else if (change_pct < -5.) {
-        m_coin_down_up[m_current_coin_index] = CoinDownUpState::CHANGE_MINUS_MORE_THAN_5_PCT;
-    } else if (change_pct < -1.) {
-        m_coin_down_up[m_current_coin_index] = CoinDownUpState::CHANGE_MINUS_1_TO_5_PCT;
-    }
 
     String msg;
     xTft.setTextColor(color, TFT_BLACK);
@@ -999,7 +953,6 @@ void Display::showCoin()
         LOG_I_PRINTLN("rewrite")
         m_last_chart_period = Settings::ChartPeriod::PERIOD_NONE;
         m_current_coin_index = 0;
-        // m_coin_down_up = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         m_last_seen_settings = xSettings.lastChange();
         rewrite = true;
     }
