@@ -1,7 +1,7 @@
 Comment,Designator,Footprint,LCSC
-"1u","C6","Capacitor_SMD:C_0805_2012Metric","C28323"
+"10u","C6,C9","Capacitor_SMD:C_0805_2012Metric","C2932476"
 "100n","C1,C3,C4,C5,C7,C8","Capacitor_SMD:C_0805_2012Metric","C49678"
-"4.7u","C2,C9","Capacitor_SMD:C_0805_2012Metric","C1779"
+"4.7u","C2","Capacitor_SMD:C_0805_2012Metric","C1779"
 "IPSDisplay_240x240","D1","barn53-kicad:IPSDisplay_240x240_FPC_80deg",""
 "USB_B_Micro","J1","barn53-kicad:MicroUSB_through_hole_fixing","C404969"
 "S8050_J3Y","Q1","Package_TO_SOT_SMD:SOT-23","C2146"
@@ -12,4 +12,4 @@ Comment,Designator,Footprint,LCSC
 "1k","R5","Resistor_SMD:R_0805_2012Metric","C17513"
 "ESP-12E","U1","barn53-kicad:ESP-12E","C82891"
 "CP2102-GMR_NRND","U2","Package_DFN_QFN:QFN-28-1EP_5x5mm_P0.5mm_EP3.35x3.35mm","C6568"
-"BL8565","U3","Package_TO_SOT_SMD:SOT-89-3","C51826"
+"WL9005P3-33","U3","Package_TO_SOT_SMD:SOT-89-3","C2688248"
