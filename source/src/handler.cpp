@@ -293,9 +293,12 @@ bool Handler::handleFileRead()
         path += F("settings.html");
     }
 
+#if COIN_THING_SERIAL == 0
     if (path.endsWith(F("/secrets.json"))) {
         server.send(403, F("text/plain"), F("403: Forbidden"));
         return true;
     }
+#endif
+
     return streamFile(path.c_str());
 }
