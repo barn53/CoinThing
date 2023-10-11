@@ -128,7 +128,7 @@ void handleWifi()
 
         delay(2500);
         if (!waitWiFiConnect()) {
-            LOG_I_PRINTLN(F("Not connected – restart"));
+            LOG_I_PRINTLN(F("Not connected - restart"));
             ESP.restart();
         }
     } else if (!successFromWiFiSecret) {
@@ -147,6 +147,11 @@ void handleWifi()
             LOG_I_PRINTLN(F("Save Config Callback"));
             if (wifiManager.getWiFiIsSaved()) {
                 LOG_I_PRINTLN(F("WiFi Saved - reset"));
+                if (xSecrets.has(F("ssid"))) {
+                    LOG_I_PRINTLN(F("Remove credentials from /secrets.json"));
+                    xSecrets.remove(F("ssid"));
+                    xSecrets.remove(F("pwd"));
+                }
             } else {
                 LOG_I_PRINTLN(F("WiFi NOT Saved"));
             }
