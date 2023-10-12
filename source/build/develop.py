@@ -12,7 +12,7 @@ Import("env")
 withWiFi = True
 withPipedream = False
 withSettings = True
-
+colorset = 1
 
 def preAction():
 
@@ -28,7 +28,7 @@ def preAction():
 
     tools.createAssetsDirectory(withWiFi, withPipedream, withSettings)
 
-    tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings)
+    tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings, colorset)
 
 
 preAction()

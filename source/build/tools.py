@@ -150,7 +150,7 @@ def copySpiffs(env, withWiFi, withPipedream, withSettings):
     shutil.copyfile(env["PROJECT_BUILD_DIR"] + "/" + env["PIOENV"] + "/spiffs.bin", assets + "/" + getSpiffsFilename())
 
 
-def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
+def prepareSecretFiles(env, withWiFi, withPipedream, withSettings, colorset):
     assets = getAssetsDirectoryName(withWiFi, withPipedream, withSettings)
     try:
         os.remove(env["PROJECT_DATA_DIR"] + "/secrets.json")
@@ -183,6 +183,10 @@ def prepareSecretFiles(env, withWiFi, withPipedream, withSettings):
             shutil.copyfile("secrets/settings.json", assets + "/settings.json")
         except OSError:
             pass
+
+    with open(env["PROJECT_DATA_DIR"] + "/colorset", "w") as f:
+        f.write(str(colorset))
+    shutil.copyfile(env["PROJECT_DATA_DIR"] + "/colorset", assets + "/colorset")
 
 
 def prepareHTMLFiles(env):
