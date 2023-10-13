@@ -3,6 +3,7 @@ secrets.h
 pre.h
 
 data/*.version
+data/colorset
 data/secrets.json
 data/settings.json
 data/*.gz
