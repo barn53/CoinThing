@@ -20,5 +20,4 @@ private:
     bool handleGetPrice();
 
     bool handleForUpdate() const;
-    bool handleSelftest() const;
 };
