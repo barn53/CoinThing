@@ -1,0 +1,37 @@
+
+###
+GET https://worldtimeapi.org/api/timezone/utc HTTP/1.0
+
+### to get a timestamp:
+GET api.coincap.io/v2/rates/xyz HTTP/1.0
+
+###
+GET api.coincap.io/v2/assets?limit=1000 HTTP/1.0
+
+###
+GET api.coincap.io/v2/assets/bitcoin HTTP/1.0
+
+###
+GET api.coincap.io/v2/assets/shiba-inu HTTP/1.0
+
+
+###
+GET api.coincap.io/v2/assets/bitcoin/history?interval=m5&start=1698430260000&end=1698430980000 HTTP/1.0
+
+###
+GET api.coincap.io/v2/rates HTTP/1.0
+
+###
+GET api.coincap.io/v2/rates/euro HTTP/1.0
+
+###
+GET api.coincap.io/v2/rates/bitcoin HTTP/1.0
+
+
+
+
+###
+coincap api key:
+gerdmuller.de+coincap@gmail.com
+3c3111cb-c2d8-4c74-883c-598c382a3978
+
