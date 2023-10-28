@@ -163,19 +163,6 @@ bool Handler::handleForUpdate() const
     return true;
 }
 
-bool Handler::handleSelftest() const
-{
-    server.send(200, F("text/plain"), "1");
-
-    // if file exists on powerup, ESP starts selftest
-    File f = SPIFFS.open(SELFTEST_FILE, "w");
-    f.close();
-
-    delay(200);
-    ESP.restart();
-    return true;
-}
-
 bool Handler::streamFile(const char* filename)
 {
     LOG_FUNC
@@ -267,8 +254,6 @@ bool Handler::handleAction()
         return handleResetAll();
     } else if (path == F("/action/reset/forupdate")) {
         return handleForUpdate();
-    } else if (path == F("/action/selftest")) {
-        return handleSelftest();
     } else if (path == F("/action/get/version")) {
         return handleGetVersion();
     } else if (path == F("/action/get/name")) {

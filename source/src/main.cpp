@@ -5,7 +5,6 @@
 #include "http_json.h"
 #include "json_store.h"
 #include "pre.h"
-#include "selftest.h"
 #include "settings.h"
 #include "utils.h"
 #include "wifi_utils.h"
@@ -55,11 +54,6 @@ void setup(void)
 
     xGecko.begin();
     xSettings.begin();
-
-    if (SPIFFS.exists(SELFTEST_FILE)) {
-        SPIFFS.remove(SELFTEST_FILE);
-        selftest();
-    }
 
     server.onNotFound([]() { // If the client requests any URI
         if (!handler.handleAction()

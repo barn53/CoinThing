@@ -53,10 +53,6 @@
                     &nbsp;<span id="forName" class="text-info"></span>
                 </p>
                 <p>
-                    <button id="selftest" class="btn btn-success btn-sm">Self Test</button>
-                    &nbsp;<span id="forSelftest" class="text-success"></span>
-                </p>
-                <p>
                     <button id="resetESP" class="btn btn-warning btn-sm">Reset ESP</button>
                     &nbsp;<span id="forResetESP" class="text-info"></span>
                 </p>
@@ -160,13 +156,6 @@
                 $.get("/settings.json", function (data) {
                     $("#forSettings").append(JSON.stringify(data))
                 }).fail(function () { $("#forSettings").append("failure") })
-            })
-
-            $('#selftest').off().click(function (e) {
-                $("#forSelftest").empty()
-                $.get("/action/selftest", function (data) {
-                    $("#forSelftest").append(data)
-                }).fail(function () { $("#forSelftest").append("failure") })
             })
 
             $('#resetESP').off().click(function (e) {

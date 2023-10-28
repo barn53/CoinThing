@@ -22,5 +22,4 @@ private:
     bool handleDecrypt();
 
     bool handleForUpdate() const;
-    bool handleSelftest() const;
 };
