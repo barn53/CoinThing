@@ -4,7 +4,6 @@
 
 #define SECRETS_FILE F("/secrets.json")
 #define FOR_UPDATE_FILE F("/forupdate")
-#define SELFTEST_FILE F("/selftest")
 #define VERSION_BEFORE_UPDATE_FILE F("/versionbeforeupdate")
 #define COLOR_SET_FILE F("/colorset")
 #define FAKE_GECKO_SERVER_FILE F("/fakegeckoserver")

@@ -21,13 +21,6 @@ if ColorSet != 0:
     print(">>    Enter to proceed...")
     input()
 
-print("Start selftest...")
-url = "http://{0}/action/selftest".format(CoinThingIP)
-urllib.request.urlopen(url)
-print("\n>>  Wait for selftest end, blue screen/open settings screen...")
-print(">>    Enter to proceed...")
-input()
-
 print("Settings test...")
 print("  - Get settings")
 url = 'http://{0}'.format(CoinThingIP)
