@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import tools
 import os
 import shutil
+import tools
 
 Import("env")
-# Import("env", "projenv")
-# print(env.Dump())
-# print(projenv.Dump())
 
-withWiFi = True
+withWiFi = 0  # False: no wifi, 0: ssids[0], ...
 withPipedream = False
 withSettings = True
 colorset = 1
+
 
 def preAction():
 
@@ -26,9 +24,11 @@ def preAction():
     tools.prepareHTMLFiles(env)
     tools.removeBuildBinFiles(env)
 
-    tools.createAssetsDirectory(withWiFi, withPipedream, withSettings)
+    tools.createAssetsDirectory(env, withWiFi, withPipedream, withSettings)
 
-    tools.prepareSecretFiles(env, withWiFi, withPipedream, withSettings, colorset)
+    tools.prepareSecretFiles(
+        env, withWiFi, withPipedream, withSettings, colorset)
 
 
+tools.checkFlags(withWiFi, withPipedream, withSettings, colorset)
 preAction()

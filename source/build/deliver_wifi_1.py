@@ -5,11 +5,8 @@ import shutil
 import tools
 
 Import("env")
-# Import("env", "projenv")
-# print(env.Dump())
-# print(projenv.Dump())
 
-withWiFi = False  # False: no wifi, 0: ssids[0], ...
+withWiFi = 1  # False: no wifi, 0: ssids[0], ...
 withPipedream = True
 withSettings = False
 colorset = 1
