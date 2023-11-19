@@ -16,7 +16,8 @@ public:
     size_t getHttpCount() const { return m_http_read_count; }
 
 private:
-    WiFiClientSecure m_client;
+    WiFiClientSecure m_client_secure;
+    WiFiClient m_client;
     HTTPClient m_http;
     int m_last_http_code { 0 };
     size_t m_http_read_count { 0 };

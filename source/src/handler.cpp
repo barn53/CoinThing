@@ -104,6 +104,16 @@ bool Handler::handleGetName() const
     return true;
 }
 
+bool Handler::handleGetProxy() const
+{
+    if (xSettings.hasProxyServer()) {
+        server.send(200, F("text/plain"), xSettings.getProxyServer());
+    } else {
+        server.send(200, F("text/plain"), F("0"));
+    }
+    return true;
+}
+
 bool Handler::handleGetPrice()
 {
     gecko_t price;
@@ -196,6 +206,10 @@ bool Handler::handleSet() const
         server.send(200, F("text/plain"), server.arg(F("fakegeckoserver")));
         delay(200);
         ESP.restart();
+    } else if (server.hasArg(F("proxy"))) {
+        xSettings.setProxyServer(server.arg(F("proxy")));
+        server.send(200, F("text/plain"), server.arg(F("proxy")));
+        delay(200);
     } else if (server.hasArg(F("osd"))) {
         xDisplay.enableOnScreenDebug(server.arg(F("osd")) == F("1") ? true : false);
         server.send(200, F("text/plain"), server.arg(F("osd")) == F("1") ? F("1") : F("0"));
@@ -228,6 +242,8 @@ bool Handler::handleAction()
         return handleGetVersion();
     } else if (path == F("/action/get/name")) {
         return handleGetName();
+    } else if (path == F("/action/get/proxy")) {
+        return handleGetProxy();
     } else if (path == F("/action/get/price")) {
         return handleGetPrice();
     }

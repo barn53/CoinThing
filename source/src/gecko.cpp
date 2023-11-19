@@ -11,6 +11,7 @@ extern JsonStore xSecrets;
 
 // https://arduinojson.org/v6/assistant/
 #define DYNAMIC_JSON_PING_SIZE 64
+#define DYNAMIC_JSON_ASSET_SIZE 256
 #define DYNAMIC_JSON_PRICE_CHANGE_SIZE 512
 #define DYNAMIC_JSON_CHART_SIZE 3072
 
@@ -31,9 +32,8 @@ Gecko::Gecko()
 
 void Gecko::begin()
 {
-    m_gecko_server = xSettings.getGeckoServer();
-    ping();
     init();
+    loop();
 }
 
 void Gecko::loop()
@@ -51,6 +51,7 @@ void Gecko::loop()
             m_last_seen_settings = 0;
         }
     } else {
+        m_gecko_server = getGeckoServer();
         ping();
         m_last_price_fetch = 0;
         m_last_seen_settings = 0;
@@ -173,6 +174,15 @@ const std::vector<gecko_t>& Gecko::chart_60d(uint32_t coinIndex, bool& refetched
     }
 
     return m_chart_60d;
+}
+
+String Gecko::getGeckoServer()
+{
+    m_on_proxy = (!m_had_problems_with_proxy
+        && xSettings.hasProxyServer()
+        && (m_http_403_count > 0
+            || m_http_429_count > 0));
+    return xSettings.getGeckoServer(m_on_proxy);
 }
 
 bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
@@ -396,7 +406,14 @@ void Gecko::handleFetchIssue()
         ++m_http_429_count;
 
         m_increase_interval_due_to_http_429 = true;
+    } else if (getLastHttpCode() == HTTP_CODE_FORBIDDEN) {
+        ++m_http_403_count;
+    } else if (getLastHttpCode() == HTTP_CODE_NOT_FOUND) {
+        if (m_on_proxy) {
+            m_had_problems_with_proxy = true;
+        }
     }
+    m_gecko_server = getGeckoServer();
 }
 
 bool Gecko::ping()
@@ -411,6 +428,8 @@ bool Gecko::ping()
         if (xHttpJson.read(url.c_str(), doc)) {
             const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
             m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
+        } else {
+            handleFetchIssue();
         }
         m_last_ping = millis_test();
     }
@@ -422,6 +441,17 @@ void Gecko::init()
     LOG_FUNC
 
     String url;
+    if (xSecrets.get(F("assets"), url)) {
+        DynamicJsonDocument doc(DYNAMIC_JSON_ASSET_SIZE);
+        DynamicJsonDocument filter(32);
+        filter["proxy"] = true;
+        if (xHttpJson.read((url + F("/proxy.json")).c_str(), doc, filter)) {
+            String proxy(doc[F("proxy")] | "");
+            Settings::setProxyServer(proxy);
+            LOG_I_PRINTF("Proxy server: '%s'\n", proxy.c_str());
+        }
+    }
+
     if (xSecrets.get(F("pipedream"), url) && url.length() > 0) {
         url += "?name=";
         url += urlencode(xHostname);

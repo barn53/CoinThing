@@ -92,12 +92,16 @@ public:
 
     static void setFakeGeckoServer(String address);
     static bool isFakeGeckoServer();
-    static String getGeckoServer();
+    static String getGeckoServer(bool proxyIfAvailable);
     static String getSettings();
 
     static uint8_t handlePowerupSequenceForResetBegin();
     static void handlePowerupSequenceForResetEnd();
     void handlePowerupSequenceForResetEnd(uint8_t powerupSequenceCounter);
+
+    static bool hasProxyServer();
+    static void setProxyServer(const String& proxy);
+    static String& getProxyServer();
 
 private:
     bool set(DynamicJsonDocument& doc);
@@ -123,4 +127,6 @@ private:
     uint8_t m_brightness { std::numeric_limits<uint8_t>::max() };
 
     uint32_t m_last_change { 0 };
+
+    static String s_proxy_server;
 };

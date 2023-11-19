@@ -26,6 +26,9 @@ public:
     int getLastHttpCode() const;
     size_t getHttpCount() const;
 
+    bool onProxy() const { return m_on_proxy; }
+    bool hadProblemsWithProxy() const { return m_had_problems_with_proxy; }
+
     bool increaseIntervalDueToHTTP429() const { return m_increase_interval_due_to_http_429; }
     uint8_t recoverFromHTTP429() const;
 
@@ -33,8 +36,11 @@ public:
     uint32_t lastHttp429Persist() const { return m_last_http_429_persist; }
     size_t http429PauseCount() const { return m_http_429_pause_count; }
     size_t http429Count() const { return m_http_429_count; }
+    size_t http403Count() const { return m_http_403_count; }
 
 private:
+    String getGeckoServer();
+
     bool fetchCoinPriceChange(uint32_t coinIndex);
     bool fetchTwoCoinsPriceChange();
     bool fetchCoinChart(uint32_t coinIndex, Settings::ChartPeriod type);
@@ -50,6 +56,9 @@ private:
 
     bool m_succeeded { false };
 
+    bool m_on_proxy { false };
+    bool m_had_problems_with_proxy { false };
+
     bool m_increase_interval_due_to_http_429 { false };
     uint32_t m_last_http_429 { 0 };
     uint32_t m_last_http_429_persist { 0 };
@@ -57,6 +66,8 @@ private:
 
     size_t m_http_429_pause_count { 0 };
     size_t m_http_429_count { 0 };
+
+    size_t m_http_403_count { 0 };
 
     gecko_t m_price { 0. };
     gecko_t m_price2 { 0. };
