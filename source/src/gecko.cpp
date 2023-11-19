@@ -33,9 +33,8 @@ Gecko::Gecko()
 
 void Gecko::begin()
 {
-    m_gecko_server = xSettings.getGeckoServer(false);
-    ping();
     init();
+    loop();
 }
 
 void Gecko::loop()
@@ -53,6 +52,7 @@ void Gecko::loop()
             m_last_seen_settings = 0;
         }
     } else {
+        m_gecko_server = getGeckoServer();
         ping();
         m_last_price_fetch = 0;
         m_last_seen_settings = 0;
@@ -183,6 +183,15 @@ void Gecko::appendProAPIKey(String& url) const
         url += F("&x_cg_pro_api_key=");
         url += m_pro_api_key;
     }
+}
+
+String Gecko::getGeckoServer()
+{
+    m_on_proxy = (!m_had_problems_with_proxy
+        && xSettings.hasProxyServer()
+        && (m_http_403_count > 0
+            || m_http_429_count > 0));
+    return xSettings.getGeckoServer(m_on_proxy, m_on_pro_api);
 }
 
 bool Gecko::fetchCoinPriceChange(uint32_t coinIndex)
@@ -409,7 +418,7 @@ void Gecko::resetFetchIssue()
             m_on_pro_api = false;
             // do not reset this flag
             // m_had_problems_with_pro_api = false;
-            m_gecko_server = xSettings.getGeckoServer(false);
+            m_gecko_server = getGeckoServer();
         }
     }
 }
@@ -427,12 +436,10 @@ void Gecko::handleFetchIssue()
             m_on_pro_api = true;
             m_increase_interval_due_to_http_429 = false;
             ++m_switch_to_pro_count;
-            m_gecko_server = xSettings.getGeckoServer(true);
         } else if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
             m_on_pro_api = false;
             m_increase_interval_due_to_http_429 = true;
-            m_gecko_server = xSettings.getGeckoServer(false);
         } else {
             ++m_http_429_pause_count;
             m_increase_interval_due_to_http_429 = true;
@@ -442,9 +449,15 @@ void Gecko::handleFetchIssue()
         if (m_on_pro_api) {
             m_had_problems_with_pro_api = true;
             m_on_pro_api = false;
-            m_gecko_server = xSettings.getGeckoServer(false);
+        }
+    } else if (getLastHttpCode() == HTTP_CODE_FORBIDDEN) {
+        ++m_http_403_count;
+    } else if (getLastHttpCode() == HTTP_CODE_NOT_FOUND) {
+        if (m_on_proxy) {
+            m_had_problems_with_proxy = true;
         }
     }
+    m_gecko_server = getGeckoServer();
 }
 
 bool Gecko::ping()
@@ -457,6 +470,8 @@ bool Gecko::ping()
         if (xHttpJson.read(url.c_str(), doc)) {
             const char* gecko_says = doc[F("gecko_says")] | ""; // "(V3) To the Moon!"
             m_succeeded = strcmp(gecko_says, String(F("(V3) To the Moon!")).c_str()) == 0;
+        } else {
+            handleFetchIssue();
         }
         m_last_ping = millis_test();
     }
@@ -497,6 +512,14 @@ void Gecko::init()
         } else {
             m_pro_api_enabled = false;
             LOG_I_PRINTLN("Pro API disabled");
+        }
+
+        filter.clear();
+        filter["proxy"] = true;
+        if (xHttpJson.read((url + F("/proxy.json")).c_str(), doc, filter)) {
+            String proxy(doc[F("proxy")] | "");
+            Settings::setProxyServer(proxy);
+            LOG_I_PRINTF("Proxy server: '%s'\n", proxy.c_str());
         }
     }
 

@@ -41,3 +41,7 @@ app.get('/action/get/version', function (req, res) {
 app.get('/action/reset/all', function (req, res) {
     res.send('1')
 })
+
+app.get('/action/get/proxy', function (req, res) {
+    res.send('http://cg.6845126580506.hostingkunde.de/proxy')
+})

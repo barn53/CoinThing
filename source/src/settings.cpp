@@ -12,6 +12,8 @@
 
 extern JsonStore xSecrets;
 
+String Settings::s_proxy_server;
+
 Settings::Settings()
 {
 }
@@ -330,7 +332,7 @@ bool Settings::isFakeGeckoServer()
     return SPIFFS.exists(FAKE_GECKO_SERVER_FILE);
 }
 
-String Settings::getGeckoServer(bool onProAPI)
+String Settings::getGeckoServer(bool proxyIfAvailable, bool onProAPI)
 {
     if (SPIFFS.exists(FAKE_GECKO_SERVER_FILE)) {
         File f = SPIFFS.open(FAKE_GECKO_SERVER_FILE, "r");
@@ -338,11 +340,30 @@ String Settings::getGeckoServer(bool onProAPI)
         f.close();
         return fakeGeckoServer;
     }
+
     if (onProAPI) {
         return F("https://pro-api.coingecko.com");
     } else {
+        if (proxyIfAvailable && hasProxyServer()) {
+            return s_proxy_server;
+        }
         return F("https://api.coingecko.com");
     }
+}
+
+bool Settings::hasProxyServer()
+{
+    return !s_proxy_server.isEmpty();
+}
+
+void Settings::setProxyServer(const String& proxy)
+{
+    s_proxy_server = proxy;
+}
+
+String& Settings::getProxyServer()
+{
+    return s_proxy_server;
 }
 
 String Settings::getSettings()

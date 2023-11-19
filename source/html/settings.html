@@ -611,6 +611,23 @@
             })
         }
 
+        let proxy
+        function getProxy(callback) {
+            $.get("/action/get/proxy", function (data) {
+                proxy = data
+                $.get(proxy + "/api/v3/ping", function (data) {
+                    // proxy works
+                    callback()
+                }).fail(() => {
+                    proxy = ""
+                    callback()
+                })
+            }).fail(() => {
+                proxy = ""
+                callback()
+            })
+        }
+
         function showError(text) {
             $("#error_text").empty().append("Error " + text)
             $('#error_modal').modal({})
@@ -964,9 +981,18 @@
                 })
         }
 
+        function getCoingeckoServer() {
+            if (proxy && proxy.length > 0) {
+                return proxy
+            } else {
+                return "https://api.coingecko.com"
+            }
+        }
+
         let allCoins
         function getAllCoins() {
-            $.get("https://api.coingecko.com/api/v3/coins/list?include_platform=false", function (data) {
+            url = getCoingeckoServer() + "/api/v3/coins/list?include_platform=false"
+            $.get(url, function (data) {
                 allCoins = data
                 allCoins = allCoins.filter(c => (c.id.length > 0))
                 allCoins = allCoins.filter(c => (c.name.length > 0))
@@ -1120,7 +1146,8 @@
         }
 
         function loadTop10() {
-            $.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false", function (data) {
+            url = getCoingeckoServer() + "/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false"
+            $.get(url, function (data) {
                 index = 0
                 data.forEach(element => {
                     $("#coin" + index + "-n").valEvent(element.name)
@@ -1130,7 +1157,8 @@
         }
 
         function loadTrending() {
-            $.get("https://api.coingecko.com/api/v3/search/trending", function (data) {
+            url = getCoingeckoServer() + "/api/v3/search/trending"
+            $.get(url, function (data) {
                 for (index = 0; index < 10; ++index) {
                     $("#coin" + index + "-n").val("")
                 }
@@ -1160,9 +1188,12 @@
                 min: 10, max: 255, value: 255, step: 50, tooltip: 'hide'
             })
 
-            getAllCoins()
-            getSettings()
-            getBrightness()
+            function callAfterProxy() {
+                getAllCoins()
+                getSettings()
+                getBrightness()
+            }
+            getProxy(callAfterProxy)
 
             brightnessSlider.on('change', function (e) {
                 console.log(e.value.newValue)

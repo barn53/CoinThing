@@ -249,12 +249,26 @@ void Display::showOnScreenDebug()
         if (xGecko.onProAPI()) {
             xTft.setTextColor(TFT_CYAN, TFT_BLACK);
             xTft.print(F("pro"));
+        } else if (xGecko.onProxy()) {
+            xTft.setTextColor(TFT_DARKCYAN, TFT_BLACK);
+            xTft.print(F("proxy"));
         } else {
             xTft.setTextColor(TFT_GREENYELLOW, TFT_BLACK);
             xTft.print(F("free"));
         }
-        if (xGecko.hadProblemsWithProApi()) {
-            xTft.print(F(" pro failed"));
+        if (xGecko.hadProblemsWithProApi()
+            || xGecko.hadProblemsWithProxy()) {
+            xTft.print(F(" "));
+            if (xGecko.hadProblemsWithProApi()) {
+                xTft.print(F("pro"));
+                if (xGecko.hadProblemsWithProxy()) {
+                    xTft.print(F("+"));
+                }
+            }
+            if (xGecko.hadProblemsWithProxy()) {
+                xTft.print(F("proxy"));
+            }
+            xTft.print(F(" failed"));
         }
         if (!xGecko.proAPIEnabled()) {
             xTft.print(F(" pro disabled"));
@@ -264,6 +278,8 @@ void Display::showOnScreenDebug()
         xTft.setCursor(7, 25);
         xTft.print(F("req:"));
         xTft.print(xGecko.getHttpCount());
+        xTft.print(F(" 403:"));
+        xTft.print(xGecko.http403Count());
         if (xGecko.increaseIntervalDueToHTTP429()) {
             xTft.print(F(" slow"));
             if (xGecko.recoverFromHTTP429() < 100) {
@@ -1223,7 +1239,7 @@ void Display::showAPIInfo(String& msg)
 #endif
 
     if (xSettings.isFakeGeckoServer()) {
-        msg = xSettings.getGeckoServer(false);
+        msg = xSettings.getGeckoServer(false, false);
         xTft.setCursor((DISPLAY_WIDTH - xTft.textWidth(msg)) / 2, 150);
         xTft.print(msg);
     }

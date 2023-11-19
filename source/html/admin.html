@@ -81,10 +81,10 @@
                     &nbsp;<span id="forResetDelivery" class="text-danger"></span>
                 </p>
                 <p>
-                    <span id="wifijson" class="text-info"></span>
+                    <span id="fakegeckoserver" class="text-info"></span>
                 </p>
                 <p>
-                    <span id="fakegeckoserver" class="text-info"></span>
+                    <span id="proxy" class="text-info"></span>
                 </p>
                 <p style="height:50px;"></p>
             </div>
@@ -101,19 +101,19 @@
 
     <script type="text/javascript">
 
-        function checkForWiFiJson() {
-            $.get("/wifi.json", function (data) {
-                $("#wifijson").append("wifi.json exists")
-            }).fail(function () {
-                $("#wifijson").empty().append("wifi.json does not exist")
-            })
-        }
-
         function checkForFakeGeckoServer() {
             $.get("/fakegeckoserver", function (data) {
                 $("#fakegeckoserver").empty().append("Fake Gecko Server: " + data)
             }).fail(function () {
                 $("#fakegeckoserver").empty()
+            })
+        }
+
+        function checkForProxy() {
+            $.get("/action/get/proxy", function (data) {
+                $("#proxy").empty().append("Proxy Server: " + data)
+            }).fail(function () {
+                $("#proxy").empty()
             })
         }
 
@@ -196,7 +196,6 @@
                 $("#forResetWiFi").empty()
                 $.get("/action/reset/wifi", function (data) {
                     $("#forResetWiFi").append(data)
-                    $("#wifijson").empty()
                 }).fail(function () { $("#forResetWiFi").append("failure") })
             })
 
@@ -204,12 +203,11 @@
                 $("#forResetDelivery").empty()
                 $.get("/action/reset/all", function (data) {
                     $("#forResetDelivery").append(data)
-                    $("#wifijson").empty()
                 }).fail(function () { $("#forResetDelivery").append("failure") })
             })
 
-            checkForWiFiJson()
             checkForFakeGeckoServer()
+            checkForProxy()
 
         })
 

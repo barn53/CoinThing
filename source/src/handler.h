@@ -17,6 +17,7 @@ private:
 
     bool handleGetVersion() const;
     bool handleGetName() const;
+    bool handleGetProxy() const;
     bool handleGetPrice();
     bool handleEncrypt();
     bool handleDecrypt();
