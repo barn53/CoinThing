@@ -6,6 +6,8 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=utf-8");
 header('Cache-Control: public, max-age=30');
 
+// ini_set('display_errors', 1); // Enable error display
+
 doTheProxy();
 
 function doTheProxy()
@@ -29,81 +31,112 @@ function doTheProxy()
         $expireTime = 5 * 60;
     } else if (str_contains($requestUri, "/ping")) {
         header('Cache-Control: public, max-age=1200');
-        $expireTime = 6 * 60 * 60;
+        $expireTime = 24 * 60 * 60;
     } else if (str_contains($requestUri, "/coins/list")) {
         header('Cache-Control: public, max-age=1200');
-        $expireTime = 6 * 60 * 60;
+        $expireTime = 24 * 60 * 60;
     }
 
-    incStatsValue("requests");
-    incStatsValue($_SERVER['REMOTE_ADDR']);
+    file_put_contents("requests.log", timePrefix() , FILE_APPEND);
 
-    file_put_contents("requests.log", timePrefix() . $_SERVER['REMOTE_ADDR'] . " - " . $requestUri, FILE_APPEND);
-
-    $coinGeckoUrl = 'https://api.coingecko.com/';
+    $coinGeckoUrl = 'https://api.coingecko.com';
 
     // Create a unique identifier for the cache based on the request URL
     $cacheKey = md5($requestUri);
 
     $cacheState = isCached($cacheKey, $expireTime);
     if ($cacheState === 0) { // cache hit and valid
+        $requestUrl = $requestUri;
         $cachedResult = getCachedResult($cacheKey, $expireTime);
-        incStatsValue("cache " . $requestUri);
         $response = $cachedResult;
-        file_put_contents("requests.log", " [cache hit]\n", FILE_APPEND);
+        file_put_contents("requests.log", " [cache hit]", FILE_APPEND);
     } else { // cache miss or expired
-        // Create a stream context with options, including 'http' context
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'GET',
-                'header' => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0', // Set a user agent to avoid issues with some servers
-            ],
-        ]);
         // Create the full URL for the coingecko server
         $requestUrl = $coinGeckoUrl . $requestUri;
-        // Make the request and get the content
-        $response = file_get_contents($requestUrl, false, $context);
-        // Get the HTTP status code from the response headers
-        list($version, $statusCode, $reasonPhrase) = explode(' ', $http_response_header[0], 3);
-        $statusCode = (int)$statusCode;
+        list($response, $statusCode) = request($requestUrl);
 
         if ($cacheState === 1) { // cache hit but expired
             if ($statusCode === 429) {
-                // Prefer the expired data over 429 response code
+                // Prefer the expired data over 429 response code and refetch
                 $cachedResult = getCachedResult($cacheKey, 24 * 60 * 60);
                 http_response_code(200);
-                incStatsValue("cache old " . $requestUri);
                 $response = $cachedResult;
-                file_put_contents("requests.log", " [cache old]\n", FILE_APPEND);
+                file_put_contents("requests.log", " [cache old]", FILE_APPEND);
             } else {
-                http_response_code($statusCode);
                 if ($statusCode === 200) {
-                    // Save the result to the cache
                     saveToCache($cacheKey, $response);
-                    incStatsValue("gecko " . $requestUri);
                 }
-                incStatsValue("gecko http " . $statusCode);
-                incStatsValue("gecko http " . $statusCode . " - " . $_SERVER['REMOTE_ADDR']);
-                file_put_contents("requests.log", " [expired -> $statusCode]\n", FILE_APPEND);
+                http_response_code($statusCode);
+                file_put_contents("requests.log", " [expired -> $statusCode]", FILE_APPEND);
             }
         } else if ($cacheState === 2) {// cache miss
-            http_response_code($statusCode);
-            if ($statusCode === 200) {
-                // Save the result to the cache
-                saveToCache($cacheKey, $response);
-                incStatsValue("gecko " . $requestUri);
+            $key = getRandomKey();
+            if ($statusCode === 429 && $key !== false) {
+                // Create the full URL for the coingecko server
+                $requestUrl = $coinGeckoUrl . $requestUri;
+                if (strpos($requestUrl, "?") === false) {
+                    $requestUrl .= "?";
+                } else {
+                    $requestUrl .= "&";
+                }
+                $requestUrl .= "x_cg_demo_api_key=" . $key;
+                list($response, $statusCode) = request($requestUrl);
+                if ($statusCode === 200) {
+                    saveToCache($cacheKey, $response);
+                }
+                file_put_contents("requests.log", " [miss -> 429 -> $statusCode]", FILE_APPEND);
+            } else {
+                if ($statusCode === 200) {
+                    saveToCache($cacheKey, $response);
+                }
+                file_put_contents("requests.log", " [miss -> $statusCode]", FILE_APPEND);
             }
-            incStatsValue("gecko http " . $statusCode);
-            incStatsValue("gecko http " . $statusCode . " - " . $_SERVER['REMOTE_ADDR']);
-            file_put_contents("requests.log", " [$statusCode]\n", FILE_APPEND);
+            http_response_code($statusCode);
         }
     }
+
+    file_put_contents("requests.log", " " . $_SERVER['REMOTE_ADDR'] . " - " . $requestUrl . "  $cacheKey\n", FILE_APPEND);
+
+    if (http_response_code() !== 200) {
+        header('Cache-Control: public, max-age=30');
+    }
     echo $response;
+}
+
+function request($url)
+{
+    // Create a stream context with options, including 'http' context
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0', // Set a user agent to avoid issues with some servers
+        ],
+    ]);
+    // Make the request and get the content
+    $response = file_get_contents($url, false, $context);
+    // Get the HTTP status code from the response headers
+    list($version, $statusCode, $reasonPhrase) = explode(' ', $http_response_header[0], 3);
+    return [$response, (int)$statusCode];
 }
 
 function timePrefix()
 {
     return "" . time() . " | ";
+}
+
+function getRandomKey()
+{
+    $keysFile = 'keys.json';
+    if (file_exists($keysFile)) {
+        $jsonContent = file_get_contents($keysFile);
+    } else {
+        return false;
+    }
+    $keys = json_decode($jsonContent, true);
+    if ($keys === null) {
+        return false;
+    }
+    return $keys[array_rand($keys)];
 }
 
 function incStatsValue($key)

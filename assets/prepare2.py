@@ -68,6 +68,11 @@ def main():
             content = response.read()
             print("\nColorset: " + str(content))
 
+        url = 'http://{0}/action/get/proxy'.format(ip_address)
+        with urllib.request.urlopen(url) as response:
+            content = response.read()
+            print("\nProxy: " + str(content))
+
         print("\nLet CoinThing run a bit with settings")
         for _ in range(30):
             time.sleep(1)
