@@ -1,4 +1,5 @@
 #include "gecko.h"
+#include "common.h"
 #include "http_json.h"
 #include "json_store.h"
 #include "pre.h"
@@ -19,9 +20,8 @@ extern JsonStore xSecrets;
 #define PRICE_FETCH_INTERVAL_WHILE_HTTP_429 (15 * 1000)
 #define CHART_48_H_FETCH_INTERVAL (15 * 60 * 1000)
 #define CHART_60_D_FETCH_INTERVAL (6 * 60 * 60 * 1000)
-#define PING_INTERVAL (2 * 1000)
 
-#define RECOVER_HTTP_429_INTERVAL (xSettings.isFakeGeckoServer() ? (20 * 1000) : (2 * 60 * 1000))
+#define RECOVER_HTTP_429_INTERVAL (xSettings.isFakeGeckoServer() ? (20 * 1000) : (30 * 1000))
 #define HTTP_429_RESET_INTERVAL (xSettings.isFakeGeckoServer() ? (60 * 1000) : (60 * 60 * 1000))
 
 Gecko::Gecko()

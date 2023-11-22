@@ -10,6 +10,8 @@
 #define POWERUP_SEQUENCE_COUNTER_FILE F("/powerupsequence")
 #define POWERUP_SEQUENCE_COUNT_TO_RESET 4
 
+#define PING_INTERVAL (2 * 1000)
+
 #define FS_NO_GLOBALS
 #include <FS.h>
 using FS = fs::FS;

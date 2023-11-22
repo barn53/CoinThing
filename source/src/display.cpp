@@ -192,11 +192,9 @@ void Display::wifiConnect()
 void Display::showRecover(uint8_t pct)
 {
     if (!m_shows_recover) {
-        xTft.fillRect(210, 0, 30, 28, TFT_BLACK); // clear
-        xTft.fillRect(224, 2, 4, 16, TFT_WHITE); // pause icon
-        xTft.fillRect(233, 2, 4, 16, TFT_WHITE); // pause icon
         xTft.fillRect(220, 25, 20, 3, CURRENT_COIN_DOT_COLOR); // 100% bar
     }
+    heartbeat();
     xTft.fillRect(220, 25, (2000 / 100 * pct) / 100, 3, TFT_BLACK); // shrink bar to pct
     m_shows_recover = true;
 }
@@ -1240,21 +1238,27 @@ void Display::showAPIOK()
 void Display::showAPIFailed()
 {
     if (m_last_screen != Screen::API_FAILED) {
-        xTft.fillScreen(TFT_RED);
-        xTft.setTextColor(TFT_BLACK, TFT_RED);
+        xTft.fillScreen(RGB(0x0, 0x10, 0x50));
+        xTft.setTextColor(TFT_WHITE, RGB(0x0, 0x10, 0x50));
 
         String msg;
         showCoinThing(msg);
-
-        xTft.loadFont(F("NotoSans-Regular30"));
-        msg = F("Gecko API failed!");
-        xTft.setCursor((DISPLAY_WIDTH - xTft.textWidth(msg)) / 2, 110);
-        xTft.print(msg);
-        xTft.unloadFont();
-
         showAPIInfo(msg);
 
         m_last_screen = Screen::API_FAILED;
+    } else {
+        xTft.setTextColor(TFT_WHITE, RGB(0x0, 0x10, 0x50));
+        xTft.loadFont(F("NotoSans-Regular30"));
+
+        String msg;
+        msg = F("Connect ...");
+        xTft.setCursor((DISPLAY_WIDTH - xTft.textWidth(msg)) / 2, 110);
+        if (millis_test() - xGecko.lastPing() < (PING_INTERVAL / 2)) {
+            xTft.print(msg);
+        } else {
+            xTft.fillRect(167, 110, 70, 30, RGB(0x0, 0x10, 0x50));
+        }
+        xTft.unloadFont();
     }
 }
 

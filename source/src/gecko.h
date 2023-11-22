@@ -37,6 +37,7 @@ public:
     size_t http429PauseCount() const { return m_http_429_pause_count; }
     size_t http429Count() const { return m_http_429_count; }
     size_t http403Count() const { return m_http_403_count; }
+    uint32_t lastPing() const { return m_last_ping; }
 
 private:
     String getGeckoServer();
