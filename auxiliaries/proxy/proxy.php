@@ -8,9 +8,9 @@ header('Cache-Control: public, max-age=30');
 
 // ini_set('display_errors', 1); // Enable error display
 
-doTheProxy();
+doTheProxy(false, true);
 
-function doTheProxy()
+function doTheProxy($logRequests, $logStats)
 {
     // Get the original path and query parameters from the current URL
     $requestUri = $_SERVER['REQUEST_URI'];
@@ -37,19 +37,18 @@ function doTheProxy()
         $expireTime = 24 * 60 * 60;
     }
 
-    file_put_contents("requests.log", timePrefix() , FILE_APPEND);
-
     $coinGeckoUrl = 'https://api.coingecko.com';
 
     // Create a unique identifier for the cache based on the request URL
     $cacheKey = md5($requestUri);
 
+    $status = "unknown";
     $cacheState = isCached($cacheKey, $expireTime);
     if ($cacheState === 0) { // cache hit and valid
         $requestUrl = $requestUri;
         $cachedResult = getCachedResult($cacheKey, $expireTime);
         $response = $cachedResult;
-        file_put_contents("requests.log", " [cache hit]", FILE_APPEND);
+        $status = "cache hit";
     } else { // cache miss or expired
         // Create the full URL for the coingecko server
         $requestUrl = $coinGeckoUrl . $requestUri;
@@ -61,13 +60,13 @@ function doTheProxy()
                 $cachedResult = getCachedResult($cacheKey, 24 * 60 * 60);
                 http_response_code(200);
                 $response = $cachedResult;
-                file_put_contents("requests.log", " [cache old]", FILE_APPEND);
+                $status = "cache old";
             } else {
                 if ($statusCode === 200) {
                     saveToCache($cacheKey, $response);
                 }
                 http_response_code($statusCode);
-                file_put_contents("requests.log", " [expired -> $statusCode]", FILE_APPEND);
+                $status = "expired -> $statusCode";
             }
         } else if ($cacheState === 2) {// cache miss
             $key = getRandomKey();
@@ -84,18 +83,23 @@ function doTheProxy()
                 if ($statusCode === 200) {
                     saveToCache($cacheKey, $response);
                 }
-                file_put_contents("requests.log", " [miss -> 429 -> $statusCode]", FILE_APPEND);
+                $status = "miss -> 429 -> $statusCode";
             } else {
                 if ($statusCode === 200) {
                     saveToCache($cacheKey, $response);
                 }
-                file_put_contents("requests.log", " [miss -> $statusCode]", FILE_APPEND);
+                $status = "miss -> $statusCode";
             }
             http_response_code($statusCode);
         }
     }
 
-    file_put_contents("requests.log", " " . $_SERVER['REMOTE_ADDR'] . " - " . $requestUrl . "  $cacheKey\n", FILE_APPEND);
+    if ($logRequests) {
+        file_put_contents("requests.log", timePrefix() . " [$status] " . $_SERVER['REMOTE_ADDR'] . " - " . $requestUrl . "  $cacheKey\n", FILE_APPEND);
+    }
+    if ($logStats) {
+        incStatsValue($status);
+    }
 
     if (http_response_code() !== 200) {
         header('Cache-Control: public, max-age=30');
@@ -141,7 +145,6 @@ function getRandomKey()
 
 function incStatsValue($key)
 {
-    /*
     $c = getStatsValue($key);
     if ($c !== false) {
         $c++;
@@ -149,12 +152,10 @@ function incStatsValue($key)
         $c = 1;
     }
     setStatsValue($key, $c);
-    */
 }
 
 function setStatsValue($key, $value)
 {
-    /*
     $statsFile = 'stats.json';
     if (file_exists($statsFile)) {
         $jsonData = file_get_contents($statsFile);
@@ -167,13 +168,11 @@ function setStatsValue($key, $value)
     // Convert the data to JSON format
     $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     // Write the JSON data to a file
-    file_put_contents($statsFile, $jsonData);
-    */
+    file_put_contents($statsFile, $jsonData, LOCK_EX);
 }
 
 function getStatsValue($key)
 {
-    /*
     $statsFile = 'stats.json';
     if (file_exists($statsFile)) {
         $jsonData = file_get_contents($statsFile);
@@ -183,7 +182,6 @@ function getStatsValue($key)
         }
     }
     return false;
-    */
 }
 
 // Function to check cache entry
@@ -207,13 +205,9 @@ function getCachedResult($cacheKey, $expireTime) {
     $cacheFile = 'cache/' . $cacheKey;
     if (file_exists($cacheFile)) {
         if ((time() - filemtime($cacheFile)) < $expireTime) {
-            incStatsValue("cache hit");
-            // file_put_contents("cache/cache_age.log", timePrefix() . "$cacheKey hit @ age: " . (time() - filemtime($cacheFile)) . ", expires: $expireTime\n", FILE_APPEND);
             return file_get_contents($cacheFile);
         } else {
             // Delete the expired cache file
-            incStatsValue("cache expired");
-            // file_put_contents("cache/cache_age.log", timePrefix() . "$cacheKey expired, hit @ age: " . (time() - filemtime($cacheFile)) . ", expires: $expireTime\n", FILE_APPEND);
             unlink($cacheFile);
         }
     }
@@ -226,7 +220,6 @@ function saveToCache($cacheKey, $data) {
     if (!is_dir($cacheDir)) {
         mkdir($cacheDir, 0777, true);
     }
-    // file_put_contents("cache/cache_age.log", timePrefix() . "$cacheKey created\n", FILE_APPEND);
     $cacheFile = $cacheDir . '/' . $cacheKey;
     file_put_contents($cacheFile, $data);
 }
