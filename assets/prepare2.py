@@ -68,6 +68,11 @@ def main():
             content = response.read()
             print("\nColorset: " + str(content))
 
+        url = 'http://{0}/action/get/version'.format(ip_address)
+        with urllib.request.urlopen(url) as response:
+            content = response.read()
+            print("\nVersion: " + str(content))
+
         url = 'http://{0}/action/get/proxy'.format(ip_address)
         with urllib.request.urlopen(url) as response:
             content = response.read()
